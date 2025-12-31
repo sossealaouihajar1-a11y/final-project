@@ -20,7 +20,7 @@ class AdminSeeder extends Seeder
             'phone' => '+212600000000',
             'city' => 'fes',
             'address' => 'Adresse admin',
-            'email_verified_at' => now(),
+     
         ]);
 
     }

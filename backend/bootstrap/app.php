@@ -12,8 +12,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        $middleware->statefulApi();
+        
+        // Alias middleware personnalisés
         $middleware->alias([
-          
+            'role' => \App\Http\Middleware\CheckRole::class,
+            'vendor.approved' => \App\Http\Middleware\CheckVendorStatus::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
