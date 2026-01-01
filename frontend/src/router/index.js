@@ -54,7 +54,13 @@ const router = createRouter({
       name: 'vendor-dashboard',
       component: () => import('@/views/vendor/DashboardView.vue'),
       meta: { requiresAuth: true, role: 'vendeur' }
-    }
+    },
+
+    {
+  path: '/products',
+  name: 'products',
+  component: () => import('@/views/ProductsPage.vue')
+},
   ]
 })
 

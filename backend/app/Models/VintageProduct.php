@@ -29,6 +29,7 @@ class VintageProduct extends Model
         'promotion' => 'decimal:2',
         'stock' => 'integer',
     ];
+    protected $appends = ['final_price'];
 
     /**
      * Relations

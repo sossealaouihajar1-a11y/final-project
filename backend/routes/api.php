@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Admin\VendorManagementController;
 use App\Http\Controllers\Api\Auth\AuthController;
+use App\Http\Controllers\Api\ProductController;
 use Illuminate\Support\Facades\Route;
 
 // Routes publiques
@@ -43,3 +44,13 @@ Route::middleware('auth:sanctum')->group(function () {
         // TODO: Routes pour le panier, commandes, etc.
     });
 });                                                                                                                         
+
+// products
+Route::prefix('products')->group(function () {
+    Route::get('/', [ProductController::class, 'index']);
+    Route::get('/categories', [ProductController::class, 'categories']);
+    Route::get('/stats', [ProductController::class, 'stats']);
+    Route::get('/promotions', [ProductController::class, 'promotions']);
+    Route::get('/category/{category}', [ProductController::class, 'byCategory']);
+    Route::get('/{id}', [ProductController::class, 'show']);
+});
