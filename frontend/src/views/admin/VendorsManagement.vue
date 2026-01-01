@@ -10,7 +10,7 @@
             <span class="text-indigo-600 font-semibold">Gestion Vendeurs</span>
           </div>
           <div class="flex items-center space-x-4">
-            <span class="text-gray-700">{{ user?.name || 'Admin' }}</span>
+            <span class="text-gray-700">{{ userName }}</span>
             <button @click="handleLogout" class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700">
               Déconnexion
             </button>
@@ -45,16 +45,16 @@
 
       <div class="bg-white rounded-lg shadow p-4 mb-6">
         <div class="flex flex-wrap gap-3">
-          <button @click="filterStatus = null" :class="filterStatus === null ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-700'" class="px-4 py-2 rounded-md text-sm font-medium">
+          <button @click="filterStatus = null" :class="getButtonClass(null)" class="px-4 py-2 rounded-md text-sm font-medium">
             Tous
           </button>
-          <button @click="filterStatus = 'pending'" :class="filterStatus === 'pending' ? 'bg-yellow-600 text-white' : 'bg-gray-200 text-gray-700'" class="px-4 py-2 rounded-md text-sm font-medium">
+          <button @click="filterStatus = 'pending'" :class="getButtonClass('pending')" class="px-4 py-2 rounded-md text-sm font-medium">
             En attente
           </button>
-          <button @click="filterStatus = 'approved'" :class="filterStatus === 'approved' ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700'" class="px-4 py-2 rounded-md text-sm font-medium">
+          <button @click="filterStatus = 'approved'" :class="getButtonClass('approved')" class="px-4 py-2 rounded-md text-sm font-medium">
             Approuvés
           </button>
-          <button @click="filterStatus = 'rejected'" :class="filterStatus === 'rejected' ? 'bg-red-600 text-white' : 'bg-gray-200 text-gray-700'" class="px-4 py-2 rounded-md text-sm font-medium">
+          <button @click="filterStatus = 'rejected'" :class="getButtonClass('rejected')" class="px-4 py-2 rounded-md text-sm font-medium">
             Rejetés
           </button>
         </div>
@@ -73,77 +73,69 @@
         <p class="mt-2 text-gray-600">Chargement...</p>
       </div>
 
-      <div v-else class="bg-white rounded-lg shadow overflow-hidden">
-        <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-              <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Vendeur</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Contact</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ville</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
-              </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-              <tr v-for="vendor in filteredVendors" :key="vendor.id" class="hover:bg-gray-50">
-                <td class="px-6 py-4">
-                  <div class="text-sm font-medium text-gray-900">{{ vendor.name }}</div>
-                  <div class="text-xs text-gray-500">{{ vendor.email }}</div>
-                </td>
-                <td class="px-6 py-4">
-                  <div class="text-sm text-gray-900">{{ vendor.phone || 'N/A' }}</div>
-                </td>
-                <td class="px-6 py-4">
-                  <div class="text-sm text-gray-900">{{ vendor.city || 'N/A' }}</div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <span v-if="vendor.vendor_status === 'pending'" class="px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800">
-                    En attente
-                  </span>
-                  <span v-else-if="vendor.vendor_status === 'approved'" class="px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
-                    Approuvé
-                  </span>
-                  <span v-else-if="vendor.vendor_status === 'rejected'" class="px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800">
-                    Rejeté
-                  </span>
-                  <span v-else class="px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-800">
-                    {{ vendor.vendor_status }}
-                  </span>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm">
-                  <div class="flex flex-col space-y-2">
-                    <div v-if="vendor.vendor_status === 'pending'" class="flex space-x-2">
-                      <button @click="approveVendor(vendor.id)" :disabled="actionLoading" class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-xs font-medium disabled:opacity-50">
-                        Approuver
-                      </button>
-                      <button @click="rejectVendor(vendor.id)" :disabled="actionLoading" class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-xs font-medium disabled:opacity-50">
-                        Rejeter
-                      </button>
-                    </div>
-                    <div v-if="vendor.vendor_status === 'approved'" class="flex space-x-2">
-                      <button @click="suspendVendor(vendor.id)" :disabled="actionLoading" class="px-3 py-1 bg-orange-600 text-white rounded hover:bg-orange-700 text-xs font-medium disabled:opacity-50">
-                        Suspendre
-                      </button>
-                    </div>
-                    <div v-if="vendor.vendor_status === 'suspended'" class="flex space-x-2">
-                      <button @click="reactivateVendor(vendor.id)" :disabled="actionLoading" class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-xs font-medium disabled:opacity-50">
-                        Réactiver
-                      </button>
-                    </div>
-                    <div v-if="vendor.vendor_status === 'rejected'" class="flex space-x-2">
-                      <button @click="approveVendor(vendor.id)" :disabled="actionLoading" class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-xs font-medium disabled:opacity-50">
-                        Approuver
-                      </button>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+      <div v-else class="space-y-4">
+        <div v-for="vendor in filteredVendors" :key="vendor.id" class="bg-white rounded-lg shadow-md overflow-hidden">
+          <div class="p-6">
+            <div class="flex items-start justify-between mb-4">
+              <div>
+                <h3 class="text-xl font-bold text-gray-900">{{ vendor.name }}</h3>
+                <p class="text-sm text-gray-500">{{ vendor.email }}</p>
+              </div>
+              <span :class="getStatusClass(vendor.vendor_status)" class="px-4 py-2 rounded-full text-sm font-semibold">
+                {{ getStatusLabel(vendor.vendor_status) }}
+              </span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+              <div class="space-y-2">
+                <h4 class="font-semibold text-gray-700 border-b pb-1">Contact</h4>
+                <div class="space-y-1 text-sm">
+                  <p><span class="text-gray-600">Email:</span> <span class="font-medium">{{ vendor.email }}</span></p>
+                  <p><span class="text-gray-600">Téléphone:</span> <span class="font-medium">{{ vendor.phone || 'N/A' }}</span></p>
+                </div>
+              </div>
+
+              <div class="space-y-2">
+                <h4 class="font-semibold text-gray-700 border-b pb-1">Localisation</h4>
+                <div class="space-y-1 text-sm">
+                  <p><span class="text-gray-600">Ville:</span> <span class="font-medium">{{ vendor.city || 'N/A' }}</span></p>
+                  <p><span class="text-gray-600">Adresse:</span> <span class="font-medium">{{ vendor.address || 'N/A' }}</span></p>
+                </div>
+              </div>
+
+              <div class="space-y-2">
+                <h4 class="font-semibold text-gray-700 border-b pb-1">Identité</h4>
+                <div class="space-y-2 text-sm">
+                  <p><span class="text-gray-600">Type:</span> <span class="font-medium">{{ getIdentityType(vendor.identity_type) }}</span></p>
+                  <a v-if="vendor.identity_document" :href="getDocumentUrl(vendor.identity_document)" target="_blank" class="inline-block px-3 py-1.5 bg-indigo-600 text-white text-xs font-medium rounded hover:bg-indigo-700">
+                    Voir le document
+                  </a>
+                  <p v-else class="text-gray-400 italic">Aucun document</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap gap-2 pt-4 border-t">
+              <button v-if="vendor.vendor_status === 'pending'" @click="approveVendor(vendor.id)" :disabled="actionLoading" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm font-medium disabled:opacity-50">
+                Approuver
+              </button>
+              <button v-if="vendor.vendor_status === 'pending'" @click="rejectVendor(vendor.id)" :disabled="actionLoading" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm font-medium disabled:opacity-50">
+                Rejeter
+              </button>
+              <button v-if="vendor.vendor_status === 'approved'" @click="suspendVendor(vendor.id)" :disabled="actionLoading" class="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 text-sm font-medium disabled:opacity-50">
+                Suspendre
+              </button>
+              <button v-if="vendor.vendor_status === 'suspended'" @click="reactivateVendor(vendor.id)" :disabled="actionLoading" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium disabled:opacity-50">
+                Réactiver
+              </button>
+              <button v-if="vendor.vendor_status === 'rejected'" @click="approveVendor(vendor.id)" :disabled="actionLoading" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm font-medium disabled:opacity-50">
+                Approuver
+              </button>
+            </div>
+          </div>
         </div>
 
-        <div v-if="filteredVendors.length === 0" class="text-center py-12">
+        <div v-if="filteredVendors.length === 0" class="bg-white rounded-lg shadow p-12 text-center">
           <p class="text-gray-500">Aucun vendeur trouvé</p>
         </div>
       </div>
@@ -166,7 +158,8 @@ const actionLoading = ref(false)
 const filterStatus = ref(null)
 const successMessage = ref('')
 const errorMessage = ref('')
-const user = computed(() => authStore.user)
+
+const userName = computed(() => authStore.user?.name || 'Admin')
 
 const stats = computed(() => {
   return {
@@ -181,6 +174,44 @@ const filteredVendors = computed(() => {
   if (!filterStatus.value) return vendors.value
   return vendors.value.filter(v => v.vendor_status === filterStatus.value)
 })
+
+const getButtonClass = (status) => {
+  if (filterStatus.value === status) {
+    if (status === 'pending') return 'bg-yellow-600 text-white'
+    if (status === 'approved') return 'bg-green-600 text-white'
+    if (status === 'rejected') return 'bg-red-600 text-white'
+    return 'bg-indigo-600 text-white'
+  }
+  return 'bg-gray-200 text-gray-700'
+}
+
+const getStatusClass = (status) => {
+  if (status === 'pending') return 'bg-yellow-100 text-yellow-800'
+  if (status === 'approved') return 'bg-green-100 text-green-800'
+  if (status === 'rejected') return 'bg-red-100 text-red-800'
+  if (status === 'suspended') return 'bg-gray-100 text-gray-800'
+  return 'bg-gray-100 text-gray-800'
+}
+
+const getStatusLabel = (status) => {
+  const labels = {
+    pending: 'En attente',
+    approved: 'Approuvé',
+    rejected: 'Rejeté',
+    suspended: 'Suspendu'
+  }
+  return labels[status] || status
+}
+
+const getIdentityType = (type) => {
+  if (type === 'cin') return 'CIN'
+  if (type === 'passport') return 'Passeport'
+  return 'N/A'
+}
+
+const getDocumentUrl = (path) => {
+  return `http://localhost:8000/storage/${path}`
+}
 
 const loadVendors = async () => {
   loading.value = true
