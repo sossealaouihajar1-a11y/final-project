@@ -24,18 +24,36 @@ class VendorManagementController extends Controller
     /**
      * Tous les vendeurs
      */
-    public function index(Request $request): JsonResponse
-    {
-        $query = User::vendors();
+ public function index(Request $request)
+{
+    // LOG pour debug
+    \Log::info('Admin vendors request', [
+        'authenticated' => auth()->check(),
+        'user_id' => auth()->id(),
+        'user_role' => auth()->user()?->role,
+        'request_path' => $request->path()
+    ]);
 
-        if ($request->has('status')) {
-            $query->where('vendor_status', $request->status);
-        }
-
-        $vendors = $query->orderBy('created_at', 'desc')->get();
-
-        return response()->json($vendors);
+    if (!auth()->check()) {
+        \Log::error('User not authenticated in vendors index');
+        return response()->json(['message' => 'Non authentifié'], 401);
     }
+
+    if (auth()->user()->role !== 'admin') {
+        \Log::error('User not admin', ['role' => auth()->user()->role]);
+        return response()->json(['message' => 'Non autorisé'], 403);
+    }
+
+    $query = User::where('role', 'vendeur');
+
+    if ($request->has('status')) {
+        $query->where('vendor_status', $request->status);
+    }
+
+    $vendors = $query->orderBy('created_at', 'desc')->get();
+
+    return response()->json($vendors);
+}
 
     /**
      * Approuver un vendeur

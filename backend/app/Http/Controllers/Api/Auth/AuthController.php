@@ -9,6 +9,7 @@ use App\Http\Requests\Auth\RegisterVendorRequest;
 use App\Services\AuthService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth; 
 
 class AuthController extends Controller
 {
@@ -60,35 +61,78 @@ class AuthController extends Controller
     /**
      * Connexion
      */
-    public function login(LoginRequest $request): JsonResponse
-    {
-        try {
-            $result = $this->authService->login($request->validated());
+ public function login(LoginRequest $request)
+{
+    $credentials = $request->only('email', 'password');
 
-            return response()->json([
-                'message' => 'Connexion réussie',
-                'user' => $result['user'],
-                'token' => $result['token'],
-            ]);
-        } catch (\Illuminate\Validation\ValidationException $e) {
+    if (!Auth::attempt($credentials)) {
+        return response()->json([
+            'message' => 'Erreur de connexion',
+            'errors' => [
+                'email' => ['Les identifiants fournis sont incorrects.']
+            ]
+        ], 422);
+    }
+
+    $user = Auth::user();
+
+    // Vérification vendeur
+    if ($user->role === 'vendeur') {
+        if ($user->vendor_status === 'pending') {
+            Auth::logout();
             return response()->json([
                 'message' => 'Erreur de connexion',
-                'errors' => $e->errors(),
+                'errors' => [
+                    'email' => ['Votre compte vendeur est en attente de validation.']
+                ]
+            ], 422);
+        }
+
+        if ($user->vendor_status === 'rejected') {
+            Auth::logout();
+            return response()->json([
+                'message' => 'Erreur de connexion',
+                'errors' => [
+                    'email' => ['Votre compte vendeur a été rejeté.']
+                ]
+            ], 422);
+        }
+
+        if ($user->vendor_status === 'suspended') {
+            Auth::logout();
+            return response()->json([
+                'message' => 'Erreur de connexion',
+                'errors' => [
+                    'email' => ['Votre compte vendeur a été suspendu.']
+                ]
             ], 422);
         }
     }
 
+    // Supprimer les anciens tokens
+    $user->tokens()->delete();
+
+    // Créer un nouveau token
+    $token = $user->createToken('auth-token')->plainTextToken;
+
+    return response()->json([
+        'message' => 'Connexion réussie',
+        'user' => $user,
+        'token' => $token
+    ], 200);
+}
+
     /**
      * Déconnexion
      */
-    public function logout(Request $request): JsonResponse
-    {
-        $this->authService->logout($request->user());
+public function logout(Request $request)
+{
+    $request->user()->currentAccessToken()->delete();
 
-        return response()->json([
-            'message' => 'Déconnexion réussie',
-        ]);
-    }
+    return response()->json([
+        'message' => 'Déconnexion réussie'
+    ], 200);
+}
 
     /**
      * Utilisateur connecté
