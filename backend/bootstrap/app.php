@@ -13,11 +13,15 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->statefulApi();
-        
+      
+
         // Alias middleware personnalisés
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckRole::class,
             'vendor.approved' => \App\Http\Middleware\CheckVendorStatus::class,
+        ]);
+        $middleware->validateCsrfTokens(except: [
+        'api/*',
         ]);
         $middleware->append(\Illuminate\Http\Middleware\HandleCors::class);
     })
