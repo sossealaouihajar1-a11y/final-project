@@ -64,12 +64,7 @@
         </button>
       </form>
 
-      <div class="mt-6 border-t pt-4">
-        <p class="text-xs text-center text-gray-500 mb-2">Comptes de test:</p>
-        <div class="bg-gray-50 p-2 rounded text-xs text-gray-600">
-          <strong>Admin:</strong> admin@vintage.com / Admin@123
-        </div>
-      </div>
+     
     </div>
   </div>
 </template>
