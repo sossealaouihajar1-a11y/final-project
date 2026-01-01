@@ -345,13 +345,13 @@
 
                 <!-- Actions -->
                 <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
-                  <button
+                  <!-- <button
                     @click="contactVendor(selectedProduct)"
                     :disabled="selectedProduct.stock === 0"
                     class="flex-1 px-6 py-4 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl"
                   >
                     {{ selectedProduct.stock === 0 ? 'Rupture de stock' : 'Contacter le vendeur' }}
-                  </button>
+                  </button> -->
                   <button
                     @click="toggleFavorite(selectedProduct.id)"
                     :class="isFavorite(selectedProduct.id) ? 'bg-red-100 text-red-600 hover:bg-red-200' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'"
