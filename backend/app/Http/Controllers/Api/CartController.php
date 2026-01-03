@@ -6,8 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\VintageProduct;
+use App\Models\Invoice;
+use App\Models\ShippingAddress;
+use App\Mail\OrderConfirmationMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class CartController extends Controller
 {
@@ -20,7 +25,23 @@ class CartController extends Controller
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|uuid|exists:vintage_products,id',
             'items.*.quantity' => 'required|integer|min:1',
+            'shipping_address' => 'required|array',
+            'shipping_address.full_name' => 'required|string|max:255',
+            'shipping_address.phone' => 'required|string|max:20',
+            'shipping_address.address' => 'required|string|max:500',
+            'shipping_address.city' => 'required|string|max:100',
+            'shipping_address.postal_code' => 'required|string|max:20',
+            'shipping_address.country' => 'required|string|max:100',
         ]);
+
+        $user = $request->user();
+
+        // Vérifier que l'utilisateur est un client
+        if ($user->role !== 'client') {
+            return response()->json([
+                'message' => 'Seuls les clients peuvent passer des commandes'
+            ], 403);
+        }
 
         try {
             DB::beginTransaction();
@@ -32,7 +53,6 @@ class CartController extends Controller
             foreach ($request->items as $item) {
                 $product = VintageProduct::findOrFail($item['product_id']);
 
-                // Vérifier le stock
                 if ($product->stock < $item['quantity']) {
                     return response()->json([
                         'message' => "Stock insuffisant pour {$product->title}",
@@ -41,7 +61,6 @@ class CartController extends Controller
                     ], 400);
                 }
 
-                // Vérifier que le produit est actif
                 if ($product->status !== 'active') {
                     return response()->json([
                         'message' => "Le produit {$product->title} n'est plus disponible"
@@ -59,14 +78,30 @@ class CartController extends Controller
                 ];
             }
 
-            // Créer la commande
-            $order = Order::create([
-                'user_id' => $request->user()->id,
-                'total_price' => $totalPrice,
-                'status' => 'pending'
+            // Créer ou récupérer l'adresse de livraison
+            $shippingAddress = ShippingAddress::create([
+                'user_id' => $user->id,
+                'full_name' => $request->shipping_address['full_name'],
+                'phone' => $request->shipping_address['phone'],
+                'address' => $request->shipping_address['address'],
+                'city' => $request->shipping_address['city'],
+                'postal_code' => $request->shipping_address['postal_code'],
+                'country' => $request->shipping_address['country'],
             ]);
 
-            // Créer les items de commande et mettre à jour le stock
+            Log::info('Shipping address created', ['id' => $shippingAddress->id]);
+
+            // Créer la commande
+            $order = Order::create([
+                'user_id' => $user->id,
+                'total_price' => $totalPrice,
+                'status' => 'pending',
+                'shipping_address_id' => $shippingAddress->id,
+            ]);
+
+            Log::info('Order created', ['id' => $order->id]);
+
+            // Créer les items de commande
             foreach ($orderItemsData as $itemData) {
                 OrderItem::create([
                     'order_id' => $order->id,
@@ -79,10 +114,37 @@ class CartController extends Controller
                 $itemData['product']->decrementStock($itemData['quantity']);
             }
 
+            Log::info('Order items created');
+
+            // Créer la facture
+            $invoice = Invoice::create([
+                'order_id' => $order->id,
+                'subtotal' => $totalPrice,
+                'shipping_cost' => 0.00, // Livraison gratuite
+                'total_amount' => $totalPrice,
+                'status' => 'unpaid',
+            ]);
+
+            Log::info('Invoice created', ['id' => $invoice->id]);
+
             DB::commit();
 
-            // Charger la commande avec ses relations
-            $order->load(['orderItems.vintageProduct', 'user']);
+            // Charger les relations pour l'email
+            $order->load([
+                'orderItems.vintageProduct',
+                'user',
+                'shippingAddress',
+                'invoice'
+            ]);
+
+            // Envoyer l'email avec la facture
+            try {
+                Mail::to($user->email)->send(new OrderConfirmationMail($order));
+                Log::info('Confirmation email sent to: ' . $user->email);
+            } catch (\Exception $e) {
+                Log::error('Failed to send email: ' . $e->getMessage());
+                // Ne pas faire échouer la commande si l'email échoue
+            }
 
             return response()->json([
                 'message' => 'Commande créée avec succès',
@@ -91,6 +153,9 @@ class CartController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
+            Log::error('Checkout error: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+            
             return response()->json([
                 'message' => 'Erreur lors de la création de la commande',
                 'error' => $e->getMessage()

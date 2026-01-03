@@ -165,15 +165,110 @@
               </div>
             </div>
 
-            <button
-              @click="proceedToCheckout"
-              :disabled="processing"
-              class="w-full px-6 py-4 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition shadow-lg hover:shadow-xl mb-3 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {{ processing ? 'Traitement...' : 'Confirmer la commande' }}
-            </button>
+            <!-- Bouton Passer la commande -->
+            <div v-if="!showShippingForm" class="mb-4">
+              <button
+                @click="showShippingForm = true"
+                class="w-full px-6 py-4 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition shadow-lg hover:shadow-xl"
+              >
+                Passer la commande
+              </button>
+            </div>
+
+            <!-- Formulaire Adresse de Livraison -->
+            <div v-else class="space-y-4 mb-4">
+              <h3 class="font-bold text-gray-900 mb-4 flex items-center space-x-2">
+                <svg class="w-5 h-5 text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                </svg>
+                <span>Adresse de livraison</span>
+              </h3>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Nom complet *</label>
+                <input
+                  v-model="shippingAddress.full_name"
+                  type="text"
+                  required
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+                  placeholder="Jean Dupont"
+                />
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Téléphone *</label>
+                <input
+                  v-model="shippingAddress.phone"
+                  type="tel"
+                  required
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+                  placeholder="+33 6 12 34 56 78"
+                />
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Adresse *</label>
+                <input
+                  v-model="shippingAddress.address"
+                  type="text"
+                  required
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+                  placeholder="123 Rue de la Paix"
+                />
+              </div>
+
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Code postal *</label>
+                  <input
+                    v-model="shippingAddress.postal_code"
+                    type="text"
+                    required
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+                    placeholder="75001"
+                  />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Ville *</label>
+                  <input
+                    v-model="shippingAddress.city"
+                    type="text"
+                    required
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+                    placeholder="Paris"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Pays *</label>
+                <input
+                  v-model="shippingAddress.country"
+                  type="text"
+                  required
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+                  placeholder="France"
+                />
+              </div>
+
+              <button
+                @click="proceedToCheckout"
+                :disabled="processing || !isShippingValid"
+                class="w-full px-6 py-4 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {{ processing ? 'Traitement...' : 'Confirmer la commande' }}
+              </button>
+
+              <button
+                @click="showShippingForm = false"
+                class="w-full px-6 py-3 bg-gray-100 text-gray-700 font-medium rounded-xl hover:bg-gray-200 transition"
+              >
+                Annuler
+              </button>
+            </div>
 
             <router-link
+              v-if="!showShippingForm"
               to="/products"
               class="block w-full px-6 py-3 bg-gray-100 text-gray-700 font-medium rounded-xl hover:bg-gray-200 transition text-center"
             >
@@ -198,6 +293,15 @@
                 <div>
                   <div class="font-semibold text-gray-900 mb-1">Livraison gratuite</div>
                   <p>Sur toutes les commandes</p>
+                </div>
+              </div>
+              <div class="flex items-start space-x-3 text-sm text-gray-600">
+                <svg class="w-5 h-5 text-indigo-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+                </svg>
+                <div>
+                  <div class="font-semibold text-gray-900 mb-1">Livraison rapide</div>
+                  <p>Sous 3 à 5 jours ouvrés</p>
                 </div>
               </div>
             </div>
@@ -228,7 +332,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCartStore } from '@/stores/cartStore'
 import cartService from '@/services/cartService'
@@ -237,10 +341,30 @@ const router = useRouter()
 const cartStore = useCartStore()
 
 const processing = ref(false)
+const showShippingForm = ref(false)
+
+const shippingAddress = ref({
+  full_name: '',
+  phone: '',
+  address: '',
+  city: '',
+  postal_code: '',
+  country: 'France'
+})
+
 const notification = ref({
   show: false,
   message: '',
   type: 'success'
+})
+
+const isShippingValid = computed(() => {
+  return shippingAddress.value.full_name &&
+         shippingAddress.value.phone &&
+         shippingAddress.value.address &&
+         shippingAddress.value.city &&
+         shippingAddress.value.postal_code &&
+         shippingAddress.value.country
 })
 
 const showNotification = (message, type = 'success') => {
@@ -269,17 +393,22 @@ const decrementQuantity = (productId) => {
 }
 
 const proceedToCheckout = async () => {
+  if (!isShippingValid.value) {
+    showNotification('Veuillez remplir tous les champs requis', 'error')
+    return
+  }
+
   processing.value = true
 
   try {
-    const response = await cartService.checkout(cartStore.items)
+    const response = await cartService.checkout(cartStore.items, shippingAddress.value)
     
-    showNotification('Commande créée avec succès!', 'success')
+    showNotification('Commande créée avec succès! Vérifiez votre email pour la facture.', 'success')
     
     // Vider le panier
     cartStore.clearCart()
     
-    // Rediriger vers la page de confirmation ou les commandes
+    // Rediriger vers le dashboard
     setTimeout(() => {
       router.push('/client/dashboard')
     }, 2000)
