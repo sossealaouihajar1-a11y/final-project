@@ -119,12 +119,14 @@
 
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
-import HomePage from '@/views/HomePage.vue' // nouvelle page home
+import HomePage from '@/views/HomePage.vue'
 import LoginPage from '@/views/auth/LoginPage.vue'
 import RegisterClientPage from '@/views/auth/RegisterClientPage.vue'
 import RegisterVendorPage from '@/views/auth/RegisterVendorPage.vue'
 import AdminDashboard from '@/views/admin/DashboardView.vue'
 import VendorsManagement from '@/views/admin/VendorsManagement.vue'
+import UsersManagement from '@/views/admin/UsersManagement.vue'
+import ProductsManagement from '@/views/admin/ProductsManagement.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -165,6 +167,18 @@ const router = createRouter({
       meta: { requiresAuth: true, role: 'admin' }
     },
     {
+      path: '/admin/users',
+      name: 'admin-users',
+      component: UsersManagement,
+      meta: { requiresAuth: true, role: 'admin' }
+    },
+    {
+      path: '/admin/products',
+      name: 'admin-products',
+      component: ProductsManagement,
+      meta: { requiresAuth: true, role: 'admin' }
+    },
+    {
       path: '/client/dashboard',
       name: 'client-dashboard',
       component: () => import('@/views/client/DashboardView.vue'),
@@ -179,6 +193,11 @@ const router = createRouter({
     {
       path: '/products',
       name: 'products',
+      component: () => import('@/views/ProductsPage.vue')
+    },
+    {
+      path: '/categories',
+      name: 'categories',
       component: () => import('@/views/ProductsPage.vue')
     },
   ]
