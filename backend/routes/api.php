@@ -7,7 +7,8 @@ use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\OrderController;
-use App\Http\Controllers\Api\ProfileController; 
+use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\ShippingAddressController;
 use Illuminate\Support\Facades\Route;
 
 // Routes publiques
@@ -26,10 +27,15 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/me', [AuthController::class, 'me']);
     });
 
+    // shipping adress
+     Route::get('/shipping-address', [ShippingAddressController::class, 'show']);
+    Route::post('/shipping-address', [ShippingAddressController::class, 'store']);
+    Route::delete('/shipping-address', [ShippingAddressController::class, 'destroy']);
+
     // modification de profile
         Route::put('/profile', [ProfileController::class, 'update']);
         Route::put('/profile/password', [ProfileController::class, 'updatePassword']);
-        
+
     // Routes Panier & Commandes
     Route::post('/cart/checkout', [CartController::class, 'checkout']);
     

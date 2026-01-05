@@ -54,6 +54,19 @@
             </div>
           </button>
           <button
+            @click="activeTab = 'address'"
+            :class="activeTab === 'address' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
+            class="pb-4 px-1 border-b-2 font-medium text-sm transition"
+          >
+            <div class="flex items-center space-x-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              <span>Adresse de Livraison</span>
+            </div>
+          </button>
+          <button
             @click="activeTab = 'orders'"
             :class="activeTab === 'orders' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
             class="pb-4 px-1 border-b-2 font-medium text-sm transition"
@@ -181,9 +194,149 @@
         </div>
       </div>
 
+      <!-- Contenu Adresse de Livraison -->
+      <div v-if="activeTab === 'address'" class="max-w-2xl">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center space-x-2">
+            <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <span>Adresse de Livraison</span>
+          </h2>
+
+          <!-- Adresse Actuelle -->
+          <div v-if="shippingAddress && !editingAddress" class="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+            <div class="flex justify-between items-start mb-3">
+              <h3 class="font-semibold text-gray-900">Adresse Enregistrée</h3>
+              <button
+                @click="startEditingAddress"
+                class="text-blue-600 hover:text-blue-700 text-sm font-medium"
+              >
+                Modifier
+              </button>
+            </div>
+            <p class="text-sm text-gray-700">
+              {{ shippingAddress.full_name }}<br>
+              {{ shippingAddress.address }}<br>
+              {{ shippingAddress.postal_code }} {{ shippingAddress.city }}<br>
+              {{ shippingAddress.country }}<br>
+              Tél: {{ shippingAddress.phone }}
+            </p>
+          </div>
+
+          <!-- Message si pas d'adresse -->
+          <div v-if="!shippingAddress && !editingAddress" class="mb-6 p-4 bg-orange-50 rounded-lg border border-orange-200">
+            <p class="text-sm text-orange-800 mb-2">
+              <strong>⚠️ Aucune adresse enregistrée</strong>
+            </p>
+            <p class="text-xs text-orange-700 mb-3">
+              Vous devez enregistrer une adresse de livraison pour passer des commandes.
+            </p>
+            <button
+              @click="startEditingAddress"
+              class="text-sm font-semibold text-orange-600 hover:text-orange-700"
+            >
+              Ajouter une adresse →
+            </button>
+          </div>
+
+          <!-- Formulaire d'Adresse -->
+          <form v-if="editingAddress" @submit.prevent="saveAddress" class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Nom complet *</label>
+              <input
+                v-model="addressForm.full_name"
+                type="text"
+                required
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                placeholder="Jean Dupont"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Téléphone *</label>
+              <input
+                v-model="addressForm.phone"
+                type="tel"
+                required
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                placeholder="+33 6 12 34 56 78"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Adresse *</label>
+              <input
+                v-model="addressForm.address"
+                type="text"
+                required
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                placeholder="123 Rue de la Paix"
+              />
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Code postal *</label>
+                <input
+                  v-model="addressForm.postal_code"
+                  type="text"
+                  required
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  placeholder="75001"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Ville *</label>
+                <input
+                  v-model="addressForm.city"
+                  type="text"
+                  required
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  placeholder="Paris"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Pays *</label>
+              <input
+                v-model="addressForm.country"
+                type="text"
+                required
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                placeholder="France"
+              />
+            </div>
+
+            <div v-if="addressError" class="bg-red-50 border-l-4 border-red-500 p-4 rounded">
+              <p class="text-sm text-red-700">{{ addressError }}</p>
+            </div>
+
+            <div class="flex space-x-3">
+              <button
+                type="submit"
+                :disabled="addressLoading"
+                class="flex-1 px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition disabled:opacity-50"
+              >
+                {{ addressLoading ? 'Enregistrement...' : 'Enregistrer l\'adresse' }}
+              </button>
+              <button
+                type="button"
+                @click="cancelEditingAddress"
+                class="px-6 py-3 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition"
+              >
+                Annuler
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
       <!-- Contenu Commandes -->
       <div v-if="activeTab === 'orders'">
-        <OrdersHistory />
+        <OrdersHistory @cancel-order="handleCancelOrder" />
       </div>
     </main>
 
@@ -213,6 +366,8 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
 import profileService from '@/services/profileService'
+import shippingAddressService from '@/services/shippingAddressService'
+import orderService from '@/services/orderService'
 import OrdersHistory from '@/components/OrdersHistory.vue'
 
 const router = useRouter()
@@ -232,10 +387,25 @@ const passwordForm = ref({
   password_confirmation: ''
 })
 
+const addressForm = ref({
+  full_name: '',
+  phone: '',
+  address: '',
+  city: '',
+  postal_code: '',
+  country: 'France'
+})
+
+const shippingAddress = ref(null)
+const editingAddress = ref(false)
+
 const profileLoading = ref(false)
 const passwordLoading = ref(false)
+const addressLoading = ref(false)
+
 const profileError = ref('')
 const passwordError = ref('')
+const addressError = ref('')
 
 const notification = ref({
   show: false,
@@ -255,6 +425,14 @@ const loadProfile = () => {
     name: authStore.user?.name || '',
     email: authStore.user?.email || '',
     phone: authStore.user?.phone || ''
+  }
+}
+
+const loadShippingAddress = async () => {
+  try {
+    shippingAddress.value = await shippingAddressService.getAddress()
+  } catch (error) {
+    console.error('Erreur chargement adresse:', error)
   }
 }
 
@@ -309,6 +487,70 @@ const updatePassword = async () => {
   }
 }
 
+const startEditingAddress = () => {
+  if (shippingAddress.value) {
+    // Mode édition - charger l'adresse existante
+    addressForm.value = {
+      full_name: shippingAddress.value.full_name,
+      phone: shippingAddress.value.phone,
+      address: shippingAddress.value.address,
+      city: shippingAddress.value.city,
+      postal_code: shippingAddress.value.postal_code,
+      country: shippingAddress.value.country
+    }
+  } else {
+    // Mode création - formulaire vide
+    addressForm.value = {
+      full_name: authStore.user?.name || '',
+      phone: '',
+      address: '',
+      city: '',
+      postal_code: '',
+      country: 'France'
+    }
+  }
+  editingAddress.value = true
+}
+
+const cancelEditingAddress = () => {
+  editingAddress.value = false
+  addressError.value = ''
+}
+
+const saveAddress = async () => {
+  addressLoading.value = true
+  addressError.value = ''
+
+  try {
+    const response = await shippingAddressService.saveAddress(addressForm.value)
+    
+    shippingAddress.value = response.address
+    editingAddress.value = false
+    
+    showNotification(response.message || 'Adresse enregistrée avec succès!')
+  } catch (error) {
+    console.error('Erreur sauvegarde adresse:', error)
+    addressError.value = error.response?.data?.message || 'Erreur lors de la sauvegarde'
+  } finally {
+    addressLoading.value = false
+  }
+}
+
+const handleCancelOrder = async (orderId) => {
+  if (!confirm('Êtes-vous sûr de vouloir annuler cette commande ?')) {
+    return
+  }
+
+  try {
+    await orderService.cancelOrder(orderId)
+    showNotification('Commande annulée avec succès')
+  } catch (error) {
+    console.error('Erreur annulation:', error)
+    const message = error.response?.data?.message || 'Erreur lors de l\'annulation'
+    showNotification(message, 'error')
+  }
+}
+
 const handleLogout = async () => {
   await authStore.logout()
   router.push('/login')
@@ -316,6 +558,7 @@ const handleLogout = async () => {
 
 onMounted(() => {
   loadProfile()
+  loadShippingAddress()
 })
 </script>
 
