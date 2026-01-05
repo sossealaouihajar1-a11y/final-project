@@ -153,15 +153,40 @@
             <div class="space-y-4 mb-6">
               <div class="flex justify-between text-gray-600">
                 <span>Sous-total</span>
-                <span class="font-medium">{{ cartStore.totalPrice }}€</span>
+                <span class="font-medium">{{ subtotal.toFixed(2) }}€</span>
               </div>
               <div class="flex justify-between text-gray-600">
                 <span>Livraison</span>
-                <span class="font-medium text-green-600">Gratuite</span>
+                <span class="font-medium" :class="shippingCost === 0 ? 'text-green-600' : 'text-gray-900'">
+                  {{ shippingCost === 0 ? 'Gratuite' : shippingCost.toFixed(2) + '€' }}
+                </span>
               </div>
+
+              <!-- Message livraison gratuite -->
+              <div v-if="subtotal < 400" class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                <div class="flex items-start space-x-2">
+                  <svg class="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                  </svg>
+                  <div>
+                    <p class="text-xs font-semibold text-blue-800">Plus que 400€</p>
+                    <p class="text-xs text-blue-700">pour la livraison gratuite !</p>
+                  </div>
+                </div>
+              </div>
+
+              <div v-else class="bg-green-50 border border-green-200 rounded-lg p-3">
+                <div class="flex items-center space-x-2">
+                  <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                  </svg>
+                  <p class="text-xs font-semibold text-green-800">Livraison gratuite !</p>
+                </div>
+              </div>
+
               <div class="border-t pt-4 flex justify-between text-lg font-bold text-gray-900">
                 <span>Total</span>
-                <span class="text-indigo-600">{{ cartStore.totalPrice }}€</span>
+                <span class="text-indigo-600">{{ totalPrice.toFixed(2) }}€</span>
               </div>
             </div>
 
@@ -231,7 +256,7 @@
                 </svg>
                 <div>
                   <div class="font-semibold text-gray-900 mb-1">Livraison gratuite</div>
-                  <p>Sur toutes les commandes</p>
+                  <p>À partir de 400€</p>
                 </div>
               </div>
               <div class="flex items-start space-x-3 text-sm text-gray-600">
@@ -271,7 +296,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCartStore } from '@/stores/cartStore'
 import cartService from '@/services/cartService'
@@ -287,6 +312,19 @@ const notification = ref({
   show: false,
   message: '',
   type: 'success'
+})
+
+// Calculs
+const subtotal = computed(() => {
+  return parseFloat(cartStore.totalPrice)
+})
+
+const shippingCost = computed(() => {
+  return subtotal.value >= 400 ? 0 : 5
+})
+
+const totalPrice = computed(() => {
+  return subtotal.value + shippingCost.value
 })
 
 const showNotification = (message, type = 'success') => {

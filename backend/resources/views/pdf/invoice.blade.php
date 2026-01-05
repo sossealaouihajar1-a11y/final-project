@@ -181,21 +181,27 @@
     </table>
 
     <div class="totals">
-        <table>
-            <tr>
-                <th>Sous-total:</th>
-                <td class="text-right">{{ number_format($order->total_price, 2) }}€</td>
-            </tr>
-            <tr>
-                <th>Frais de port:</th>
-                <td class="text-right" style="color: #10b981; font-weight: bold;">GRATUIT</td>
-            </tr>
-            <tr class="total-line">
-                <th>TOTAL TTC:</th>
-                <td class="text-right">{{ number_format($order->total_price, 2) }}€</td>
-            </tr>
-        </table>
-    </div>
+    <table>
+        <tr>
+            <th>Sous-total:</th>
+            <td class="text-right">{{ number_format($order->invoice->subtotal, 2) }}€</td>
+        </tr>
+        <tr>
+            <th>Frais de port:</th>
+            <td class="text-right" :style="$order->invoice->shipping_cost == 0 ? 'color: #10b981; font-weight: bold;' : ''">
+                @if($order->invoice->shipping_cost == 0)
+                    GRATUIT
+                @else
+                    {{ number_format($order->invoice->shipping_cost, 2) }}€
+                @endif
+            </td>
+        </tr>
+        <tr class="total-line">
+            <th>TOTAL TTC:</th>
+            <td class="text-right">{{ number_format($order->invoice->total_amount, 2) }}€</td>
+        </tr>
+    </table>
+</div>
 
     <div class="footer">
         <p><strong>Merci pour votre confiance !</strong></p>

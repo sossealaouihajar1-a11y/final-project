@@ -19,130 +19,151 @@ class CartController extends Controller
     /**
      * Créer une commande à partir du panier
      */
-   public function checkout(Request $request)
-{
-    $request->validate([
-        'items' => 'required|array|min:1',
-        'items.*.product_id' => 'required|uuid|exists:vintage_products,id',
-        'items.*.quantity' => 'required|integer|min:1',
-    ]);
-
-    $user = $request->user();
-
-    // Vérifier que l'utilisateur est un client
-    if ($user->role !== 'client') {
-        return response()->json([
-            'message' => 'Seuls les clients peuvent passer des commandes'
-        ], 403);
-    }
-
-    // Vérifier que le client a une adresse de livraison
-    $shippingAddress = ShippingAddress::where('user_id', $user->id)->first();
-    
-    if (!$shippingAddress) {
-        return response()->json([
-            'message' => 'Veuillez enregistrer une adresse de livraison avant de passer commande'
-        ], 400);
-    }
-
-    try {
-        DB::beginTransaction();
-
-        $totalPrice = 0;
-        $orderItemsData = [];
-
-        // Vérifier la disponibilité et calculer le total
-        foreach ($request->items as $item) {
-            $product = VintageProduct::findOrFail($item['product_id']);
-
-            if ($product->stock < $item['quantity']) {
-                return response()->json([
-                    'message' => "Stock insuffisant pour {$product->title}",
-                    'product' => $product->title,
-                    'available_stock' => $product->stock
-                ], 400);
-            }
-
-            if ($product->status !== 'active') {
-                return response()->json([
-                    'message' => "Le produit {$product->title} n'est plus disponible"
-                ], 400);
-            }
-
-            $price = $product->final_price;
-            $subtotal = $price * $item['quantity'];
-            $totalPrice += $subtotal;
-
-            $orderItemsData[] = [
-                'product' => $product,
-                'quantity' => $item['quantity'],
-                'price' => $price
-            ];
-        }
-
-        // Créer la commande avec l'adresse existante
-        $order = Order::create([
-            'user_id' => $user->id,
-            'total_price' => $totalPrice,
-            'status' => 'pending',
-            'shipping_address_id' => $shippingAddress->id,
+    public function checkout(Request $request)
+    {
+        $request->validate([
+            'items' => 'required|array|min:1',
+            'items.*.product_id' => 'required|uuid|exists:vintage_products,id',
+            'items.*.quantity' => 'required|integer|min:1',
         ]);
 
-        Log::info('Order created', ['id' => $order->id]);
+        $user = $request->user();
 
-        // Créer les items de commande
-        foreach ($orderItemsData as $itemData) {
-            OrderItem::create([
-                'order_id' => $order->id,
-                'vintage_product_id' => $itemData['product']->id,
-                'quantity' => $itemData['quantity'],
-                'price' => $itemData['price']
+        // Vérifier que l'utilisateur est un client
+        if ($user->role !== 'client') {
+            return response()->json([
+                'message' => 'Seuls les clients peuvent passer des commandes'
+            ], 403);
+        }
+
+        // Vérifier que le client a une adresse de livraison
+        $shippingAddress = ShippingAddress::where('user_id', $user->id)->first();
+        
+        if (!$shippingAddress) {
+            return response()->json([
+                'message' => 'Veuillez enregistrer une adresse de livraison avant de passer commande'
+            ], 400);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $subtotal = 0;
+            $orderItemsData = [];
+
+            // Vérifier la disponibilité et calculer le sous-total
+            foreach ($request->items as $item) {
+                $product = VintageProduct::findOrFail($item['product_id']);
+
+                if ($product->stock < $item['quantity']) {
+                    return response()->json([
+                        'message' => "Stock insuffisant pour {$product->title}",
+                        'product' => $product->title,
+                        'available_stock' => $product->stock
+                    ], 400);
+                }
+
+                if ($product->status !== 'active') {
+                    return response()->json([
+                        'message' => "Le produit {$product->title} n'est plus disponible"
+                    ], 400);
+                }
+
+                $price = $product->final_price;
+                $itemSubtotal = $price * $item['quantity'];
+                $subtotal += $itemSubtotal;
+
+                $orderItemsData[] = [
+                    'product' => $product,
+                    'quantity' => $item['quantity'],
+                    'price' => $price
+                ];
+            }
+
+            // Calculer les frais de livraison
+            // Gratuit si > 400€, sinon 5€
+            $shippingCost = $subtotal >= 400 ? 0.00 : 5.00;
+            $totalPrice = $subtotal + $shippingCost;
+
+            Log::info('Checkout calculation', [
+                'subtotal' => $subtotal,
+                'shipping_cost' => $shippingCost,
+                'total_price' => $totalPrice
             ]);
 
-            // Décrémenter le stock
-            $itemData['product']->decrementStock($itemData['quantity']);
-        }
+            // Créer la commande avec le total incluant la livraison
+            $order = Order::create([
+                'user_id' => $user->id,
+                'total_price' => $totalPrice,
+                'status' => 'pending',
+                'shipping_address_id' => $shippingAddress->id,
+            ]);
 
-        // Créer la facture
-        $invoice = Invoice::create([
-            'order_id' => $order->id,
-            'subtotal' => $totalPrice,
-            'shipping_cost' => 0.00,
-            'total_amount' => $totalPrice,
-            'status' => 'unpaid',
-        ]);
+            Log::info('Order created', ['id' => $order->id, 'total' => $order->total_price]);
 
-        DB::commit();
+            // Créer les items de commande
+            foreach ($orderItemsData as $itemData) {
+                OrderItem::create([
+                    'order_id' => $order->id,
+                    'vintage_product_id' => $itemData['product']->id,
+                    'quantity' => $itemData['quantity'],
+                    'price' => $itemData['price']
+                ]);
 
-        // Charger les relations pour l'email
-        $order->load([
-            'orderItems.vintageProduct',
-            'user',
-            'shippingAddress',
-            'invoice'
-        ]);
+                // Décrémenter le stock
+                $itemData['product']->decrementStock($itemData['quantity']);
+            }
 
-        // Envoyer l'email avec la facture
-        try {
-            Mail::to($user->email)->send(new OrderConfirmationMail($order));
-            Log::info('Confirmation email sent to: ' . $user->email);
+            Log::info('Order items created');
+
+            // Créer la facture avec les frais de livraison
+            $invoice = Invoice::create([
+                'order_id' => $order->id,
+                'subtotal' => $subtotal,
+                'shipping_cost' => $shippingCost,
+                'total_amount' => $totalPrice,
+                'status' => 'unpaid',
+            ]);
+
+            Log::info('Invoice created', [
+                'id' => $invoice->id,
+                'subtotal' => $invoice->subtotal,
+                'shipping_cost' => $invoice->shipping_cost,
+                'total_amount' => $invoice->total_amount
+            ]);
+
+            DB::commit();
+
+            // Charger les relations pour l'email
+            $order->load([
+                'orderItems.vintageProduct',
+                'user',
+                'shippingAddress',
+                'invoice'
+            ]);
+
+            // Envoyer l'email avec la facture
+            try {
+                Mail::to($user->email)->send(new OrderConfirmationMail($order));
+                Log::info('Confirmation email sent to: ' . $user->email);
+            } catch (\Exception $e) {
+                Log::error('Failed to send email: ' . $e->getMessage());
+            }
+
+            return response()->json([
+                'message' => 'Commande créée avec succès',
+                'order' => $order
+            ], 201);
+
         } catch (\Exception $e) {
-            Log::error('Failed to send email: ' . $e->getMessage());
+            DB::rollBack();
+            Log::error('Checkout error: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+            
+            return response()->json([
+                'message' => 'Erreur lors de la création de la commande',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        return response()->json([
-            'message' => 'Commande créée avec succès',
-            'order' => $order
-        ], 201);
-
-    } catch (\Exception $e) {
-        DB::rollBack();
-        Log::error('Checkout error: ' . $e->getMessage());
-        
-        return response()->json([
-            'message' => 'Erreur lors de la création de la commande',
-            'error' => $e->getMessage()
-        ], 500);
     }
-}
 }
