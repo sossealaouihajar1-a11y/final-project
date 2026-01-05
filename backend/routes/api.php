@@ -3,6 +3,8 @@
 use App\Http\Controllers\Api\Admin\VendorManagementController;
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\CartController;
+use App\Http\Controllers\Api\OrderController;
 use Illuminate\Support\Facades\Route;
 
 // Routes publiques
@@ -21,6 +23,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/me', [AuthController::class, 'me']);
     });
 
+    // Routes Panier & Commandes
+    Route::post('/cart/checkout', [CartController::class, 'checkout']);
+    
+    Route::prefix('orders')->group(function () {
+        Route::get('/', [OrderController::class, 'index']);
+        Route::get('/{id}', [OrderController::class, 'show']);
+        Route::post('/{id}/cancel', [OrderController::class, 'cancel']);
+    });
     // Routes Admin
     Route::middleware('role:admin')->prefix('admin')->group(function () {
         Route::prefix('vendors')->group(function () {

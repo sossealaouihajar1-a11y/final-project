@@ -119,7 +119,7 @@
 
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
-import HomePage from '@/views/HomePage.vue' // nouvelle page home
+import HomePage from '@/views/HomePage.vue' 
 import LoginPage from '@/views/auth/LoginPage.vue'
 import RegisterClientPage from '@/views/auth/RegisterClientPage.vue'
 import RegisterVendorPage from '@/views/auth/RegisterVendorPage.vue'
@@ -181,6 +181,12 @@ const router = createRouter({
       name: 'products',
       component: () => import('@/views/ProductsPage.vue')
     },
+    {
+      path: '/cart',
+      name: 'cart',
+      component: () => import('@/views/CartPage.vue'),
+      meta: { requiresAuth: true, role: 'client' }
+    },
   ]
 })
 
@@ -188,6 +194,13 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
 
+   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+    next('/login')
+  } else if (to.meta.role && authStore.user?.role !== to.meta.role) {
+    next('/products')
+  } else {
+    next()
+  }
   // Routes pour invités
   if (to.meta.guest) {
     if (authStore.isAuthenticated && authStore.user) {
