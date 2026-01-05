@@ -17,5 +17,11 @@ export default {
   async cancelOrder(id) {
     const response = await apiClient.post(`/orders/${id}/cancel`)
     return response.data
+  },
+
+  // Statistiques
+  async getStats() {
+    const response = await apiClient.get('/orders/stats')
+    return response.data
   }
 }

@@ -410,7 +410,7 @@ const proceedToCheckout = async () => {
     
     // Rediriger vers le dashboard
     setTimeout(() => {
-      router.push('/client/dashboard')
+      router.push('/orders')
     }, 2000)
     
   } catch (error) {

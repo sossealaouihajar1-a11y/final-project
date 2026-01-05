@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\OrderController;
+use App\Http\Controllers\Api\ProfileController; 
 use Illuminate\Support\Facades\Route;
 
 // Routes publiques
@@ -25,6 +26,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/me', [AuthController::class, 'me']);
     });
 
+    // modification de profile
+        Route::put('/profile', [ProfileController::class, 'update']);
+        Route::put('/profile/password', [ProfileController::class, 'updatePassword']);
+        
     // Routes Panier & Commandes
     Route::post('/cart/checkout', [CartController::class, 'checkout']);
     
@@ -66,6 +71,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::delete('/{product}', [ProductManagementController::class, 'destroy']);
             Route::post('/{product}/toggle-active', [ProductManagementController::class, 'toggleActive']);
         });
+
     });
 
     // Routes Vendeur (approuvé uniquement)

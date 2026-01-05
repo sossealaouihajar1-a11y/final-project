@@ -178,10 +178,10 @@ const router = createRouter({
       component: ProductsManagement,
       meta: { requiresAuth: true, role: 'admin' }
     },
-    {
+   {
       path: '/client/dashboard',
-      name: 'client-dashboard',
-      component: () => import('@/views/client/DashboardView.vue'),
+      name: 'clientDashboard',
+      component: () => import('@/views/ClientDashboard.vue'),
       meta: { requiresAuth: true, role: 'client' }
     },
     {
@@ -204,6 +204,12 @@ const router = createRouter({
       path: '/cart',
       name: 'cart',
       component: () => import('@/views/CartPage.vue'),
+      meta: { requiresAuth: true, role: 'client' }
+    },
+    {
+      path: '/orders',
+      name: 'orders',
+      component: () => import('@/views/OrdersPage.vue'),
       meta: { requiresAuth: true, role: 'client' }
     },
   ]

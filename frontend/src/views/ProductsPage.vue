@@ -38,9 +38,9 @@
             <router-link v-else-if="authStore.isVendor" to="/vendor/dashboard" class="text-sm font-medium text-gray-700 hover:text-indigo-600 transition">
               Espace Vendeur
             </router-link>
-            <router-link v-else-if="authStore.isClient" to="/client/dashboard" class="text-sm font-medium text-gray-700 hover:text-indigo-600 transition">
-              Mon Compte
-            </router-link>
+       <router-link v-else-if="authStore.isClient" to="/client/dashboard" class="text-sm font-medium text-gray-700 hover:text-indigo-600 transition">
+          Mon Compte
+        </router-link>
           </div>
         </div>
       </div>

@@ -13,9 +13,9 @@ class OrderController extends Controller
      */
     public function index(Request $request)
     {
-        $orders = Order::with(['orderItems.vintageProduct'])
+        $orders = Order::with(['orderItems.vintageProduct', 'shippingAddress'])
             ->where('user_id', $request->user()->id)
-            ->recent()
+            ->orderBy('created_at', 'desc')
             ->paginate(10);
 
         return response()->json($orders);
@@ -26,7 +26,7 @@ class OrderController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $order = Order::with(['orderItems.vintageProduct', 'user'])
+        $order = Order::with(['orderItems.vintageProduct', 'user', 'shippingAddress', 'invoice'])
             ->where('id', $id)
             ->where('user_id', $request->user()->id)
             ->firstOrFail();
@@ -53,7 +53,27 @@ class OrderController extends Controller
 
         return response()->json([
             'message' => 'Commande annulée avec succès',
-            'order' => $order->fresh()
+            'order' => $order->fresh(['orderItems.vintageProduct'])
         ]);
+    }
+
+    /**
+     * Statistiques des commandes
+     */
+    public function stats(Request $request)
+    {
+        $userId = $request->user()->id;
+
+        $stats = [
+            'total_orders' => Order::where('user_id', $userId)->count(),
+            'pending_orders' => Order::where('user_id', $userId)->where('status', 'pending')->count(),
+            'delivered_orders' => Order::where('user_id', $userId)->where('status', 'delivered')->count(),
+            'canceled_orders' => Order::where('user_id', $userId)->where('status', 'canceled')->count(),
+            'total_spent' => Order::where('user_id', $userId)
+                ->whereIn('status', ['pending', 'paid', 'shipped', 'delivered'])
+                ->sum('total_price'),
+        ];
+
+        return response()->json($stats);
     }
 }
