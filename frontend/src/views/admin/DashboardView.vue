@@ -7,9 +7,21 @@
             <span class="text-indigo-600 font-semibold text-lg">🔧 Dashboard Admin</span>
             <router-link
               to="/admin/vendors"
-              class="text-gray-700 hover:text-indigo-600 transition"
+              class="text-gray-700 hover:text-indigo-600 transition text-sm"
             >
-              Gestion Vendeurs
+              Vendeurs
+            </router-link>
+            <router-link
+              to="/admin/users"
+              class="text-gray-700 hover:text-indigo-600 transition text-sm"
+            >
+              Utilisateurs
+            </router-link>
+            <router-link
+              to="/admin/products"
+              class="text-gray-700 hover:text-indigo-600 transition text-sm"
+            >
+              Produits
             </router-link>
           </div>
           <div class="flex items-center space-x-4">
@@ -55,6 +67,40 @@
             </p>
           </router-link>
 
+          <!-- Gestion Utilisateurs -->
+          <router-link
+            to="/admin/users"
+            class="group bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-lg hover:shadow-lg transition-all border border-blue-200"
+          >
+            <div class="flex items-center justify-between mb-3">
+              <div class="text-3xl">👤</div>
+              <svg class="w-5 h-5 text-blue-600 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-blue-900 mb-2">Gestion Utilisateurs</h3>
+            <p class="text-sm text-blue-700">
+              Gérer tous les utilisateurs de la plateforme
+            </p>
+          </router-link>
+
+          <!-- Gestion Produits -->
+          <router-link
+            to="/admin/products"
+            class="group bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-lg hover:shadow-lg transition-all border border-purple-200"
+          >
+            <div class="flex items-center justify-between mb-3">
+              <div class="text-3xl">📦</div>
+              <svg class="w-5 h-5 text-purple-600 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-purple-900 mb-2">Gestion Produits</h3>
+            <p class="text-sm text-purple-700">
+              Créer, éditer et gérer tous les produits
+            </p>
+          </router-link>
+
           <!-- Stats (placeholder) -->
           <div class="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-lg border border-green-200">
             <div class="text-3xl mb-3">📊</div>
@@ -64,30 +110,12 @@
             </p>
           </div>
 
-          <!-- Produits (placeholder) -->
-          <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-lg border border-purple-200">
-            <div class="text-3xl mb-3">📦</div>
-            <h3 class="text-lg font-semibold text-purple-900 mb-2">Produits</h3>
-            <p class="text-sm text-purple-700">
-              Gérer tous les produits de la plateforme
-            </p>
-          </div>
-
           <!-- Commandes (placeholder) -->
           <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 p-6 rounded-lg border border-yellow-200">
             <div class="text-3xl mb-3">🛒</div>
             <h3 class="text-lg font-semibold text-yellow-900 mb-2">Commandes</h3>
             <p class="text-sm text-yellow-700">
               Suivre toutes les commandes
-            </p>
-          </div>
-
-          <!-- Clients (placeholder) -->
-          <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-lg border border-blue-200">
-            <div class="text-3xl mb-3">👤</div>
-            <h3 class="text-lg font-semibold text-blue-900 mb-2">Clients</h3>
-            <p class="text-sm text-blue-700">
-              Gérer les comptes clients
             </p>
           </div>
 

@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\Admin\ProductManagementController;
+use App\Http\Controllers\Api\Admin\UserManagementController;
 use App\Http\Controllers\Api\Admin\VendorManagementController;
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\ProductController;
@@ -41,6 +43,28 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/{user}/reject', [VendorManagementController::class, 'reject']);
             Route::post('/{user}/suspend', [VendorManagementController::class, 'suspend']);
             Route::post('/{user}/reactivate', [VendorManagementController::class, 'reactivate']);
+        });
+        
+        // Users management
+        Route::prefix('users')->group(function () {
+            Route::get('/', [UserManagementController::class, 'index']);
+            Route::get('/statistics', [UserManagementController::class, 'statistics']);
+            Route::get('/{user}', [UserManagementController::class, 'show']);
+            Route::put('/{user}', [UserManagementController::class, 'update']);
+            Route::delete('/{user}', [UserManagementController::class, 'destroy']);
+            Route::post('/{user}/suspend', [UserManagementController::class, 'suspend']);
+            Route::post('/{user}/reactivate', [UserManagementController::class, 'reactivate']);
+        });
+        
+        Route::prefix('products')->group(function () {
+            Route::get('/', [ProductManagementController::class, 'index']);
+            Route::post('/', [ProductManagementController::class, 'store']);
+            Route::get('/statistics', [ProductManagementController::class, 'statistics']);
+            Route::get('/categories-list', [ProductManagementController::class, 'categories']);
+            Route::get('/{product}', [ProductManagementController::class, 'show']);
+            Route::put('/{product}', [ProductManagementController::class, 'update']);
+            Route::delete('/{product}', [ProductManagementController::class, 'destroy']);
+            Route::post('/{product}/toggle-active', [ProductManagementController::class, 'toggleActive']);
         });
     });
 
