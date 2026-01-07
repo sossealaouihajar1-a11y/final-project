@@ -5,6 +5,10 @@ use App\Http\Controllers\Api\Admin\UserManagementController;
 use App\Http\Controllers\Api\Admin\VendorManagementController;
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\Vendor\ProductController as VendorProductController;
+use App\Http\Controllers\Api\Vendor\ClientController as VendorClientController;
+use App\Http\Controllers\Api\Vendor\OrderController as VendorOrderController;
+use App\Http\Controllers\Api\Vendor\StockController as VendorStockController;
 use Illuminate\Support\Facades\Route;
 
 // Routes publiques
@@ -60,7 +64,51 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Routes Vendeur (approuvé uniquement)
     Route::middleware('vendor.approved')->prefix('vendor')->group(function () {
-        // TODO: Routes pour la gestion des produits
+        // Products Management
+        Route::prefix('products')->group(function () {
+            Route::get('/', [VendorProductController::class, 'index']);
+            Route::post('/', [VendorProductController::class, 'store']);
+            Route::get('/categories-list', [VendorProductController::class, 'categories']);
+            Route::get('/statistics', [VendorProductController::class, 'statistics']);
+            Route::get('/{id}', [VendorProductController::class, 'show']);
+            Route::put('/{id}', [VendorProductController::class, 'update']);
+            Route::delete('/{id}', [VendorProductController::class, 'destroy']);
+            Route::post('/bulk-status', [VendorProductController::class, 'bulkUpdateStatus']);
+            Route::post('/{id}/stock', [VendorProductController::class, 'updateStock']);
+        });
+
+        // Clients Tracking
+        Route::prefix('clients')->group(function () {
+            Route::get('/', [VendorClientController::class, 'index']);
+            Route::get('/statistics', [VendorClientController::class, 'statistics']);
+            Route::get('/recent-orders', [VendorClientController::class, 'recentOrders']);
+            Route::get('/export', [VendorClientController::class, 'exportClients']);
+            Route::get('/{clientId}', [VendorClientController::class, 'show']);
+        });
+
+        // Orders Tracking
+        Route::prefix('orders')->group(function () {
+            Route::get('/', [VendorOrderController::class, 'index']);
+            Route::get('/statistics', [VendorOrderController::class, 'statistics']);
+            Route::get('/status/{status}', [VendorOrderController::class, 'byStatus']);
+            Route::get('/export', [VendorOrderController::class, 'export']);
+            Route::get('/{orderId}', [VendorOrderController::class, 'show']);
+            Route::put('/{orderId}/status', [VendorOrderController::class, 'updateStatus']);
+        });
+
+        // Stock Management
+        Route::prefix('stock')->group(function () {
+            Route::get('/', [VendorStockController::class, 'index']);
+            Route::get('/statistics', [VendorStockController::class, 'statistics']);
+            Route::get('/low-stock', [VendorStockController::class, 'lowStock']);
+            Route::get('/out-of-stock', [VendorStockController::class, 'outOfStock']);
+            Route::get('/alerts', [VendorStockController::class, 'alerts']);
+            Route::get('/history', [VendorStockController::class, 'history']);
+            Route::get('/export', [VendorStockController::class, 'export']);
+            Route::put('/{productId}', [VendorStockController::class, 'update']);
+            Route::post('/{productId}/adjust', [VendorStockController::class, 'adjust']);
+            Route::post('/bulk-update', [VendorStockController::class, 'bulkUpdate']);
+        });
     });
 
     // Routes Client
