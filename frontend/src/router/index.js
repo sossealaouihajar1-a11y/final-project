@@ -185,10 +185,42 @@ const router = createRouter({
       meta: { requiresAuth: true, role: 'client' }
     },
     {
-      path: '/vendor/dashboard',
-      name: 'vendor-dashboard',
+      path: '/vendor',
+      name: 'vendor-layout',
       component: () => import('@/views/vendor/DashboardView.vue'),
-      meta: { requiresAuth: true, role: 'vendeur' }
+      meta: { requiresAuth: true, role: 'vendeur' },
+      children: [
+        {
+          path: 'dashboard',
+          name: 'vendor-dashboard',
+          component: () => import('@/views/vendor/DashboardView.vue'),
+          meta: { requiresAuth: true, role: 'vendeur' }
+        },
+        {
+          path: 'products',
+          name: 'vendor-products',
+          component: () => import('@/views/vendor/ProductsView.vue'),
+          meta: { requiresAuth: true, role: 'vendeur' }
+        },
+        {
+          path: 'clients',
+          name: 'vendor-clients',
+          component: () => import('@/views/vendor/ClientsView.vue'),
+          meta: { requiresAuth: true, role: 'vendeur' }
+        },
+        {
+          path: 'orders',
+          name: 'vendor-orders',
+          component: () => import('@/views/vendor/OrdersView.vue'),
+          meta: { requiresAuth: true, role: 'vendeur' }
+        },
+        {
+          path: 'stock',
+          name: 'vendor-stock',
+          component: () => import('@/views/vendor/StockView.vue'),
+          meta: { requiresAuth: true, role: 'vendeur' }
+        }
+      ]
     },
     {
       path: '/products',
