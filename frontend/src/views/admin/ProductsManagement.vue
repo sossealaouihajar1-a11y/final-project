@@ -5,12 +5,12 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="flex justify-between items-center">
           <h1 class="text-3xl font-bold text-gray-900">Gestion des Produits</h1>
-          <button
+          <!-- <button
             @click="showNewProductModal = true"
             class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
           >
             + Nouveau Produit
-          </button>
+          </button> -->
         </div>
       </div>
     </div>
