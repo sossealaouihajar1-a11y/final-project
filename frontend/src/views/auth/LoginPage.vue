@@ -83,26 +83,29 @@ const form = reactive({
 })
 
 const handleLogin = async () => {
-  loading.value = true
-  error.value = ''
-  
   try {
     await authStore.login(form)
+
+    // Attendre un peu pour être sûr que la session est établie
+    await new Promise(resolve => setTimeout(resolve, 100))
     
-    // Redirection selon le rôle
-    if (authStore.isAdmin) {
-      router.push('/admin/dashboard')
-    } else if (authStore.isVendor) {
-      router.push('/vendor/dashboard')
-    } else if (authStore.isClient) {
-      router.push('/products')  // ← Client vers products (home)
-    } else {
-      router.push('/')
+    const user = authStore.user
+    
+    console.log('User après login:', user) // DEBUG
+    
+    if (!user) {
+      throw new Error('Utilisateur non défini après login')
     }
-  } catch (err) {
-    error.value = err.response?.data?.message || 'Erreur de connexion'
-  } finally {
-    loading.value = false
+    
+    if (user.role === 'admin') {
+      router.push('/admin/dashboard')
+    } else if (user.role === 'vendeur') {
+      router.push('/vendor/dashboard')
+    } else {
+      router.push('/client/dashboard')
+    }
+  } catch (error) {
+    console.error('Erreur de connexion:', error)
   }
 }
 </script>
