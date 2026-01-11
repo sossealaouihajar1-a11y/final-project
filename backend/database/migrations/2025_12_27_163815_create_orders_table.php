@@ -15,7 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->uuid('user_id');
             $table->decimal('total_price', 10, 2);
-            $table->enum('status', ['pending', 'paid', 'shipped', 'delivered', 'canceled'])->default('pending');
+            $table->enum('status', ['pending', 'paid', 'delivered', 'canceled'])->default('pending');
             $table->timestamps();
             $table->softDeletes();
             

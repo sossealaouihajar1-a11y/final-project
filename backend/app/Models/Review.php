@@ -43,6 +43,17 @@ class Review extends Model
     }
 
     /**
+     * Scope pour filtrer les avis de clients uniquement
+     * (pas strictement nécessaire si on fait confiance à la validation)
+     */
+    public function scopeFromClients($query)
+    {
+        return $query->whereHas('user', function ($q) {
+            $q->where('role', 'client');
+        });
+    }
+
+    /**
      * Static Methods
      */
     public static function totalReviewsForProduct($productId)

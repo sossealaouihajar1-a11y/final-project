@@ -14,7 +14,7 @@ class ProductSeeder extends Seeder
     public function run(): void
     {
         // ID du vendeur approuvé
-        $vendorId = '019b6e85-cc74-732b-a9d0-911c557e8b7a';
+        $vendorId = '019ba1fd-2b09-72ec-9b78-5fe0bc3d31bc';
         
         // Vérifier que le vendeur existe
         $vendor = User::find($vendorId);
@@ -35,7 +35,7 @@ class ProductSeeder extends Seeder
             [
                 'title' => 'Robe Vintage Années 50 Pin-Up',
                 'description' => 'Magnifique robe vintage des années 50, style pin-up avec imprimé fleuri rouge et blanc. Taille ajustable à la taille avec ceinture incluse. Parfait état, tissu en coton de qualité. Idéale pour un look rétro élégant ou une soirée à thème.',
-                'category' => 'Vêtements Femme',
+                'category' => 'mode',
                 'price' => 89.99,
                 'promotion' => 10,
                 'condition' => 'excellent',
@@ -46,7 +46,7 @@ class ProductSeeder extends Seeder
             [
                 'title' => 'Vinyle The Beatles - Abbey Road (1969)',
                 'description' => 'Album vinyle original The Beatles Abbey Road, première édition 1969. Pochette d\'origine avec quelques marques d\'usure naturelles. Disque en excellent état, testé et fonctionne parfaitement. Pièce de collection authentique pour les fans des Fab Four.',
-                'category' => 'Musique',
+                'category' => 'art',
                 'price' => 150.00,
                 'promotion' => 0,
                 'condition' => 'tres_bon',
@@ -57,7 +57,7 @@ class ProductSeeder extends Seeder
             [
                 'title' => 'Appareil Photo Polaroid OneStep Vintage',
                 'description' => 'Appareil photo Polaroid OneStep des années 80 entièrement fonctionnel. Livré avec étui en cuir d\'origine. Flash intégré opérationnel. Parfait pour la photographie instantanée rétro. Testé et garanti fonctionnel.',
-                'category' => 'Électronique',
+                'category' => 'electronique_vintage',
                 'price' => 120.00,
                 'promotion' => 15,
                 'condition' => 'bon',
@@ -68,7 +68,7 @@ class ProductSeeder extends Seeder
             [
                 'title' => 'Lampe de Table Art Déco Bronze et Verre',
                 'description' => 'Superbe lampe de table Art Déco originale des années 1930. Base en bronze patiné, abat-jour en verre taillé. Câblage électrique refait aux normes actuelles. Pièce authentique signée. État exceptionnel, aucune restauration nécessaire.',
-                'category' => 'Décoration',
+                'category' => 'mobilier',
                 'price' => 250.00,
                 'promotion' => 0,
                 'condition' => 'excellent',
@@ -79,7 +79,7 @@ class ProductSeeder extends Seeder
             [
                 'title' => 'Blouson Cuir Véritable Style Biker Années 70',
                 'description' => 'Authentique blouson en cuir véritable style biker des années 70. Cuir patiné avec caractère unique. Fermeture éclair YKK d\'origine parfaitement fonctionnelle. Doublure en satin bordeaux. Taille L (mesures détaillées disponibles). Pièce unique chargée d\'histoire.',
-                'category' => 'Vêtements Homme',
+                'category' => 'mode',
                 'price' => 180.00,
                 'promotion' => 20,
                 'condition' => 'tres_bon',
@@ -90,7 +90,7 @@ class ProductSeeder extends Seeder
             [
                 'title' => 'Horloge Murale Bois Massif Vintage',
                 'description' => 'Horloge murale ancienne en bois massif de chêne. Cadran authentique avec chiffres romains. Mécanisme à quartz moderne installé pour une fiabilité optimale. Dimensions: 35cm de diamètre. Fonctionne parfaitement, pile fournie.',
-                'category' => 'Décoration',
+                'category' => 'mobilier',
                 'price' => 65.00,
                 'promotion' => 0,
                 'condition' => 'bon',
@@ -101,7 +101,7 @@ class ProductSeeder extends Seeder
             [
                 'title' => 'Sac à Main Hermès Kelly Vintage Authentique',
                 'description' => 'Authentique sac à main Hermès Kelly des années 80. Cuir box marron cognac de qualité exceptionnelle. Excellent état général avec très peu de marques d\'usage. Certificat d\'authenticité inclus. Pochette et cadenas d\'origine. Investissement et pièce de collection.',
-                'category' => 'Accessoires',
+                'category' => 'accessoires',
                 'price' => 4500.00,
                 'promotion' => 10,
                 'condition' => 'excellent',
@@ -112,7 +112,7 @@ class ProductSeeder extends Seeder
             [
                 'title' => 'Console Atari 2600 + 10 Jeux Classiques',
                 'description' => 'Console de jeu Atari 2600 complète et parfaitement fonctionnelle. Livrée avec 2 manettes d\'origine, tous les câbles nécessaires et 10 jeux classiques (Pac-Man, Space Invaders, Asteroids, etc.). Testée et garantie. Parfaite pour les collectionneurs et nostalgiques.',
-                'category' => 'Électronique',
+                'category' => 'electronique_vintage',
                 'price' => 200.00,
                 'promotion' => 25,
                 'condition' => 'bon',
@@ -123,7 +123,7 @@ class ProductSeeder extends Seeder
             [
                 'title' => 'Fauteuil Scandinave Teck Années 60',
                 'description' => 'Magnifique fauteuil design scandinave des années 60 en teck massif. Structure entièrement restaurée par un ébéniste professionnel. Tissu refait à neuf dans un textile d\'époque respectant le design original. Assise très confortable. Design iconique du mid-century modern.',
-                'category' => 'Mobilier',
+                'category' => 'mobilier',
                 'price' => 380.00,
                 'promotion' => 0,
                 'condition' => 'excellent',
@@ -134,7 +134,7 @@ class ProductSeeder extends Seeder
             [
                 'title' => 'Affiche Cinéma Pulp Fiction Originale Encadrée',
                 'description' => 'Affiche originale du film culte Pulp Fiction de Quentin Tarantino (1994). Format cinéma authentique 60x40cm. Encadrée professionnellement sous verre avec passe-partout noir. Parfait état de conservation. Numérotée et authentifiée. Pièce de collection pour cinéphiles.',
-                'category' => 'Art',
+                'category' => 'art',
                 'price' => 95.00,
                 'promotion' => 5,
                 'condition' => 'tres_bon',
@@ -145,7 +145,7 @@ class ProductSeeder extends Seeder
             [
                 'title' => 'Montre Omega Seamaster Automatique Vintage',
                 'description' => 'Montre Omega Seamaster des années 70, référence recherchée par les collectionneurs. Mouvement mécanique automatique Cal. 565 révisé. Boîtier acier inoxydable en excellent état. Révision horlogère complète effectuée récemment. Bracelet cuir neuf de qualité. Fonctionne parfaitement. Certificat d\'authenticité fourni.',
-                'category' => 'Accessoires',
+                'category' => 'accessoires',
                 'price' => 1200.00,
                 'promotion' => 0,
                 'condition' => 'excellent',
@@ -156,7 +156,7 @@ class ProductSeeder extends Seeder
             [
                 'title' => 'Machine à Écrire Remington Années 40',
                 'description' => 'Machine à écrire Remington portable des années 40, modèle emblématique. Entièrement fonctionnelle, toutes les touches répondent parfaitement. Ruban neuf installé. Touches d\'origine en excellent état. Mallette de transport d\'origine incluse. Parfaite pour décoration vintage ou utilisation.',
-                'category' => 'Décoration',
+                'category' => 'electronique_vintage',
                 'price' => 140.00,
                 'promotion' => 15,
                 'condition' => 'bon',
@@ -167,7 +167,7 @@ class ProductSeeder extends Seeder
             [
                 'title' => 'Vélo Peugeot Course Vintage 1970',
                 'description' => 'Vélo de course Peugeot vintage des années 70, modèle de compétition. Cadre en acier chromé, très solide. Entièrement restauré mécaniquement: transmission, freins, roulements. Peinture d\'origine conservée avec patine authentique. Guidon cintre route, selle cuir Brooks. Prêt à rouler, fonctionne parfaitement.',
-                'category' => 'Sport',
+                'category' => 'autre',
                 'price' => 320.00,
                 'promotion' => 10,
                 'condition' => 'tres_bon',
@@ -178,7 +178,7 @@ class ProductSeeder extends Seeder
             [
                 'title' => 'Service à Café Porcelaine Limoges Art Nouveau',
                 'description' => 'Service à café complet en porcelaine de Limoges, époque Art Nouveau début XXe siècle. Comprend: 6 tasses avec soucoupes assorties, cafetière, sucrier et pot à lait. Décor floral doré finement exécuté. État impeccable, aucun éclat ni fêlure. Marquage au dos authentifiant l\'origine. Pièce de collection rare.',
-                'category' => 'Art de la Table',
+                'category' => 'art',
                 'price' => 280.00,
                 'promotion' => 0,
                 'condition' => 'excellent',
@@ -189,7 +189,7 @@ class ProductSeeder extends Seeder
             [
                 'title' => 'Miroir Barbier Pivotant Années 30',
                 'description' => 'Miroir de barbier authentique sur pied pivotant des années 30. Double face: miroir normal et miroir grossissant x3. Monture circulaire en laiton patiné avec caractère. Pied en fonte assurant une stabilité parfaite. Mécanisme de pivotement fluide et silencieux. Pièce décorative authentique, parfaite pour salle de bain vintage.',
-                'category' => 'Décoration',
+                'category' => 'mobilier',
                 'price' => 175.00,
                 'promotion' => 20,
                 'condition' => 'bon',

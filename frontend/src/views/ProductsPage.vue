@@ -38,9 +38,9 @@
             <router-link v-else-if="authStore.isVendor" to="/vendor/dashboard" class="text-sm font-medium text-gray-700 hover:text-indigo-600 transition">
               Espace Vendeur
             </router-link>
-       <router-link v-else-if="authStore.isClient" to="/client/dashboard" class="text-sm font-medium text-gray-700 hover:text-indigo-600 transition">
-          Mon Compte
-        </router-link>
+            <router-link v-else-if="authStore.isClient" to="/client/dashboard" class="text-sm font-medium text-gray-700 hover:text-indigo-600 transition">
+              Mon Compte
+            </router-link>
           </div>
         </div>
       </div>
@@ -280,12 +280,19 @@
               </span>
             </div>
 
+            <!-- Aperçu des Avis -->
+            <ProductReviewsPreview 
+              v-if="productReviews[product.id]"
+              :reviews="productReviews[product.id]"
+              @view-all="openProductModal(product)"
+            />
+
             <!-- Bouton Ajouter au panier - Seulement pour clients -->
             <button
               v-if="authStore.isClient"
               @click="addToCart(product)"
               :disabled="product.stock === 0"
-              class="w-full px-4 py-2.5 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+              class="w-full px-4 py-2.5 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 mt-4"
             >
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -297,7 +304,7 @@
             <button
               v-else
               @click="openProductModal(product)"
-              class="w-full px-4 py-2.5 bg-gray-600 text-white font-semibold rounded-lg hover:bg-gray-700 transition flex items-center justify-center space-x-2"
+              class="w-full px-4 py-2.5 bg-gray-600 text-white font-semibold rounded-lg hover:bg-gray-700 transition flex items-center justify-center space-x-2 mt-4"
             >
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -356,17 +363,22 @@
     <!-- Modal Détails Produit -->
     <transition name="modal">
       <div v-if="selectedProduct" @click="closeModal" class="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4 overflow-y-auto backdrop-blur-sm">
-        <div @click.stop class="bg-white rounded-2xl max-w-5xl w-full my-8 max-h-[90vh] overflow-y-auto shadow-2xl">
-          <div class="relative">
+        <div @click.stop class="bg-white rounded-2xl max-w-6xl w-full my-8 shadow-2xl">
+          <!-- Header Modal avec Fermeture -->
+          <div class="relative border-b border-gray-200">
             <button @click="closeModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 z-10 bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-lg hover:shadow-xl transition">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
+          </div>
 
+          <!-- Contenu Scrollable -->
+          <div class="max-h-[85vh] overflow-y-auto">
+            <!-- Section Produit -->
             <div class="grid grid-cols-1 md:grid-cols-2">
               <!-- Image -->
-              <div class="relative h-96 md:h-full bg-gray-100 flex items-center justify-center">
+              <div class="relative h-96 md:h-[600px] bg-gray-100 flex items-center justify-center">
                 <img
                   v-if="selectedProduct.image_url"
                   :src="selectedProduct.image_url"
@@ -483,6 +495,11 @@
                 </div>
               </div>
             </div>
+
+            <!-- Section Reviews (en dessous du produit) -->
+            <div class="border-t border-gray-200 bg-gray-50 p-8">
+              <ReviewSection :product-id="selectedProduct.id" />
+            </div>
           </div>
         </div>
       </div>
@@ -514,6 +531,9 @@ import { ref, computed, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/authStore'
 import { useCartStore } from '@/stores/cartStore'
 import productService from '@/services/productService'
+import reviewService from '@/services/reviewService'
+import ReviewSection from '@/components/ReviewSection.vue'
+import ProductReviewsPreview from '@/components/ProductReviewsPreview.vue'
 
 const authStore = useAuthStore()
 const cartStore = useCartStore()
@@ -524,6 +544,7 @@ const loading = ref(false)
 const searchQuery = ref('')
 const selectedProduct = ref(null)
 const pagination = ref(null)
+const productReviews = ref({})
 
 const notification = ref({
   show: false,
@@ -583,6 +604,36 @@ const applyFilters = () => {
   loadProducts()
 }
 
+const loadProductReviews = async (productId) => {
+  if (productReviews.value[productId]) {
+    console.log('✅ Avis déjà chargés pour:', productId, productReviews.value[productId])
+    return
+  }
+  
+  try {
+    console.log('🔄 Chargement des avis pour:', productId)
+    const response = await reviewService.getProductReviews(productId)
+    console.log('📦 Réponse API:', response)
+    productReviews.value[productId] = response.reviews
+    console.log('✅ Avis stockés:', productReviews.value[productId])
+  } catch (error) {
+    console.error('❌ Erreur chargement avis:', error)
+    productReviews.value[productId] = []
+  }
+}
+
+const loadAllReviews = async () => {
+  console.log('🚀 Début chargement de tous les avis')
+  console.log('📋 Nombre de produits:', products.value.length)
+  
+  for (const product of products.value) {
+    console.log('➡️ Traitement produit:', product.id, product.title)
+    await loadProductReviews(product.id)
+  }
+  
+  console.log('✅ Tous les avis chargés:', productReviews.value)
+}
+
 const loadProducts = async () => {
   loading.value = true
   try {
@@ -598,6 +649,9 @@ const loadProducts = async () => {
       last_page: response.last_page,
       total: response.total
     }
+    
+    // Charger les avis pour tous les produits
+    await loadAllReviews()
   } catch (error) {
     console.error('Erreur chargement produits:', error)
   } finally {

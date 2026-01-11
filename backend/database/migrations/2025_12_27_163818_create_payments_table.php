@@ -15,7 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->uuid('order_id');
             $table->uuid('user_id');
-            $table->enum('payment_method', ['stripe']);
+            $table->enum('payment_method', ['stripe', 'cash_on_delivery'])->default('cash_on_delivery')->after('status');
             $table->string('transaction_id')->nullable();
             $table->decimal('amount', 10, 2);
             $table->enum('status', ['pending', 'succeeded', 'failed'])->default('pending');
