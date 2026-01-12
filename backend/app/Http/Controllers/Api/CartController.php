@@ -121,7 +121,7 @@ class CartController extends Controller
         $pdf->save($pdfPath);
 
         // Envoyer email
-        Mail::to($user->email)->send(new \App\Mail\OrderConfirmation($order, $pdfPath));
+        Mail::to($user->email)->send(new \App\Mail\OrderConfirmationMail($order, $pdfPath));
 
         DB::commit();
 
