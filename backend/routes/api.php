@@ -13,9 +13,10 @@ use App\Http\Controllers\Api\Vendor\ProductController as VendorProductController
 use App\Http\Controllers\Api\Vendor\ClientController as VendorClientController;
 use App\Http\Controllers\Api\Vendor\OrderController as VendorOrderController;
 use App\Http\Controllers\Api\Vendor\StockController as VendorStockController;
+
 use Illuminate\Support\Facades\Route;
 
-// Routes publiques
+// Routes publiques                  
 Route::prefix('auth')->group(function () {
     Route::post('/register/client', [AuthController::class, 'registerClient']);
     Route::post('/register/vendor', [AuthController::class, 'registerVendor']);
@@ -30,7 +31,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/me', [AuthController::class, 'me']);
     });
-
+   
     // shipping adress
      Route::get('/shipping-address', [ShippingAddressController::class, 'show']);
     Route::post('/shipping-address', [ShippingAddressController::class, 'store']);
