@@ -224,9 +224,11 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
+import { useFavorites } from '@/composables/useFavorites'
 
 const router = useRouter()
 const authStore = useAuthStore()
+const { loadFavorites, getFavoriteCount } = useFavorites()
 
 const showUserMenu = ref(false)
 const showMobileMenu = ref(false)
@@ -259,7 +261,7 @@ const closeMenus = () => {
 }
 
 const goToFavorites = () => {
-  router.push('/products?favorites=true')
+  router.push('/favorites')
 }
 
 const goToCart = () => {
@@ -273,9 +275,15 @@ const handleLogout = async () => {
   router.push('/')
 }
 
-const loadFavoritesCount = () => {
-  const favorites = JSON.parse(localStorage.getItem('favorites') || '[]')
-  favoritesCount.value = favorites.length
+const loadFavoritesCount = async () => {
+  try {
+    if (authStore.isAuthenticated) {
+      await loadFavorites()
+      favoritesCount.value = getFavoriteCount.value
+    }
+  } catch (error) {
+    console.error('Error loading favorites:', error)
+  }
 }
 
 const handleClickOutside = (event) => {
@@ -284,16 +292,27 @@ const handleClickOutside = (event) => {
   }
 }
 
+const updateFavoritesCount = async (event) => {
+  // Reload favorites count from the server/composable
+  await loadFavoritesCount()
+}
+
 onMounted(() => {
   loadFavoritesCount()
   window.addEventListener('click', handleClickOutside)
-  // Écouter les changements de favoris
-  window.addEventListener('storage', loadFavoritesCount)
+  // Listen for favorites updates
+  window.addEventListener('favorites-updated', updateFavoritesCount)
+  // Reload favorites when page becomes visible
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      loadFavoritesCount()
+    }
+  })
 })
 
 onUnmounted(() => {
   window.removeEventListener('click', handleClickOutside)
-  window.removeEventListener('storage', loadFavoritesCount)
+  window.removeEventListener('favorites-updated', updateFavoritesCount)
 })
 </script>
 

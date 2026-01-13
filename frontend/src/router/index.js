@@ -244,6 +244,12 @@ const router = createRouter({
       component: () => import('@/views/OrdersPage.vue'),
       meta: { requiresAuth: true, role: 'client' }
     },
+    {
+      path: '/favorites',
+      name: 'favorites',
+      component: () => import('@/views/FavoritesPage.vue'),
+      meta: { requiresAuth: true, role: 'client' }
+    },
   ]
 })
 

@@ -28,12 +28,13 @@
 
       <!-- Bouton Favoris -->
       <button
-        @click.stop="$emit('toggle-favorite', product.id)"
+        @click.stop="handleToggleFavorite"
         class="absolute bottom-3 right-3 bg-white rounded-full p-2.5 shadow-lg hover:scale-110 transition transform z-10"
+        :disabled="isLoading"
       >
         <svg 
           class="w-5 h-5 transition"
-          :class="isFavorite ? 'text-red-500 fill-red-500' : 'text-gray-400'"
+          :class="isFavorite(product.id) ? 'text-red-500 fill-red-500' : 'text-gray-400'"
           fill="none" 
           stroke="currentColor" 
           viewBox="0 0 24 24"
@@ -66,17 +67,31 @@
       </div>
 
       <!-- Condition -->
-      <div>
+      <div class="mb-4 flex items-center justify-between">
         <span :class="getConditionClass(product.condition)" class="px-3 py-1.5 text-xs font-semibold rounded-full inline-block">
           {{ getConditionLabel(product.condition) }}
         </span>
       </div>
+
+      <!-- Add to Favorites Button -->
+      <button
+        @click.stop="handleToggleFavorite"
+        :class="isFavorite(product.id) ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'"
+        class="w-full px-4 py-2.5 rounded-lg transition font-semibold text-sm flex items-center justify-center space-x-2 disabled:opacity-50"
+        :disabled="isLoading"
+      >
+        <svg class="w-5 h-5" :class="isFavorite(product.id) ? 'fill-white' : 'fill-gray-400'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+        </svg>
+        <span>{{ isFavorite(product.id) ? 'En favoris' : 'Ajouter aux favoris' }}</span>
+      </button>
     </div>
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue'
+import { useFavorites } from '@/composables/useFavorites'
 
 const props = defineProps({
   product: {
@@ -89,7 +104,21 @@ const props = defineProps({
   }
 })
 
-defineEmits(['click', 'toggle-favorite'])
+const emit = defineEmits(['click', 'toggle-favorite'])
+const { isFavorite, isLoading, toggleFavorite } = useFavorites()
+
+const handleToggleFavorite = async () => {
+  try {
+    const newStatus = await toggleFavorite(props.product.id)
+    // Dispatch custom event to update navbar
+    window.dispatchEvent(new CustomEvent('favorites-updated', { 
+      detail: { count: newStatus } 
+    }))
+    emit('toggle-favorite', props.product.id)
+  } catch (err) {
+    console.error('Error toggling favorite:', err)
+  }
+}
 
 const getConditionLabel = (condition) => {
   const labels = {

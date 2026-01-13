@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\Admin\VendorManagementController;
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\CartController;
+use App\Http\Controllers\Api\FavoritesController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\ShippingAddressController;
@@ -13,9 +14,10 @@ use App\Http\Controllers\Api\Vendor\ProductController as VendorProductController
 use App\Http\Controllers\Api\Vendor\ClientController as VendorClientController;
 use App\Http\Controllers\Api\Vendor\OrderController as VendorOrderController;
 use App\Http\Controllers\Api\Vendor\StockController as VendorStockController;
+
 use Illuminate\Support\Facades\Route;
 
-// Routes publiques
+// Routes publiques                  
 Route::prefix('auth')->group(function () {
     Route::post('/register/client', [AuthController::class, 'registerClient']);
     Route::post('/register/vendor', [AuthController::class, 'registerVendor']);
@@ -30,7 +32,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/me', [AuthController::class, 'me']);
     });
-
+   
     // shipping adress
      Route::get('/shipping-address', [ShippingAddressController::class, 'show']);
     Route::post('/shipping-address', [ShippingAddressController::class, 'store']);
@@ -47,6 +49,17 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [OrderController::class, 'index']);
         Route::get('/{id}', [OrderController::class, 'show']);
         Route::post('/{id}/cancel', [OrderController::class, 'cancel']);
+    });
+
+    // Routes Favorites
+    Route::prefix('favorites')->group(function () {
+        Route::get('/', [FavoritesController::class, 'index']);
+        Route::post('/', [FavoritesController::class, 'store']);
+        Route::post('/toggle', [FavoritesController::class, 'toggle']);
+        Route::get('/count', [FavoritesController::class, 'count']);
+        Route::get('/{productId}/check', [FavoritesController::class, 'isFavorite']);
+        Route::delete('/{favoriteId}', [FavoritesController::class, 'destroy']);
+        Route::delete('/', [FavoritesController::class, 'clearAll']);
     });
     // Routes Admin
     Route::middleware('role:admin')->prefix('admin')->group(function () {
