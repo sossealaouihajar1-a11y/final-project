@@ -593,7 +593,7 @@ import ProductReviewsPreview from '@/components/ProductReviewsPreview.vue'
 
 const authStore = useAuthStore()
 const cartStore = useCartStore()
-const { isFavorite, isLoading: isTogglingFavorite, toggleFavorite, loadFavorites } = useFavorites()
+const { isFavorite, isLoading: isTogglingFavorite, toggleFavorite, loadFavorites, getFavoriteCount } = useFavorites()
 
 const products = ref([])
 const categories = ref([])
@@ -603,7 +603,9 @@ const searchQuery = ref('')
 const selectedProduct = ref(null)
 const pagination = ref(null)
 const isProductFavorited = ref(false)
-const favoritesCount = ref(0)
+
+// Computed property for real favorites count
+const favoritesCount = computed(() => getFavoriteCount.value)
 
 const notification = ref({
   show: false,
@@ -768,15 +770,10 @@ const toggleFavoriteProduct = async () => {
   try {
     const newStatus = await toggleFavorite(selectedProduct.value.id)
     isProductFavorited.value = newStatus
-    // Update favorites count
-    if (newStatus) {
-      favoritesCount.value++
-    } else {
-      favoritesCount.value = Math.max(0, favoritesCount.value - 1)
-    }
+    // Favorites count is now computed automatically from getFavoriteCount
     // Dispatch custom event to update navbar
     window.dispatchEvent(new CustomEvent('favorites-updated', { 
-      detail: { count: favoritesCount.value } 
+      detail: { count: getFavoriteCount.value } 
     }))
     showNotification(newStatus ? 'Ajouté aux favoris!' : 'Supprimé des favoris!')
   } catch (err) {
@@ -788,15 +785,10 @@ const toggleFavoriteProduct = async () => {
 const toggleFavoriteFromGrid = async (product) => {
   try {
     const newStatus = await toggleFavorite(product.id)
-    // Update favorites count
-    if (newStatus) {
-      favoritesCount.value++
-    } else {
-      favoritesCount.value = Math.max(0, favoritesCount.value - 1)
-    }
+    // Favorites count is now computed automatically from getFavoriteCount
     // Dispatch custom event to update navbar
     window.dispatchEvent(new CustomEvent('favorites-updated', { 
-      detail: { count: favoritesCount.value } 
+      detail: { count: getFavoriteCount.value } 
     }))
     showNotification(newStatus ? 'Ajouté aux favoris!' : 'Supprimé des favoris!')
   } catch (err) {
@@ -831,11 +823,7 @@ onMounted(async () => {
   // Load favorites if client is authenticated
   if (authStore.isClient) {
     await loadFavorites()
-    // Set favorites count from localStorage
-    const favorites = localStorage.getItem('favorites')
-    if (favorites) {
-      favoritesCount.value = JSON.parse(favorites).length
-    }
+    // Favorites count is now computed automatically from getFavoriteCount
   }
 })
 </script>
