@@ -18,6 +18,15 @@
             </router-link>
           </div>
           <div class="flex items-center space-x-6">
+            <!-- Favoris - Seulement pour clients -->
+            <router-link v-if="authStore.isClient" to="/favorites" class="relative text-gray-600 hover:text-red-500 transition">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+              <span v-if="favoritesCount > 0" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                {{ favoritesCount }}
+              </span>
+            </router-link>
             <!-- Panier - Seulement pour clients -->
             <router-link v-if="authStore.isClient" to="/cart" class="relative text-gray-600 hover:text-indigo-600 transition">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -254,6 +263,25 @@
             <div v-if="product.stock > 0 && product.stock < 5" class="absolute top-3 left-3 bg-orange-500 text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow-lg">
               Plus que {{ product.stock }}
             </div>
+
+            <!-- Favorite Button - Only for clients -->
+            <button
+              v-if="authStore.isClient"
+              @click.stop="toggleFavoriteFromGrid(product)"
+              class="absolute bottom-3 right-3 bg-white rounded-full p-2.5 shadow-lg hover:scale-110 transition transform z-10 hover:shadow-xl"
+              :disabled="isTogglingFavorite"
+              :title="isFavorite(product.id) ? 'Retirer des favoris' : 'Ajouter aux favoris'"
+            >
+              <svg 
+                class="w-5 h-5 transition"
+                :class="isFavorite(product.id) ? 'text-red-500 fill-red-500' : 'text-gray-400 hover:text-red-500'"
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+            </button>
           </div>
 
           <!-- Contenu -->
@@ -380,11 +408,39 @@
                 <div v-if="selectedProduct.promotion > 0" class="absolute top-4 right-4 bg-red-600 text-white px-4 py-2 rounded-lg text-base font-bold shadow-lg">
                   -{{ selectedProduct.promotion }}%
                 </div>
+
+                <!-- Favorite Button -->
+                <button
+                  v-if="authStore.isClient"
+                  @click.stop="toggleFavoriteProduct"
+                  class="absolute bottom-4 right-4 bg-white rounded-full p-3 shadow-lg hover:scale-110 transition transform z-10"
+                  :disabled="isTogglingFavorite"
+                >
+                  <svg 
+                    class="w-6 h-6 transition"
+                    :class="isProductFavorited ? 'text-red-500 fill-red-500' : 'text-gray-400'"
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                  </svg>
+                </button>
               </div>
 
               <!-- Détails -->
               <div class="p-8 md:p-10">
-                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-6">{{ selectedProduct.title }}</h2>
+                <div class="flex items-start justify-between mb-4">
+                  <h2 class="text-3xl md:text-4xl font-bold text-gray-900">{{ selectedProduct.title }}</h2>
+                  <div v-if="authStore.isClient && isProductFavorited" class="bg-red-50 border border-red-200 px-3 py-1.5 rounded-lg">
+                    <span class="text-red-700 font-semibold text-sm flex items-center space-x-1">
+                      <svg class="w-4 h-4 fill-red-500" viewBox="0 0 24 24">
+                        <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                      </svg>
+                      <span>En favoris</span>
+                    </span>
+                  </div>
+                </div>
                 
                 <div class="space-y-4 mb-6">
                   <div class="flex items-center space-x-3 text-sm">
@@ -513,10 +569,13 @@
 import { ref, computed, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/authStore'
 import { useCartStore } from '@/stores/cartStore'
+import { useFavorites } from '@/composables/useFavorites'
 import productService from '@/services/productService'
 
 const authStore = useAuthStore()
 const cartStore = useCartStore()
+const { isFavorite, isLoading: isTogglingFavorite, toggleFavorite, loadFavorites } = useFavorites()
+
 const products = ref([])
 const categories = ref([])
 const stats = ref(null)
@@ -524,6 +583,8 @@ const loading = ref(false)
 const searchQuery = ref('')
 const selectedProduct = ref(null)
 const pagination = ref(null)
+const isProductFavorited = ref(false)
+const favoritesCount = ref(0)
 
 const notification = ref({
   show: false,
@@ -672,11 +733,57 @@ const getConditionClass = (condition) => {
 const openProductModal = (product) => {
   selectedProduct.value = product
   document.body.style.overflow = 'hidden'
+  // Check if product is favorited
+  if (authStore.isClient) {
+    isProductFavorited.value = isFavorite(product.id)
+  }
 }
 
 const closeModal = () => {
   selectedProduct.value = null
   document.body.style.overflow = 'auto'
+}
+
+const toggleFavoriteProduct = async () => {
+  if (!selectedProduct.value) return
+  try {
+    const newStatus = await toggleFavorite(selectedProduct.value.id)
+    isProductFavorited.value = newStatus
+    // Update favorites count
+    if (newStatus) {
+      favoritesCount.value++
+    } else {
+      favoritesCount.value = Math.max(0, favoritesCount.value - 1)
+    }
+    // Dispatch custom event to update navbar
+    window.dispatchEvent(new CustomEvent('favorites-updated', { 
+      detail: { count: favoritesCount.value } 
+    }))
+    showNotification(newStatus ? 'Ajouté aux favoris!' : 'Supprimé des favoris!')
+  } catch (err) {
+    console.error('Error toggling favorite:', err)
+    showNotification('Erreur lors de la mise à jour du favori', 'error')
+  }
+}
+
+const toggleFavoriteFromGrid = async (product) => {
+  try {
+    const newStatus = await toggleFavorite(product.id)
+    // Update favorites count
+    if (newStatus) {
+      favoritesCount.value++
+    } else {
+      favoritesCount.value = Math.max(0, favoritesCount.value - 1)
+    }
+    // Dispatch custom event to update navbar
+    window.dispatchEvent(new CustomEvent('favorites-updated', { 
+      detail: { count: favoritesCount.value } 
+    }))
+    showNotification(newStatus ? 'Ajouté aux favoris!' : 'Supprimé des favoris!')
+  } catch (err) {
+    console.error('Error toggling favorite:', err)
+    showNotification('Erreur lors de la mise à jour du favori', 'error')
+  }
 }
 
 const addToCart = (product) => {
@@ -698,10 +805,19 @@ const addToCartFromModal = (product) => {
   addToCart(product)
 }
 
-onMounted(() => {
+onMounted(async () => {
   loadProducts()
   loadCategories()
   loadStats()
+  // Load favorites if client is authenticated
+  if (authStore.isClient) {
+    await loadFavorites()
+    // Set favorites count from localStorage
+    const favorites = localStorage.getItem('favorites')
+    if (favorites) {
+      favoritesCount.value = JSON.parse(favorites).length
+    }
+  }
 })
 </script>
 
