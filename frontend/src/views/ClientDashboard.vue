@@ -18,6 +18,11 @@
             </router-link>
           </div>
           <div class="flex items-center space-x-6">
+            <router-link to="/favorites" class="relative text-gray-600 hover:text-red-500 transition">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+            </router-link>
             <router-link to="/cart" class="relative text-gray-600 hover:text-indigo-600 transition">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -76,6 +81,21 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
               </svg>
               <span>Mes Commandes</span>
+            </div>
+          </button>
+          <button
+            @click="activeTab = 'favorites'"
+            :class="activeTab === 'favorites' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
+            class="pb-4 px-1 border-b-2 font-medium text-sm transition relative"
+          >
+            <div class="flex items-center space-x-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+              <span>Mes Favoris</span>
+              <span v-if="favoriteCount > 0" class="ml-2 bg-indigo-600 text-white text-xs font-bold rounded-full px-2 py-0.5">
+                {{ favoriteCount }}
+              </span>
             </div>
           </button>
         </nav>
@@ -338,6 +358,115 @@
       <div v-if="activeTab === 'orders'">
         <OrdersHistory @cancel-order="handleCancelOrder" />
       </div>
+
+      <!-- Contenu Favoris -->
+      <div v-if="activeTab === 'favorites'" class="space-y-6">
+        <!-- Header -->
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-2xl font-bold text-gray-900">Mes Favoris</h2>
+            <p class="text-gray-600 mt-1">{{ favoriteCount }} produit(s) sauvegardé(s)</p>
+          </div>
+          <button
+            v-if="favoriteCount > 0"
+            @click="clearAllFavorites"
+            class="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition font-medium text-sm"
+          >
+            Supprimer tous
+          </button>
+        </div>
+
+        <!-- Empty State -->
+        <div v-if="favoritesList.length === 0" class="text-center py-16">
+          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+          </svg>
+          <h3 class="mt-2 text-sm font-medium text-gray-900">Aucun favori</h3>
+          <p class="mt-1 text-sm text-gray-500">Vous n'avez pas encore sauvegardé de produits.</p>
+          <router-link to="/products" class="mt-6 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+            Découvrir les produits
+          </router-link>
+        </div>
+
+        <!-- Loading State -->
+        <div v-if="favoritesLoading" class="flex justify-center items-center py-12">
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+        </div>
+
+        <!-- Error State -->
+        <div v-if="favoritesError" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+          {{ favoritesError }}
+        </div>
+
+        <!-- Favorites Grid -->
+        <div v-if="!favoritesLoading && favoritesList.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div v-for="favorite in favoritesList" :key="favorite.id" class="relative">
+            <div class="bg-white rounded-xl shadow-md overflow-hidden cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-2xl group">
+              <!-- Image -->
+              <div class="relative h-56 bg-gray-100 flex items-center justify-center overflow-hidden">
+                <img
+                  v-if="favorite.product?.image"
+                  :src="favorite.product.image"
+                  :alt="favorite.product.title"
+                  class="w-full h-full object-cover group-hover:scale-110 transition duration-300"
+                />
+                <div v-else class="text-gray-400 text-sm">Aucune image</div>
+                
+                <!-- Stock Badge -->
+                <div v-if="favorite.product?.stock > 0 && favorite.product?.stock < 5" class="absolute top-3 left-3 bg-orange-500 text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-lg">
+                  Plus que {{ favorite.product.stock }}
+                </div>
+                <div v-else-if="favorite.product?.stock === 0" class="absolute top-3 left-3 bg-gray-500 text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-lg">
+                  Épuisé
+                </div>
+
+                <!-- Remove Button -->
+                <button
+                  @click="removeFavorite(favorite.id)"
+                  class="absolute bottom-3 right-3 bg-white rounded-full p-2.5 shadow-lg hover:scale-110 transition transform z-10 text-red-500"
+                >
+                  <svg class="w-5 h-5 fill-red-500" viewBox="0 0 24 24">
+                    <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Content -->
+              <div class="p-5">
+                <h3 class="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 min-h-[3.5rem] group-hover:text-indigo-600 transition cursor-pointer" @click="goToProduct(favorite.product.id)">
+                  {{ favorite.product?.title }}
+                </h3>
+                
+                <p class="text-sm text-gray-600 mb-3">
+                  {{ favorite.product?.category }}
+                </p>
+                
+                <!-- Price -->
+                <div class="flex items-center justify-between mb-3">
+                  <div class="text-2xl font-bold text-indigo-600">
+                    {{ favorite.product?.price }}€
+                  </div>
+                </div>
+
+                <!-- Condition -->
+                <div v-if="favorite.product?.condition" class="mb-4">
+                  <span :class="getConditionClass(favorite.product.condition)" class="px-3 py-1.5 text-xs font-semibold rounded-full inline-block">
+                    {{ getConditionLabel(favorite.product.condition) }}
+                  </span>
+                </div>
+
+                <!-- View Button -->
+                <button
+                  @click="goToProduct(favorite.product.id)"
+                  class="w-full px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-medium text-sm"
+                >
+                  Voir le produit
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </main>
 
     <!-- Toast Notification -->
@@ -365,13 +494,16 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
+import { useFavorites } from '@/composables/useFavorites'
 import profileService from '@/services/profileService'
 import shippingAddressService from '@/services/shippingAddressService'
 import orderService from '@/services/orderService'
+import favoritesService from '@/services/favoritesService'
 import OrdersHistory from '@/components/OrdersHistory.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
+const { loadFavorites, getFavoriteCount } = useFavorites()
 
 const activeTab = ref('profile')
 
@@ -406,6 +538,12 @@ const addressLoading = ref(false)
 const profileError = ref('')
 const passwordError = ref('')
 const addressError = ref('')
+
+// Favorites state
+const favoritesList = ref([])
+const favoritesLoading = ref(false)
+const favoritesError = ref('')
+const favoriteCount = ref(0)
 
 const notification = ref({
   show: false,
@@ -556,9 +694,78 @@ const handleLogout = async () => {
   router.push('/login')
 }
 
+// Favorites methods
+const fetchFavorites = async () => {
+  try {
+    favoritesLoading.value = true
+    favoritesError.value = ''
+    const response = await favoritesService.getFavorites()
+    favoritesList.value = response.data || []
+    favoriteCount.value = favoritesList.value.length
+  } catch (err) {
+    favoritesError.value = 'Impossible de charger vos favoris'
+    console.error('Error fetching favorites:', err)
+  } finally {
+    favoritesLoading.value = false
+  }
+}
+
+const removeFavorite = async (favoriteId) => {
+  try {
+    await favoritesService.removeFavorite(favoriteId)
+    favoritesList.value = favoritesList.value.filter(f => f.id !== favoriteId)
+    favoriteCount.value = favoritesList.value.length
+    showNotification('Produit supprimé des favoris')
+  } catch (err) {
+    favoritesError.value = 'Impossible de supprimer le favori'
+    console.error('Error removing favorite:', err)
+  }
+}
+
+const clearAllFavorites = async () => {
+  if (confirm('Êtes-vous sûr de vouloir supprimer tous vos favoris ?')) {
+    try {
+      await favoritesService.clearAll()
+      favoritesList.value = []
+      favoriteCount.value = 0
+      showNotification('Tous les favoris ont été supprimés')
+    } catch (err) {
+      favoritesError.value = 'Impossible de supprimer les favoris'
+      console.error('Error clearing favorites:', err)
+    }
+  }
+}
+
+const goToProduct = (productId) => {
+  router.push(`/products/${productId}`)
+}
+
+const getConditionLabel = (condition) => {
+  const labels = {
+    neuf: 'Neuf',
+    excellent: 'Excellent',
+    tres_bon: 'Très bon état',
+    bon: 'Bon état',
+    acceptable: 'État correct',
+  }
+  return labels[condition] || condition
+}
+
+const getConditionClass = (condition) => {
+  const classes = {
+    neuf: 'bg-green-100 text-green-800',
+    excellent: 'bg-blue-100 text-blue-800',
+    tres_bon: 'bg-indigo-100 text-indigo-800',
+    bon: 'bg-yellow-100 text-yellow-800',
+    acceptable: 'bg-orange-100 text-orange-800',
+  }
+  return classes[condition] || 'bg-gray-100 text-gray-800'
+}
+
 onMounted(() => {
   loadProfile()
   loadShippingAddress()
+  fetchFavorites()
 })
 </script>
 
