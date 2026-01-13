@@ -12,18 +12,22 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // CORS must be first in the middleware stack
         $middleware->statefulApi();
-      
+        
+        // Add CORS handling for credentials
+        $middleware->append(\Illuminate\Http\Middleware\HandleCors::class);
 
         // Alias middleware personnalisés
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckRole::class,
             'vendor.approved' => \App\Http\Middleware\CheckVendorStatus::class,
         ]);
+        
         $middleware->validateCsrfTokens(except: [
-        'api/*',
+            'api/*',
+            'sanctum/*',
         ]);
-        $middleware->append(\Illuminate\Http\Middleware\HandleCors::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
