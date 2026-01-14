@@ -127,6 +127,7 @@ import AdminDashboard from '@/views/admin/DashboardView.vue'
 import VendorsManagement from '@/views/admin/VendorsManagement.vue'
 import UsersManagement from '@/views/admin/UsersManagement.vue'
 import ProductsManagement from '@/views/admin/ProductsManagement.vue'
+import ProductDetailsPage from '@/views/ProductDetailsPage.vue' 
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -250,6 +251,18 @@ const router = createRouter({
       component: () => import('@/views/FavoritesPage.vue'),
       meta: { requiresAuth: true, role: 'client' }
     },
+    {
+    path: '/products/:id',
+    name: 'ProductDetails',
+    component: () => import('../views/ProductDetailsPage.vue'),
+    meta: { requiresAuth: false }
+},
+{
+    path: '/products/:id',
+    name: 'ProductDetails',
+    component: () => import('../views/ProductDetailsPage.vue'),
+    meta: { requiresAuth: false }
+    }
   ]
 })
 
