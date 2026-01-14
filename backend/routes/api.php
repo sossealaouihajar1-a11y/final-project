@@ -169,3 +169,4 @@ Route::prefix('products')->group(function () {
     Route::get('/category/{category}', [ProductController::class, 'byCategory']);
     Route::get('/{id}', [ProductController::class, 'show']);
 });
+
