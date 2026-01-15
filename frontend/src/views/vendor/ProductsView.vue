@@ -6,7 +6,7 @@
         <h3 class="text-lg font-semibold text-gray-900">Mes Produits</h3>
         <p class="text-sm text-gray-600 mt-1">Gérez vos produits vintage</p>
       </div>
-      <button @click="showAddModal = true" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+      <button @click="openAddModal" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
         + Ajouter un produit
       </button>
     </div>
@@ -102,31 +102,58 @@
 
     <!-- Add/Edit Modal -->
     <div v-if="showAddModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+      <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md max-h-[90vh] flex flex-col">
         <h3 class="text-lg font-semibold text-gray-900 mb-4">
           {{ editingProduct ? 'Modifier le produit' : 'Ajouter un produit' }}
         </h3>
-        <form @submit.prevent="saveProduct" class="space-y-4">
-          <input v-model="form.title" type="text" placeholder="Titre" class="w-full border rounded-lg px-3 py-2" required />
-          <textarea v-model="form.description" placeholder="Description" class="w-full border rounded-lg px-3 py-2 h-20" required></textarea>
-          <select v-model="form.category" class="w-full border rounded-lg px-3 py-2" required>
-            <option value="">Sélectionnez une catégorie</option>
-            <option value="furniture">Mobilier</option>
-            <option value="clothing">Vêtements</option>
-            <option value="jewelry">Bijoux</option>
-          </select>
-          <input v-model.number="form.price" type="number" placeholder="Prix" class="w-full border rounded-lg px-3 py-2" required />
-          <input v-model.number="form.stock" type="number" placeholder="Stock" class="w-full border rounded-lg px-3 py-2" required />
-          <select v-model="form.condition" class="w-full border rounded-lg px-3 py-2" required>
-            <option value="">État du produit</option>
-            <option value="neuf">Neuf</option>
-            <option value="excellent">Excellent</option>
-            <option value="tres_bon">Très bon</option>
-            <option value="bon">Bon</option>
-            <option value="acceptable">Acceptable</option>
-            <option value="a_restaurer">À restaurer</option>
-          </select>
-          <input v-model.number="form.promotion" type="number" placeholder="Promotion %" class="w-full border rounded-lg px-3 py-2" />
+        <form @submit.prevent="saveProduct" class="space-y-4 overflow-y-auto flex-1 pr-2">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Titre du produit</label>
+            <input v-model="form.title" type="text" placeholder="Titre" class="w-full border rounded-lg px-3 py-2" required />
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+            <textarea v-model="form.description" placeholder="Description" class="w-full border rounded-lg px-3 py-2 h-20" required></textarea>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Catégorie</label>
+            <select v-model="form.category" class="w-full border rounded-lg px-3 py-2" required>
+              <option value="">Sélectionnez une catégorie</option>
+              <option value="furniture">Mobilier</option>
+              <option value="clothing">Vêtements</option>
+              <option value="jewelry">Bijoux</option>
+            </select>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Prix ($)</label>
+            <input v-model.number="form.price" type="number" placeholder="Prix" class="w-full border rounded-lg px-3 py-2" required />
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Stock (Quantité)</label>
+            <input v-model.number="form.stock" type="number" placeholder="Stock" class="w-full border rounded-lg px-3 py-2" required />
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">État du produit</label>
+            <select v-model="form.condition" class="w-full border rounded-lg px-3 py-2" required>
+              <option value="">État du produit</option>
+              <option value="neuf">Neuf</option>
+              <option value="excellent">Excellent</option>
+              <option value="tres_bon">Très bon</option>
+              <option value="bon">Bon</option>
+              <option value="acceptable">Acceptable</option>
+              <option value="a_restaurer">À restaurer</option>
+            </select>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Promotion (%)</label>
+            <input v-model.number="form.promotion" type="number" placeholder="Promotion %" class="w-full border rounded-lg px-3 py-2" />
+          </div>
           
           <!-- Image Upload Section -->
           <div class="space-y-2">
@@ -147,7 +174,7 @@
           </div>
 
           <div class="flex justify-end gap-3 mt-6">
-            <button type="button" @click="showAddModal = false" class="px-4 py-2 text-gray-700 border rounded-lg hover:bg-gray-50">
+            <button type="button" @click="closeModal" class="px-4 py-2 text-gray-700 border rounded-lg hover:bg-gray-50">
               Annuler
             </button>
             <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
@@ -214,6 +241,22 @@ const applyFilters = () => {
   loadProducts()
 }
 
+const openAddModal = () => {
+  editingProduct.value = null
+  form.value = {
+    title: '',
+    description: '',
+    category: '',
+    price: 0,
+    stock: 0,
+    condition: 'bon',
+    promotion: 0,
+    image: null,
+    image_preview: ''
+  }
+  showAddModal.value = true
+}
+
 const editProduct = (product) => {
   editingProduct.value = product
   form.value = { 
@@ -222,6 +265,22 @@ const editProduct = (product) => {
     image_preview: product.image_url || ''
   }
   showAddModal.value = true
+}
+
+const closeModal = () => {
+  showAddModal.value = false
+  editingProduct.value = null
+  form.value = {
+    title: '',
+    description: '',
+    category: '',
+    price: 0,
+    stock: 0,
+    condition: 'bon',
+    promotion: 0,
+    image: null,
+    image_preview: ''
+  }
 }
 
 const onImageSelected = (event) => {
@@ -278,6 +337,7 @@ const saveProduct = async () => {
     } else {
       await vendorProductService.updateProduct(editingProduct.value.id, formData)
     }
+    
     
     showAddModal.value = false
     editingProduct.value = null

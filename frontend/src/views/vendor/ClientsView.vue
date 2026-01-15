@@ -126,7 +126,7 @@
                 {{ order.status }}
               </span>
             </div>
-            <p class="text-sm text-gray-600 mt-2">{{ order.items.length }} article(s) - {{ order.total_price }}€</p>
+            <p class="text-sm text-gray-600 mt-2">{{ order.order_items.length }} article(s) - {{ order.total_price }}€</p>
           </div>
         </div>
 

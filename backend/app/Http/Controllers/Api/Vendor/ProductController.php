@@ -57,22 +57,15 @@ class ProductController extends Controller
             'low_stock' => $products->where('stock', '<', 5)->count(),
             'out_of_stock' => $products->where('stock', 0)->count(),
             'total_revenue' => 0, // Will be calculated from orders
-            'avg_rating' => 0, // Will be calculated from reviews
         ];
 
         // Calculate revenue from orders
         $revenue = \DB::table('order_items')
             ->join('vintage_products', 'order_items.vintage_product_id', '=', 'vintage_products.id')
             ->where('vintage_products.vendeur_id', $user->id)
-            ->sum('order_items.total_price');
+            ->selectRaw('SUM(order_items.price * order_items.quantity) as total')
+            ->value('total') ?? 0;
         $stats['total_revenue'] = $revenue;
-
-        // Calculate average rating
-        $avgRating = \DB::table('reviews')
-            ->join('vintage_products', 'reviews.vintage_product_id', '=', 'vintage_products.id')
-            ->where('vintage_products.vendeur_id', $user->id)
-            ->avg('reviews.rating');
-        $stats['avg_rating'] = round($avgRating ?? 0, 2);
 
         return response()->json($stats);
     }
