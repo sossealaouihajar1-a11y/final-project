@@ -58,6 +58,7 @@
               <span>Profil</span>
             </div>
           </button>
+
           <button
             @click="activeTab = 'address'"
             :class="activeTab === 'address' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
@@ -71,6 +72,7 @@
               <span>Adresse de Livraison</span>
             </div>
           </button>
+
           <button
             @click="activeTab = 'orders'"
             :class="activeTab === 'orders' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
@@ -96,6 +98,19 @@
               <span v-if="favoriteCount > 0" class="ml-2 bg-indigo-600 text-white text-xs font-bold rounded-full px-2 py-0.5">
                 {{ favoriteCount }}
               </span>
+            </div>
+          </button>
+
+          <button
+            @click="activeTab = 'reviews'"
+            :class="activeTab === 'reviews' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
+            class="pb-4 px-1 border-b-2 font-medium text-sm transition"
+          >
+            <div class="flex items-center space-x-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+              </svg>
+              <span>Mes Avis</span>
             </div>
           </button>
         </nav>
@@ -467,6 +482,11 @@
           </div>
         </div>
       </div>
+
+      <!-- Contenu Mes Avis -->
+      <div v-if="activeTab === 'reviews'">
+        <MyReviews />
+      </div>
     </main>
 
     <!-- Toast Notification -->
@@ -500,6 +520,7 @@ import shippingAddressService from '@/services/shippingAddressService'
 import orderService from '@/services/orderService'
 import favoritesService from '@/services/favoritesService'
 import OrdersHistory from '@/components/OrdersHistory.vue'
+import MyReviews from '@/components/MyReviews.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()

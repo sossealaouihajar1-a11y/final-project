@@ -232,8 +232,9 @@ const { loadFavorites, getFavoriteCount } = useFavorites()
 
 const showUserMenu = ref(false)
 const showMobileMenu = ref(false)
-const favoritesCount = ref(0)
 const cartCount = ref(0)
+
+const favoritesCount = computed(() => getFavoriteCount.value)
 
 const userInitials = computed(() => {
   if (!authStore.user?.name) return 'U'
@@ -279,7 +280,7 @@ const loadFavoritesCount = async () => {
   try {
     if (authStore.isAuthenticated) {
       await loadFavorites()
-      favoritesCount.value = getFavoriteCount.value
+      // Favorites count is now computed automatically from getFavoriteCount
     }
   } catch (error) {
     console.error('Error loading favorites:', error)
