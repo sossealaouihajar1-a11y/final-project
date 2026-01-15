@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\Vendor\ProductController as VendorProductController
 use App\Http\Controllers\Api\Vendor\ClientController as VendorClientController;
 use App\Http\Controllers\Api\Vendor\OrderController as VendorOrderController;
 use App\Http\Controllers\Api\Vendor\StockController as VendorStockController;
+use App\Http\Controllers\Api\ReviewController;  
 
 use Illuminate\Support\Facades\Route;
 
@@ -23,6 +24,7 @@ Route::prefix('auth')->group(function () {
     Route::post('/register/vendor', [AuthController::class, 'registerVendor']);
     Route::post('/login', [AuthController::class, 'login']);
 });
+Route::get('/products/{productId}/reviews', [ReviewController::class, 'index']);
 
 // Routes protégées (authentification requise)
 Route::middleware('auth:sanctum')->group(function () {
@@ -32,9 +34,15 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/me', [AuthController::class, 'me']);
     });
-   
+     Route::prefix('reviews')->group(function () {
+        Route::get('/my-reviews', [ReviewController::class, 'myReviews']); // ← NOUVELLE ROUTE
+        Route::post('/', [ReviewController::class, 'store']);
+        Route::put('/{id}', [ReviewController::class, 'update']);
+        Route::delete('/{id}', [ReviewController::class, 'destroy']);
+        Route::get('/check/{productId}', [ReviewController::class, 'checkUserReview']);
+    });
     // shipping adress
-     Route::get('/shipping-address', [ShippingAddressController::class, 'show']);
+    Route::get('/shipping-address', [ShippingAddressController::class, 'show']);
     Route::post('/shipping-address', [ShippingAddressController::class, 'store']);
     Route::delete('/shipping-address', [ShippingAddressController::class, 'destroy']);
 

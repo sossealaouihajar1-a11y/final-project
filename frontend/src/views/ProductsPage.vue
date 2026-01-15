@@ -381,33 +381,38 @@
       </div>
     </main>
 
-    <!-- Modal Détails Produit -->
-    <transition name="modal">
-      <div v-if="selectedProduct" @click="closeModal" class="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4 overflow-y-auto backdrop-blur-sm">
-        <div @click.stop class="bg-white rounded-2xl max-w-5xl w-full my-8 max-h-[90vh] overflow-y-auto shadow-2xl">
-          <div class="relative">
-            <button @click="closeModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 z-10 bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-lg hover:shadow-xl transition">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+<!-- Modal Détails Produit -->
+<transition name="modal">
+  <div v-if="selectedProduct" @click="closeModal" class="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4 overflow-y-auto backdrop-blur-sm">
+    <div @click.stop class="bg-white rounded-2xl max-w-6xl w-full my-8 shadow-2xl">
+      <!-- Header Modal avec Fermeture -->
+      <div class="relative border-b border-gray-200">
+        <button @click="closeModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 z-10 bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-lg hover:shadow-xl transition">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2">
-              <!-- Image -->
-              <div class="relative h-96 md:h-full bg-gray-100 flex items-center justify-center">
-                <img
-                  v-if="selectedProduct.image_url"
-                  :src="selectedProduct.image_url"
-                  :alt="selectedProduct.title"
-                  class="w-full h-full object-cover"
-                />
-                <svg v-else class="w-32 h-32 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
-                </svg>
-                
-                <div v-if="selectedProduct.promotion > 0" class="absolute top-4 right-4 bg-red-600 text-white px-4 py-2 rounded-lg text-base font-bold shadow-lg">
-                  -{{ selectedProduct.promotion }}%
-                </div>
+      <!-- Contenu Scrollable -->
+      <div class="max-h-[85vh] overflow-y-auto">
+        <!-- Section Produit -->
+        <div class="grid grid-cols-1 md:grid-cols-2">
+          <!-- Image -->
+          <div class="relative h-96 md:h-[600px] bg-gray-100 flex items-center justify-center">
+            <img
+              v-if="selectedProduct.image_url"
+              :src="selectedProduct.image_url"
+              :alt="selectedProduct.title"
+              class="w-full h-full object-cover"
+            />
+            <svg v-else class="w-32 h-32 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
+            </svg>
+            
+            <div v-if="selectedProduct.promotion > 0" class="absolute top-4 right-4 bg-red-600 text-white px-4 py-2 rounded-lg text-base font-bold shadow-lg">
+              -{{ selectedProduct.promotion }}%
+            </div>
 
                 <!-- Favorite Button -->
                 <button
@@ -426,12 +431,12 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                   </svg>
                 </button>
-              </div>
+          </div>
 
-              <!-- Détails -->
-              <div class="p-8 md:p-10">
+          <!-- Détails -->
+          <div class="p-8 md:p-10">
                 <div class="flex items-start justify-between mb-4">
-                  <h2 class="text-3xl md:text-4xl font-bold text-gray-900">{{ selectedProduct.title }}</h2>
+              <h2 class="text-3xl md:text-4xl font-bold text-gray-900">{{ selectedProduct.title }}</h2>
                   <div v-if="authStore.isClient && isProductFavorited" class="bg-red-50 border border-red-200 px-3 py-1.5 rounded-lg">
                     <span class="text-red-700 font-semibold text-sm flex items-center space-x-1">
                       <svg class="w-4 h-4 fill-red-500" viewBox="0 0 24 24">
@@ -441,108 +446,117 @@
                     </span>
                   </div>
                 </div>
-                
-                <div class="space-y-4 mb-6">
-                  <div class="flex items-center space-x-3 text-sm">
-                    <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z" />
-                    </svg>
-                    <span class="text-gray-600">Catégorie:</span>
-                    <span class="font-semibold text-indigo-600">{{ selectedProduct.category }}</span>
-                  </div>
+            
+            <div class="space-y-4 mb-6">
+              <div class="flex items-center space-x-3 text-sm">
+                <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z" />
+                </svg>
+                <span class="text-gray-600">Catégorie:</span>
+                <span class="font-semibold text-indigo-600">{{ selectedProduct.category }}</span>
+              </div>
 
-                  <div class="flex items-center space-x-3 text-sm">
-                    <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                    </svg>
-                    <span class="text-gray-600">État:</span>
-                    <span :class="getConditionClass(selectedProduct.condition)" class="px-3 py-1.5 text-xs font-medium rounded-lg">
-                      {{ getConditionLabel(selectedProduct.condition) }}
-                    </span>
-                  </div>
+              <div class="flex items-center space-x-3 text-sm">
+                <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+                <span class="text-gray-600">État:</span>
+                <span :class="getConditionClass(selectedProduct.condition)" class="px-3 py-1.5 text-xs font-medium rounded-lg">
+                  {{ getConditionLabel(selectedProduct.condition) }}
+                </span>
+              </div>
 
-                  <div class="flex items-center space-x-3 text-sm">
-                    <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
-                    </svg>
-                    <span class="text-gray-600">Stock:</span>
-                    <span class="font-semibold" :class="selectedProduct.stock < 5 ? 'text-orange-600' : 'text-green-600'">
-                      {{ selectedProduct.stock > 0 ? `${selectedProduct.stock} disponible(s)` : 'Épuisé' }}
-                    </span>
-                  </div>
+              <div class="flex items-center space-x-3 text-sm">
+                <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
+                </svg>
+                <span class="text-gray-600">Stock:</span>
+                <span class="font-semibold" :class="selectedProduct.stock < 5 ? 'text-orange-600' : 'text-green-600'">
+                  {{ selectedProduct.stock > 0 ? `${selectedProduct.stock} disponible(s)` : 'Épuisé' }}
+                </span>
+              </div>
 
-                  <div class="flex items-center space-x-3 text-sm">
-                    <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
-                    </svg>
-                    <span class="text-gray-600">Vendeur:</span>
-                    <span class="font-semibold text-gray-900">{{ selectedProduct.vendeur?.name || 'Vintage Shop' }}</span>
-                  </div>
-                </div>
+              <div class="flex items-center space-x-3 text-sm">
+                <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                </svg>
+                <span class="text-gray-600">Vendeur:</span>
+                <span class="font-semibold text-gray-900">{{ selectedProduct.vendeur?.name || 'Vintage Shop' }}</span>
+              </div>
+            </div>
 
-                <!-- Prix -->
-                <div class="mb-6 p-6 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl border border-indigo-100">
-                  <div v-if="selectedProduct.promotion > 0" class="flex items-center space-x-3 mb-2">
-                    <span class="text-2xl text-gray-400 line-through">{{ selectedProduct.price }}€</span>
-                    <span class="px-3 py-1.5 bg-red-500 text-white text-sm font-bold rounded-lg">
-                      -{{ selectedProduct.promotion }}%
-                    </span>
-                  </div>
-                  <div class="text-5xl font-bold text-indigo-600 mb-2">
-                    {{ selectedProduct.final_price }}€
-                  </div>
-                  <div v-if="selectedProduct.promotion > 0" class="text-sm text-green-600 font-semibold flex items-center space-x-2">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                    </svg>
-                    <span>Vous économisez {{ (selectedProduct.price - selectedProduct.final_price).toFixed(2) }}€</span>
-                  </div>
-                </div>
+            <!-- Prix -->
+            <div class="mb-6 p-6 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl border border-indigo-100">
+              <div v-if="selectedProduct.promotion > 0" class="flex items-center space-x-3 mb-2">
+                <span class="text-2xl text-gray-400 line-through">{{ selectedProduct.price }}€</span>
+                <span class="px-3 py-1.5 bg-red-500 text-white text-sm font-bold rounded-lg">
+                  -{{ selectedProduct.promotion }}%
+                </span>
+              </div>
+              <div class="text-5xl font-bold text-indigo-600 mb-2">
+                {{ selectedProduct.final_price }}€
+              </div>
+              <div v-if="selectedProduct.promotion > 0" class="text-sm text-green-600 font-semibold flex items-center space-x-2">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+                <span>Vous économisez {{ (selectedProduct.price - selectedProduct.final_price).toFixed(2) }}€</span>
+              </div>
+            </div>
 
-                <!-- Description -->
-                <div class="mb-8">
-                  <h3 class="font-bold text-gray-900 mb-3 text-lg flex items-center space-x-2">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
-                    </svg>
-                    <span>Description</span>
-                  </h3>
-                  <p class="text-gray-700 leading-relaxed">{{ selectedProduct.description }}</p>
-                </div>
+            <!-- Description -->
+            <div class="mb-8">
+              <h3 class="font-bold text-gray-900 mb-3 text-lg flex items-center space-x-2">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                </svg>
+                <span>Description</span>
+              </h3>
+              <p class="text-gray-700 leading-relaxed">{{ selectedProduct.description }}</p>
+            </div>
 
-                <!-- Actions -->
-                <div v-if="authStore.isClient">
-                  <button
-                    @click="addToCartFromModal(selectedProduct)"
-                    :disabled="selectedProduct.stock === 0"
-                    class="w-full px-6 py-4 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl"
-                  >
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                    <span>{{ selectedProduct.stock === 0 ? 'Rupture de stock' : 'Ajouter au panier' }}</span>
-                  </button>
-                </div>
-                <div v-else class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg">
-                  <div class="flex">
-                    <svg class="w-6 h-6 text-blue-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
-                    </svg>
-                    <div>
-                      <p class="font-semibold text-blue-800">Connexion requise</p>
-                      <p class="text-sm text-blue-700 mt-1">Connectez-vous en tant que client pour acheter ce produit.</p>
-                      <router-link to="/login" class="mt-3 inline-block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium">
-                        Se connecter
-                      </router-link>
-                    </div>
-                  </div>
+            <!-- Actions -->
+            <div v-if="authStore.isClient">
+              <button
+                @click="addToCartFromModal(selectedProduct)"
+                :disabled="selectedProduct.stock === 0"
+                class="w-full px-6 py-4 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl"
+              >
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                <span>{{ selectedProduct.stock === 0 ? 'Rupture de stock' : 'Ajouter au panier' }}</span>
+              </button>
+            </div>
+            <div v-else class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg">
+              <div class="flex">
+                <svg class="w-6 h-6 text-blue-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                </svg>
+                <div>
+                  <p class="font-semibold text-blue-800">Connexion requise</p>
+                  <p class="text-sm text-blue-700 mt-1">Connectez-vous en tant que client pour acheter ce produit.</p>
+                  <router-link to="/login" class="mt-3 inline-block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium">
+                    Se connecter
+                  </router-link>
                 </div>
               </div>
             </div>
           </div>
         </div>
+
+        <!-- SECTION REVIEWS - ICI C'EST IMPORTANT -->
+        <div class="border-t border-gray-200 bg-gray-50 p-8">
+          <h2 class="text-2xl font-bold text-gray-900 mb-6">📝 Section Avis (Test)</h2>
+          <ReviewSection 
+            v-if="selectedProduct && selectedProduct.id"
+            :product-id="selectedProduct.id" 
+          />
+        </div>
       </div>
-    </transition>
+    </div>
+  </div>
+</transition>
 
     <!-- Toast Notification -->
     <transition name="slide-up">
@@ -572,9 +586,14 @@ import { useCartStore } from '@/stores/cartStore'
 import { useFavorites } from '@/composables/useFavorites'
 import productService from '@/services/productService'
 
+
+import reviewService from '@/services/reviewService'
+import ReviewSection from '@/components/ReviewSection.vue'  
+import ProductReviewsPreview from '@/components/ProductReviewsPreview.vue'
+
 const authStore = useAuthStore()
 const cartStore = useCartStore()
-const { isFavorite, isLoading: isTogglingFavorite, toggleFavorite, loadFavorites } = useFavorites()
+const { isFavorite, isLoading: isTogglingFavorite, toggleFavorite, loadFavorites, getFavoriteCount } = useFavorites()
 
 const products = ref([])
 const categories = ref([])
@@ -584,7 +603,9 @@ const searchQuery = ref('')
 const selectedProduct = ref(null)
 const pagination = ref(null)
 const isProductFavorited = ref(false)
-const favoritesCount = ref(0)
+
+// Computed property for real favorites count
+const favoritesCount = computed(() => getFavoriteCount.value)
 
 const notification = ref({
   show: false,
@@ -749,15 +770,10 @@ const toggleFavoriteProduct = async () => {
   try {
     const newStatus = await toggleFavorite(selectedProduct.value.id)
     isProductFavorited.value = newStatus
-    // Update favorites count
-    if (newStatus) {
-      favoritesCount.value++
-    } else {
-      favoritesCount.value = Math.max(0, favoritesCount.value - 1)
-    }
+    // Favorites count is now computed automatically from getFavoriteCount
     // Dispatch custom event to update navbar
     window.dispatchEvent(new CustomEvent('favorites-updated', { 
-      detail: { count: favoritesCount.value } 
+      detail: { count: getFavoriteCount.value } 
     }))
     showNotification(newStatus ? 'Ajouté aux favoris!' : 'Supprimé des favoris!')
   } catch (err) {
@@ -769,15 +785,10 @@ const toggleFavoriteProduct = async () => {
 const toggleFavoriteFromGrid = async (product) => {
   try {
     const newStatus = await toggleFavorite(product.id)
-    // Update favorites count
-    if (newStatus) {
-      favoritesCount.value++
-    } else {
-      favoritesCount.value = Math.max(0, favoritesCount.value - 1)
-    }
+    // Favorites count is now computed automatically from getFavoriteCount
     // Dispatch custom event to update navbar
     window.dispatchEvent(new CustomEvent('favorites-updated', { 
-      detail: { count: favoritesCount.value } 
+      detail: { count: getFavoriteCount.value } 
     }))
     showNotification(newStatus ? 'Ajouté aux favoris!' : 'Supprimé des favoris!')
   } catch (err) {
@@ -812,11 +823,7 @@ onMounted(async () => {
   // Load favorites if client is authenticated
   if (authStore.isClient) {
     await loadFavorites()
-    // Set favorites count from localStorage
-    const favorites = localStorage.getItem('favorites')
-    if (favorites) {
-      favoritesCount.value = JSON.parse(favorites).length
-    }
+    // Favorites count is now computed automatically from getFavoriteCount
   }
 })
 </script>
