@@ -127,16 +127,23 @@ import AdminDashboard from '@/views/admin/DashboardView.vue'
 import VendorsManagement from '@/views/admin/VendorsManagement.vue'
 import UsersManagement from '@/views/admin/UsersManagement.vue'
 import ProductsManagement from '@/views/admin/ProductsManagement.vue'
-import ProductDetailsPage from '@/views/ProductDetailsPage.vue' 
+import ProductDetailsPage from '@/views/ProductDetailsPage.vue'
+import Layout from '@/components/Layout.vue'   
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
-      name: 'home',
-      component: HomePage
-    },
+    path: '/',
+    component: Layout,
+    children: [
+      {
+        path: '',
+        name: 'home',
+        component: HomePage,
+      },
+    ],
+  },
     {
       path: '/login',
       name: 'login',
