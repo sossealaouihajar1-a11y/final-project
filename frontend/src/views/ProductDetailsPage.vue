@@ -257,10 +257,33 @@ const showNotification = (message, type = 'success') => {
 const loadProduct = async () => {
   loading.value = true
   try {
-    const productId = route.params.id
-    product.value = await productService.getProduct(productId)
+    const encodedTitle = route.params.id
+    // Décoder le titre
+    const decodedTitle = decodeURIComponent(encodedTitle)
+    console.log('Looking for product with title:', decodedTitle)
     
-    if (authStore.isClient) {
+    const response = await productService.getAllProducts({})
+    console.log('Response:', response)
+    
+    // Extraire la liste des produits (gérer la pagination)
+    const productsList = response.data || response
+    console.log('Products list:', productsList)
+    
+    // Normaliser le titre pour la comparaison
+    const normalizeTitle = (title) => 
+      title.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-')
+    
+    const targetNormalized = normalizeTitle(decodedTitle)
+    
+    // Trouver le produit
+    product.value = productsList.find(p => {
+      const productNormalized = normalizeTitle(p.title)
+      return productNormalized === targetNormalized
+    }) || null
+    
+    console.log('Found product:', product.value)
+    
+    if (authStore.isClient && product.value) {
       checkFavorite()
     }
   } catch (error) {
