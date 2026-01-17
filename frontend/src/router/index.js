@@ -252,10 +252,11 @@ const router = createRouter({
       name: 'categories',
       component: () => import('@/views/ProductsPage.vue')
     },
-        {
+    {
       path: '/cart',
       name: 'cart',
-      component: () => import('@/views/CartPage.vue')
+      component: () => import('@/views/CartPage.vue'),
+      meta: { requiresAuth: true, role: 'client' }
     },
     {
       path: '/orders',
