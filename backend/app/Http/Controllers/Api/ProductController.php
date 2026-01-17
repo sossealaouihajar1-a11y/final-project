@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\VintageProduct;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
@@ -103,7 +104,7 @@ class ProductController extends Controller
     /**
      * Récupérer toutes les catégories disponibles
      */
-   public function categories()
+    public function categories()
     {
         try {
             // Méthode 1 : Récupérer depuis l'enum de la base de données
@@ -163,6 +164,63 @@ class ProductController extends Controller
             ]);
         }
     }
+
+    /**
+     * ⭐ NOUVEAU: Récupérer toutes les conditions disponibles
+     */
+/**
+ * Récupérer toutes les conditions de l'ENUM
+ */
+public function conditions()
+{
+    try {
+        // Récupérer la définition de la colonne
+        $columnInfo = DB::select("SHOW COLUMNS FROM vintage_products WHERE Field = 'condition'");
+        
+        if (!empty($columnInfo)) {
+            $columnType = $columnInfo[0]->Type;
+            
+            \Log::info('🔍 Type de colonne:', ['type' => $columnType]);
+            
+            // Vérifier si c'est un ENUM et extraire les valeurs
+            if (preg_match('/^enum\((.*)\)$/i', $columnType, $matches)) {
+                
+                // Utiliser une regex pour extraire toutes les valeurs entre quotes
+                preg_match_all("/'([^']+)'/", $matches[1], $values);
+                
+                if (!empty($values[1])) {
+                    $conditions = array_map('trim', $values[1]);
+                    $conditions = array_filter($conditions);
+                    $conditions = array_values($conditions);
+                    
+                    \Log::info('✅ Conditions ENUM:', $conditions);
+                    
+                    return response()->json($conditions);
+                }
+            }
+        }
+        
+        // Fallback: valeurs distinctes utilisées
+        $usedConditions = VintageProduct::select('condition')
+            ->distinct()
+            ->whereNotNull('condition')
+            ->where('condition', '!=', '')
+            ->pluck('condition')
+            ->toArray();
+        
+        if (!empty($usedConditions)) {
+            return response()->json($usedConditions);
+        }
+        
+        // Fallback final
+        return response()->json(['Excellent', 'Very Good', 'Good', 'Fair']);
+        
+    } catch (\Exception $e) {
+        \Log::error('❌ Erreur conditions:', ['error' => $e->getMessage()]);
+        return response()->json(['Excellent', 'Very Good', 'Good', 'Fair']);
+    }
+}
+
     /**
      * Statistiques des produits
      */
