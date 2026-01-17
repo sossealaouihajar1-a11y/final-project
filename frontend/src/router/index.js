@@ -128,6 +128,8 @@ import VendorsManagement from '@/views/admin/VendorsManagement.vue'
 import UsersManagement from '@/views/admin/UsersManagement.vue'
 import ProductsManagement from '@/views/admin/ProductsManagement.vue'
 import ProductDetailsPage from '@/views/ProductDetailsPage.vue'
+import About from '@/views/About.vue'
+import Contact from '@/views/Contact.vue'
 import Layout from '@/components/Layout.vue'   
 
 const router = createRouter({
@@ -150,6 +152,16 @@ const router = createRouter({
       component: LoginPage,
       meta: { guest: true }
     },
+    {
+    path: '/about',
+    name: 'About',
+    component: About,
+  },
+    {
+    path: '/contact',
+    name: 'Contact',
+    component: Contact,
+  },
     {
       path: '/register-client',
       name: 'register-client',
@@ -243,8 +255,7 @@ const router = createRouter({
         {
       path: '/cart',
       name: 'cart',
-      component: () => import('@/views/CartPage.vue'),
-      meta: { requiresAuth: true, role: 'client' }
+      component: () => import('@/views/CartPage.vue')
     },
     {
       path: '/orders',

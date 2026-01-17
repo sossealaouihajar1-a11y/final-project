@@ -177,7 +177,7 @@
                 type="password"
                 required
                 minlength="8"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1c3d] focus:border-transparent"
               />
               <p class="text-xs text-gray-500 mt-1">Minimum 8 caractères</p>
             </div>
@@ -188,7 +188,7 @@
                 v-model="passwordForm.password_confirmation"
                 type="password"
                 required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1c3d] focus:border-transparent"
               />
             </div>
 
@@ -262,7 +262,7 @@
                 v-model="addressForm.full_name"
                 type="text"
                 required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1c3d] focus:border-transparent"
                 placeholder="Jean Dupont"
               />
             </div>
@@ -273,7 +273,7 @@
                 v-model="addressForm.phone"
                 type="tel"
                 required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1c3d] focus:border-transparent"
                 placeholder="+33 6 12 34 56 78"
               />
             </div>
@@ -284,7 +284,7 @@
                 v-model="addressForm.address"
                 type="text"
                 required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1c3d] focus:border-transparent"
                 placeholder="123 Rue de la Paix"
               />
             </div>
@@ -296,7 +296,7 @@
                   v-model="addressForm.postal_code"
                   type="text"
                   required
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1c3d] focus:border-transparent"
                   placeholder="75001"
                 />
               </div>
@@ -306,7 +306,7 @@
                   v-model="addressForm.city"
                   type="text"
                   required
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1c3d] focus:border-transparent"
                   placeholder="Paris"
                 />
               </div>
@@ -318,7 +318,7 @@
                 v-model="addressForm.country"
                 type="text"
                 required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1c3d] focus:border-transparent"
                 placeholder="France"
               />
             </div>

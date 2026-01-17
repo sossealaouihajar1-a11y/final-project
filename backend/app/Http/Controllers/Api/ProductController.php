@@ -31,9 +31,21 @@ class ProductController extends Controller
             $query->byCondition($request->condition);
         }
 
-        // Filtre par prix min/max
-        if ($request->filled('min_price') && $request->filled('max_price')) {
-            $query->priceRange($request->min_price, $request->max_price);
+        // ✅ FILTRAGE PAR PRIX CORRIGÉ - Accepte min OU max indépendamment
+        if ($request->filled('min_price') || $request->filled('max_price')) {
+            $minPrice = $request->min_price;
+            $maxPrice = $request->max_price;
+            
+            if ($minPrice !== null && $maxPrice !== null) {
+                // Les deux sont présents - utiliser whereBetween
+                $query->whereBetween('price', [(float)$minPrice, (float)$maxPrice]);
+            } elseif ($minPrice !== null) {
+                // Seulement prix minimum
+                $query->where('price', '>=', (float)$minPrice);
+            } elseif ($maxPrice !== null) {
+                // Seulement prix maximum
+                $query->where('price', '<=', (float)$maxPrice);
+            }
         }
 
         // Recherche
@@ -91,21 +103,66 @@ class ProductController extends Controller
     /**
      * Récupérer toutes les catégories disponibles
      */
-    public function categories()
+   public function categories()
     {
-        $categories = VintageProduct::active()
-            ->whereHas('vendeur', function ($q) {
-                $q->where('vendor_status', 'approved');
-            })
-            ->distinct()
-            ->pluck('category')
-            ->filter()
-            ->sort()
-            ->values();
-
-        return response()->json($categories);
+        try {
+            // Méthode 1 : Récupérer depuis l'enum de la base de données
+            $enumValues = DB::select("
+                SHOW COLUMNS 
+                FROM vintage_products 
+                WHERE Field = 'category'
+            ");
+            
+            if (!empty($enumValues)) {
+                $type = $enumValues[0]->Type;
+                
+                // Log pour debug
+                \Log::info('🔍 Enum type trouvé:', ['type' => $type]);
+                
+                // Parser l'enum : enum('mode','mobilier',...)
+                preg_match('/^enum\((.*)\)$/', $type, $matches);
+                
+                if (!empty($matches[1])) {
+                    // Extraire les valeurs
+                    $categories = array_map(function($value) {
+                        return trim($value, "'");
+                    }, explode(',', $matches[1]));
+                    
+                    \Log::info('✅ Catégories trouvées:', $categories);
+                    
+                    return response()->json($categories);
+                }
+            }
+            
+            // Si la méthode enum ne fonctionne pas, fallback
+            \Log::warning('⚠️ Enum non trouvé, utilisation du fallback');
+            
+            return response()->json([
+                'mode',
+                'mobilier',
+                'accessoires',
+                'electronique_vintage',
+                'art',
+                'autre'
+            ]);
+            
+        } catch (\Exception $e) {
+            \Log::error('❌ Erreur categories:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            // Fallback en cas d'erreur
+            return response()->json([
+                'mode',
+                'mobilier',
+                'accessoires',
+                'electronique_vintage',
+                'art',
+                'autre'
+            ]);
+        }
     }
-
     /**
      * Statistiques des produits
      */
