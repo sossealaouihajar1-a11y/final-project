@@ -181,7 +181,7 @@
       </div>
 
       <!-- Reviews Section -->
-      <div class="border-t border-gray-200 py-16">
+      <div v-if="authStore.isClient" class="border-t border-gray-200 py-16">
         <div class="text-center mb-12">
           <p class="text-sm text-gray-500 uppercase tracking-widest mb-4">Read Customer Reviews</p>
           <h2 class="text-3xl font-serif text-gray-900">What they're saying about {{ product.vendeur?.name || 'our shop' }}</h2>

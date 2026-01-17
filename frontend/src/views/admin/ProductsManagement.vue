@@ -1,19 +1,17 @@
 <template>
-  <div class="min-h-screen bg-gray-100">
-    <!-- Header -->
-    <div class="bg-white shadow">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div class="flex justify-between items-center">
-          <h1 class="text-3xl font-bold text-gray-900">Gestion des Produits</h1>
-          <!-- <button
-            @click="showNewProductModal = true"
-            class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
-          >
-            + Nouveau Produit
-          </button> -->
+  <div class="min-h-screen bg-white">
+    <Header />
+
+    <!-- Hero Section -->
+    <section class="bg-[#f2f1ed] border-b border-gray-200">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="text-center">
+          <p class="text-sm font-semibold uppercase tracking-wider text-[#8b1c3d] mb-2">Administration</p>
+          <h1 class="text-4xl md:text-5xl font-serif font-bold text-gray-900 mb-4">Gestion des Produits</h1>
+          <p class="text-lg text-gray-600">Gérez tous les produits de la plateforme</p>
         </div>
       </div>
-    </div>
+    </section>
 
     <!-- Main Content -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -47,7 +45,7 @@
               type="text"
               placeholder="Titre ou description..."
               @input="handleSearch"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1c3d] focus:border-transparent"
             />
           </div>
           <div>
@@ -55,7 +53,7 @@
             <select
               v-model="filterCategory"
               @change="loadProducts"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1c3d] focus:border-transparent"
             >
               <option value="">Toutes les catégories</option>
               <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
@@ -66,7 +64,7 @@
             <select
               v-model="filterStatus"
               @change="loadProducts"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1c3d] focus:border-transparent"
             >
               <option value="">Tous</option>
               <option value="active">Actifs</option>
@@ -76,7 +74,7 @@
           <div class="flex items-end">
             <button
               @click="loadProducts"
-              class="w-full px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+              class="w-full px-4 py-2 bg-[#8b1c3d] text-white rounded-lg hover:bg-[#5a4a3a] transition"
             >
               Charger
             </button>
@@ -87,7 +85,7 @@
       <!-- Products Table -->
       <div class="bg-white rounded-lg shadow overflow-hidden">
         <div v-if="loading" class="p-8 text-center">
-          <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+          <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#8b1c3d]"></div>
           <p class="mt-2 text-gray-600">Chargement...</p>
         </div>
 
@@ -138,7 +136,7 @@
               <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
                 <button
                   @click="editProduct(product)"
-                  class="text-indigo-600 hover:text-indigo-900 font-medium"
+                  class="text-[#8b1c3d] hover:text-[#5a4a3a] font-medium"
                 >
                   Éditer
                 </button>
@@ -200,7 +198,7 @@
             <input
               v-model="productForm.title"
               type="text"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1c3d] focus:border-transparent"
             />
           </div>
           <div>
@@ -208,7 +206,7 @@
             <textarea
               v-model="productForm.description"
               rows="3"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1c3d] focus:border-transparent"
             ></textarea>
           </div>
           <div class="grid grid-cols-2 gap-4">
@@ -217,14 +215,14 @@
               <input
                 v-model="productForm.category"
                 type="text"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1c3d] focus:border-transparent"
               />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">État</label>
               <select
                 v-model="productForm.condition"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1c3d] focus:border-transparent"
               >
                 <option value="neuf">Neuf</option>
                 <option value="excellent">Excellent</option>
@@ -242,7 +240,7 @@
                 v-model.number="productForm.price"
                 type="number"
                 step="0.01"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1c3d] focus:border-transparent"
               />
             </div>
             <div>
@@ -252,7 +250,7 @@
                 type="number"
                 min="0"
                 max="100"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1c3d] focus:border-transparent"
               />
             </div>
           </div>
@@ -262,12 +260,12 @@
               v-model.number="productForm.stock"
               type="number"
               min="0"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1c3d] focus:border-transparent"
             />
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Image du Produit</label>
-            <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-indigo-400 transition cursor-pointer" @click="$refs.imageInput.click()">
+            <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-[#8b1c3d] transition cursor-pointer" @click="$refs.imageInput.click()">
               <div v-if="imagePreview" class="mb-4">
                 <img :src="imagePreview" alt="Preview" class="h-40 w-40 object-cover mx-auto rounded" />
               </div>
@@ -335,6 +333,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import Header from '@/components/Header.vue'
 import productManagementService from '@/services/productManagementService'
 
 const products = ref([])

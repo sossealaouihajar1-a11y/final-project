@@ -15,8 +15,11 @@ use App\Http\Controllers\Api\Vendor\ClientController as VendorClientController;
 use App\Http\Controllers\Api\Vendor\OrderController as VendorOrderController;
 use App\Http\Controllers\Api\Vendor\StockController as VendorStockController;
 use App\Http\Controllers\Api\ReviewController;  
-
+use App\Http\Controllers\ContactController;
 use Illuminate\Support\Facades\Route;
+
+// contact form
+Route::post('/contact', [ContactController::class, 'send']);
 
 // Routes publiques                  
 Route::prefix('auth')->group(function () {

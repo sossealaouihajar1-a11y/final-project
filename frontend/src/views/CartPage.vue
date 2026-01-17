@@ -1,54 +1,33 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="bg-white min-h-screen flex flex-col">
     <!-- Header -->
-    <nav class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center h-16">
-          <div class="flex items-center space-x-8">
-            <router-link to="/" class="flex items-center space-x-2">
-              <div class="w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center">
-                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <span class="text-xl font-bold text-gray-900">Vintage Shop</span>
-            </router-link>
-            <router-link to="/products" class="text-sm font-medium text-gray-700 hover:text-indigo-600">
-              Catalogue
-            </router-link>
-          </div>
-          <div class="flex items-center space-x-6">
-            <router-link to="/favorites" class="relative text-gray-600 hover:text-red-500 transition">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-              </svg>
-            </router-link>
-            <router-link to="/cart" class="relative text-indigo-600">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-              <span v-if="cartStore.itemCount > 0" class="absolute -top-2 -right-2 bg-indigo-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                {{ cartStore.itemCount }}
-              </span>
-            </router-link>
-            <router-link to="/client/dashboard" class="text-sm font-medium text-gray-700 hover:text-indigo-600">
-              Mon Compte
-            </router-link>
-          </div>
-        </div>
-      </div>
-    </nav>
+    <Header />
 
-    <main class="max-w-7xl mx-auto px-4 py-8">
-      <!-- Titre -->
+    <!-- ================= HERO ================= -->
+    <section class="bg-[#f2f1ed] border-b border-gray-200">
+      <div class="max-w-7xl mx-auto px-6 py-14">
+        <p class="uppercase tracking-[0.35em] text-xs text-gray-500 mb-4">
+          Panier
+        </p>
+        <h1 class="text-4xl md:text-5xl font-serif text-gray-900 mb-4">
+          Mon Panier
+        </h1>
+        <p class="text-gray-600 max-w-2xl">
+          {{ cartStore.itemCount }} article(s) dans votre panier
+        </p>
+      </div>
+    </section>
+
+    <!-- ================= CONTENT ================= -->
+    <main class="max-w-7xl mx-auto px-6 py-16 flex-grow">
+    <!-- Titre -->
       <div class="mb-8">
         <h1 class="text-3xl font-bold text-gray-900 flex items-center space-x-3">
-          <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-8 h-8 text-[#8b1c3d]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
           </svg>
-          <span>Mon Panier</span>
+          <span>Votre panier</span>
         </h1>
-        <p class="text-gray-600 mt-2">{{ cartStore.itemCount }} article(s) dans votre panier</p>
       </div>
 
       <!-- Panier vide -->
@@ -58,7 +37,7 @@
         </svg>
         <h2 class="text-2xl font-bold text-gray-800 mb-2">Votre panier est vide</h2>
         <p class="text-gray-600 mb-6">Découvrez nos produits vintage uniques</p>
-        <router-link to="/products" class="inline-block px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium transition">
+        <router-link to="/products" class="inline-block border border-[#8b1c3d] px-10 py-3 text-[#8b1c3d] uppercase tracking-wider text-sm hover:bg-[#8b1c3d] hover:text-white transition">
           Parcourir la boutique
         </router-link>
       </div>
@@ -107,7 +86,7 @@
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                   <!-- Prix -->
                   <div class="mb-4 sm:mb-0">
-                    <div class="text-2xl font-bold text-indigo-600">
+                    <div class="text-2xl font-bold text-[#8b1c3d]">
                       {{ (item.price * item.quantity).toFixed(2) }}€
                     </div>
                     <div class="text-sm text-gray-500">
@@ -150,9 +129,6 @@
           </div>
         </div>
 
-        <!-- Order Summary -->
-        <div class="lg:col-span-1">
-          <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-24">
             <h2 class="text-xl font-bold text-gray-900 mb-6">Récapitulatif</h2>
 
             <!-- Price Details -->
@@ -163,7 +139,7 @@
               </div>
               <div class="flex justify-between text-gray-600">
                 <span>Livraison</span>
-                <span class="font-medium" :class="shippingCost === 0 ? 'text-green-600' : ''">
+                <span class="font-medium" :class="shippingCost === 0 ? 'text-[#8b1c3d]' : ''">
                   {{ shippingCost === 0 ? 'GRATUIT' : shippingCost.toFixed(2) + '€' }}
                 </span>
               </div>
@@ -175,12 +151,12 @@
                   <span class="font-medium">{{ (400 - subtotal).toFixed(2) }}€</span>
                 </div>
                 <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-                  <div class="h-full bg-gradient-to-r from-indigo-500 to-green-500 transition-all duration-500" :style="{ width: `${(subtotal / 400) * 100}%` }"></div>
+                  <div class="h-full bg-gradient-to-r from-[#8b1c3d] to-[#5a4a3a] transition-all duration-500" :style="{ width: `${(subtotal / 400) * 100}%` }"></div>
                 </div>
                 <p class="text-xs text-gray-500 mt-2">Plus que {{ (400 - subtotal).toFixed(2) }}€ pour la livraison gratuite !</p>
               </div>
               <div v-else class="pt-2">
-                <div class="flex items-center space-x-2 text-green-600 text-sm font-medium">
+                <div class="flex items-center space-x-2 text-[#8b1c3d] text-sm font-medium">
                   <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                   </svg>
@@ -191,13 +167,13 @@
 
             <div class="flex justify-between text-xl font-bold text-gray-900 mb-6">
               <span>Total</span>
-              <span class="text-indigo-600">{{ totalPrice.toFixed(2) }}€</span>
+              <span class="text-[#8b1c3d]">{{ totalPrice.toFixed(2) }}€</span>
             </div>
 
             <!-- Adresse de livraison enregistrée -->
-            <div v-if="hasShippingAddress" class="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+            <div v-if="hasShippingAddress" class="mb-6 p-4 bg-[#f2f1ed] rounded-lg border border-gray-200">
               <h3 class="font-semibold text-gray-900 mb-2 flex items-center space-x-2">
-                <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                <svg class="w-5 h-5 text-[#8b1c3d]" fill="currentColor" viewBox="0 0 20 20">
                   <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
                 </svg>
                 <span>Adresse de livraison</span>
@@ -209,7 +185,7 @@
                 {{ shippingAddress.country }}<br>
                 Tél: {{ shippingAddress.phone }}
               </p>
-              <router-link to="/client/dashboard" class="text-xs text-blue-600 hover:text-blue-700 mt-2 inline-block">
+              <router-link to="/client/dashboard" class="text-xs text-[#8b1c3d] hover:text-[#5a4a3a] mt-2 inline-block">
                 Modifier l'adresse →
               </router-link>
             </div>
@@ -235,16 +211,16 @@
               <h3 class="text-sm font-semibold text-gray-900 mb-3">Méthode de paiement</h3>
               <div class="space-y-3">
                 <!-- Cash on Delivery -->
-                <label class="flex items-start p-4 border-2 rounded-lg cursor-pointer transition" :class="paymentMethod === 'cash_on_delivery' ? 'border-green-600 bg-green-50' : 'border-gray-200 hover:border-gray-300'">
+                <label class="flex items-start p-4 border-2 rounded-lg cursor-pointer transition" :class="paymentMethod === 'cash_on_delivery' ? 'border-[#8b1c3d] bg-[#f2f1ed]' : 'border-gray-200 hover:border-gray-300'">
                   <input
                     type="radio"
                     v-model="paymentMethod"
                     value="cash_on_delivery"
-                    class="mt-1 h-4 w-4 text-green-600 focus:ring-green-500"
+                    class="mt-1 h-4 w-4 text-[#8b1c3d] focus:ring-[#8b1c3d]"
                   />
                   <div class="ml-3 flex-1">
                     <div class="flex items-center space-x-2">
-                      <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg class="w-5 h-5 text-[#8b1c3d]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
                       </svg>
                       <span class="font-medium text-gray-900">Paiement à la livraison</span>
@@ -254,16 +230,16 @@
                 </label>
 
                 <!-- Stripe -->
-                <label class="flex items-start p-4 border-2 rounded-lg cursor-pointer transition" :class="paymentMethod === 'stripe' ? 'border-indigo-600 bg-indigo-50' : 'border-gray-200 hover:border-gray-300'">
+                <label class="flex items-start p-4 border-2 rounded-lg cursor-pointer transition" :class="paymentMethod === 'stripe' ? 'border-[#8b1c3d] bg-[#f2f1ed]' : 'border-gray-200 hover:border-gray-300'">
                   <input
                     type="radio"
                     v-model="paymentMethod"
                     value="stripe"
-                    class="mt-1 h-4 w-4 text-indigo-600 focus:ring-indigo-500"
+                    class="mt-1 h-4 w-4 text-[#8b1c3d] focus:ring-[#8b1c3d]"
                   />
                   <div class="ml-3 flex-1">
                     <div class="flex items-center space-x-2">
-                      <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg class="w-5 h-5 text-[#8b1c3d]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                       </svg>
                       <span class="font-medium text-gray-900">Carte bancaire (Stripe)</span>
@@ -279,7 +255,7 @@
               <button
                 @click="proceedToCheckout"
                 :disabled="!hasShippingAddress || processing || !paymentMethod"
-                class="w-full px-6 py-4 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl"
+                class="w-full px-6 py-4 bg-[#8b1c3d] text-white font-bold rounded-xl hover:bg-[#5a4a3a] transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl"
               >
                 <svg v-if="!processing" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -318,7 +294,7 @@
                     💰 Montant à régler à la livraison: <strong>{{ confirmedOrder.total_price.toFixed(2) }}€</strong>
                   </p>
                 </div>
-                <router-link to="/client/dashboard" class="block w-full px-6 py-4 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition text-center">
+                <router-link to="/client/dashboard" class="block w-full px-6 py-4 bg-[#8b1c3d] text-white font-bold rounded-xl hover:bg-[#5a4a3a] transition text-center">
                   Voir mes commandes
                 </router-link>
               </div>
@@ -428,6 +404,7 @@ import { useRouter } from 'vue-router'
 import { useCartStore } from '@/stores/cartStore'
 import cartService from '@/services/cartService'
 import shippingAddressService from '@/services/shippingAddressService'
+import Header from '@/components/Header.vue'
 
 const router = useRouter()
 const cartStore = useCartStore()

@@ -13,7 +13,7 @@
             text-align: center;
             margin-bottom: 30px;
             padding-bottom: 20px;
-            border-bottom: 3px solid #667eea;
+            border-bottom: 3px solid  #4a1709;
         }
         .company-name {
             font-size: 28px;
@@ -38,7 +38,7 @@
         }
         .info-box h3 {
             margin-top: 0;
-            color: #667eea;
+            color: #4a1709;
             font-size: 16px;
         }
         table {
@@ -47,7 +47,7 @@
             margin: 30px 0;
         }
         th {
-            background: #667eea;
+            background: #4a1709;
             color: white;
             padding: 12px;
             text-align: left;
@@ -73,7 +73,7 @@
             color: #333;
         }
         .total-line {
-            background: #667eea !important;
+            background: #431502 !important;
             color: white !important;
             font-size: 18px;
             font-weight: bold;
@@ -105,10 +105,10 @@
 </head>
 <body>
     <div class="header">
-        <div class="company-name">🕰️ VINTAGE SHOP</div>
+        <div class="company-name">Nostalgia Collective</div>
         <div>Boutique d'Articles Vintage</div>
         <div style="margin-top: 10px; font-size: 12px; color: #6b7280;">
-            contact@vintageshop.com | +33 1 23 45 67 89
+            contact@nostalgia-collective.com | +33 1 23 45 67 89
         </div>
     </div>
 
@@ -205,8 +205,8 @@
 
     <div class="footer">
         <p><strong>Merci pour votre confiance !</strong></p>
-        <p>Vintage Shop - SIRET: 123 456 789 00010 - TVA: FR12345678901</p>
-        <p>123 Rue du Vintage, 75001 Paris, France</p>
+        <p>Nostalgia Collective - SIRET: 123 456 789 00010 - TVA: FR12345678901</p>
+        <p>123 Rue du Vintage, 75001 Fes, Maroc</p>
     </div>
 </body>
 </html>
