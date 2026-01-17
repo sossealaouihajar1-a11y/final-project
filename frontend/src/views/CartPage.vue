@@ -395,6 +395,9 @@
         </div>
       </div>
     </transition>
+
+    <!-- Footer -->
+    <Footer />
   </div>
 </template>
 
@@ -405,6 +408,7 @@ import { useCartStore } from '@/stores/cartStore'
 import cartService from '@/services/cartService'
 import shippingAddressService from '@/services/shippingAddressService'
 import Header from '@/components/Header.vue'
+import Footer from '@/components/Footer.vue'
 
 const router = useRouter()
 const cartStore = useCartStore()

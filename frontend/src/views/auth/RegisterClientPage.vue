@@ -1,134 +1,123 @@
 <template>
-  <div class="bg-white min-h-screen flex flex-col">
+  <div class="bg-[#f7f6f3] min-h-screen flex flex-col">
     <!-- Header -->
     <Header />
 
     <!-- ================= HERO ================= -->
-    <section class="bg-[#f2f1ed] border-b border-gray-200">
-      <div class="max-w-7xl mx-auto px-6 py-14">
-        <p class="uppercase tracking-[0.35em] text-xs text-gray-500 mb-4">
-          Inscription
-        </p>
-        <h1 class="text-4xl md:text-5xl font-serif text-gray-900 mb-4">
+    <section class="bg-[#e6dfd1] border-b border-gray-300">
+      <div class="max-w-6xl mx-auto px-6 py-12 text-center">
+        <h1 class="text-3xl md:text-4xl font-serif text-[#3b2f2f] mb-4">
           Créer un compte client
         </h1>
-        <p class="text-gray-600 max-w-2xl">
-          Rejoignez notre communauté et accédez à tous nos services.
+        <p class="text-gray-600 max-w-xl mx-auto text-sm">
+          Rejoignez notre communauté et accédez à tous nos services. Chaque inscription fait partie de notre collection intemporelle.
         </p>
       </div>
     </section>
 
     <!-- ================= CONTENT ================= -->
-    <main class="max-w-7xl mx-auto px-6 py-16 flex-grow">
-      <div class="w-full max-w-2xl mx-auto">
-        <!-- Succès -->
-        <div v-if="success" class="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-          <p class="text-sm text-green-800">✅ Inscription réussie ! Redirection...</p>
+    <main class="flex-grow flex items-center justify-center px-6 py-20">
+      <div class="w-full max-w-md">
+
+        <!-- Card -->
+        <div class="bg-[#fffaf5] border border-[#d1c4b1] rounded-2xl shadow-lg p-8 space-y-6">
+
+          <!-- Success Alert -->
+          <div v-if="success" class="flex items-center gap-3 p-4 rounded-lg border border-[#a6d5ba] bg-[#e0f4e9] text-[#556b2f] text-sm">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm-1-7l3-3-1.414-1.414L9 8.586 7.414 7 6 8.414l3 3z" clip-rule="evenodd" />
+            </svg>
+            <span>✅ Inscription réussie ! Redirection...</span>
+          </div>
+
+          <!-- Error Alert -->
+          <div v-if="authStore.error" class="flex items-start gap-3 p-4 rounded-lg border border-[#a6d5ba] bg-[#e0f4e9] text-[#556b2f] text-sm">
+            <svg class="w-5 h-5 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm-1-9V5h2v4h-2zm0 4h2v-2h-2v2z" clip-rule="evenodd" />
+            </svg>
+            <div>
+              {{ authStore.error }}
+              <div v-if="errors" class="mt-1 text-[#556b2f]">
+                <ul class="list-disc pl-5 space-y-1">
+                  <li v-for="(error, field) in errors" :key="field">
+                    {{ error[0] }}
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Form -->
+          <form @submit.prevent="handleRegister" class="space-y-4">
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="md:col-span-2">
+                <label class="block text-xs uppercase tracking-wider text-[#5a4a3a] mb-1">Nom complet *</label>
+                <input v-model="form.name" type="text" required placeholder="Ahmed Ben Ali"
+                       class="w-full px-4 py-3 rounded-lg border border-[#d1c4b1] bg-[#fffaf5]
+                              focus:outline-none focus:ring-2 focus:ring-[#556b2f] focus:border-transparent transition"/>
+              </div>
+
+              <div>
+                <label class="block text-xs uppercase tracking-wider text-[#5a4a3a] mb-1">Email *</label>
+                <input v-model="form.email" type="email" required placeholder="ahmed@example.com"
+                       class="w-full px-4 py-3 rounded-lg border border-[#d1c4b1] bg-[#fffaf5]
+                              focus:outline-none focus:ring-2 focus:ring-[#556b2f] focus:border-transparent transition"/>
+              </div>
+
+              <div>
+                <label class="block text-xs uppercase tracking-wider text-[#5a4a3a] mb-1">Téléphone</label>
+                <input v-model="form.phone" type="tel" placeholder="0612345678"
+                       class="w-full px-4 py-3 rounded-lg border border-[#d1c4b1] bg-[#fffaf5]
+                              focus:outline-none focus:ring-2 focus:ring-[#556b2f] focus:border-transparent transition"/>
+              </div>
+
+              <div>
+                <label class="block text-xs uppercase tracking-wider text-[#5a4a3a] mb-1">Ville</label>
+                <input v-model="form.city" type="text" placeholder="Casablanca"
+                       class="w-full px-4 py-3 rounded-lg border border-[#d1c4b1] bg-[#fffaf5]
+                              focus:outline-none focus:ring-2 focus:ring-[#556b2f] focus:border-transparent transition"/>
+              </div>
+
+              <div class="md:col-span-2">
+                <label class="block text-xs uppercase tracking-wider text-[#5a4a3a] mb-1">Adresse</label>
+                <input v-model="form.address" type="text" placeholder="123 Rue Mohammed V"
+                       class="w-full px-4 py-3 rounded-lg border border-[#d1c4b1] bg-[#fffaf5]
+                              focus:outline-none focus:ring-2 focus:ring-[#556b2f] focus:border-transparent transition"/>
+              </div>
+
+              <div>
+                <label class="block text-xs uppercase tracking-wider text-[#5a4a3a] mb-1">Mot de passe *</label>
+                <input v-model="form.password" type="password" required placeholder="••••••••"
+                       class="w-full px-4 py-3 rounded-lg border border-[#d1c4b1] bg-[#fffaf5]
+                              focus:outline-none focus:ring-2 focus:ring-[#556b2f] focus:border-transparent transition"/>
+              </div>
+
+              <div>
+                <label class="block text-xs uppercase tracking-wider text-[#5a4a3a] mb-1">Confirmer *</label>
+                <input v-model="form.password_confirmation" type="password" required placeholder="••••••••"
+                       class="w-full px-4 py-3 rounded-lg border border-[#d1c4b1] bg-[#fffaf5]
+                              focus:outline-none focus:ring-2 focus:ring-[#556b2f] focus:border-transparent transition"/>
+              </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" :disabled="authStore.loading || success"
+                    class="w-full py-3 rounded-lg bg-[#3b2f2f] text-[#fffaf5] font-medium
+                           hover:bg-[#5a4a3a] transition-all
+                           focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3b2f2f]
+                           disabled:opacity-50">
+              {{ authStore.loading ? 'Inscription...' : "S'inscrire" }}
+            </button>
+
+            <div class="text-center mt-4 text-sm">
+              <router-link to="/login" class="text-[#3b2f2f] hover:text-[#5a4a3a] transition">
+                ← Retour à la connexion
+              </router-link>
+            </div>
+
+          </form>
         </div>
-
-        <!-- Erreur -->
-        <div v-if="authStore.error" class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-          <p class="text-sm text-red-800">{{ authStore.error }}</p>
-          <div v-if="errors" class="mt-2 text-sm text-red-700">
-            <ul class="list-disc pl-5 space-y-1">
-              <li v-for="(error, field) in errors" :key="field">
-                {{ error[0] }}
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <form @submit.prevent="handleRegister" class="space-y-6">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="md:col-span-2">
-              <label class="block text-sm font-medium text-gray-700 mb-2">Nom complet *</label>
-              <input
-                v-model="form.name"
-                type="text"
-                required
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b1c3d] focus:border-transparent"
-                placeholder="Ahmed Ben Ali"
-              />
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Email *</label>
-              <input
-                v-model="form.email"
-                type="email"
-                required
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b1c3d] focus:border-transparent"
-                placeholder="ahmed@example.com"
-              />
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Téléphone</label>
-              <input
-                v-model="form.phone"
-                type="tel"
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b1c3d] focus:border-transparent"
-                placeholder="0612345678"
-              />
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Ville</label>
-              <input
-                v-model="form.city"
-                type="text"
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b1c3d] focus:border-transparent"
-                placeholder="Casablanca"
-              />
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Adresse</label>
-              <input
-                v-model="form.address"
-                type="text"
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b1c3d] focus:border-transparent"
-                placeholder="123 Rue Mohammed V"
-              />
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Mot de passe *</label>
-              <input
-                v-model="form.password"
-                type="password"
-                required
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b1c3d] focus:border-transparent"
-                placeholder="••••••••"
-              />
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Confirmer *</label>
-              <input
-                v-model="form.password_confirmation"
-                type="password"
-                required
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b1c3d] focus:border-transparent"
-                placeholder="••••••••"
-              />
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            :disabled="authStore.loading || success"
-            class="w-full py-3 px-4 border border-transparent rounded-lg text-white bg-[#8b1c3d] hover:bg-[#5a4a3a] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8b1c3d] disabled:opacity-50 transition-all font-medium"
-          >
-            {{ authStore.loading ? 'Inscription...' : "S'inscrire" }}
-          </button>
-
-          <div class="text-center">
-            <router-link to="/login" class="text-sm text-[#8b1c3d] hover:text-[#5a4a3a]">
-              ← Retour à la connexion
-            </router-link>
-          </div>
-        </form>
       </div>
     </main>
 
@@ -136,6 +125,9 @@
     <Footer />
   </div>
 </template>
+
+
+
 
 <script setup>
 import { reactive, ref } from 'vue'

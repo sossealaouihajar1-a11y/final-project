@@ -11,7 +11,7 @@
         <!-- LOGO / BRAND -->
         <div>
           <h3 class="font-serif text-2xl tracking-widest text-white mb-6">
-            Vintage Shop
+            Nostalgia Collective
           </h3>
           <p class="text-sm leading-relaxed text-gray-400">
             Curated vintage pieces for timeless interiors and
@@ -75,7 +75,7 @@
       <div class="mt-20 pt-8 border-t border-gray-600 flex flex-col md:flex-row items-center justify-between text-xs text-gray-500">
 
         <p>
-          © 2025 Vintage Shop. All rights reserved.
+          © 2025 Nostalgia Collective. All rights reserved.
         </p>
 
        

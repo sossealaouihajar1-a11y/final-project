@@ -193,7 +193,36 @@
         </router-link>
       </div>
     </section>
+<!--  -->
+  <section class="py-24 bg-[#e6e7e4]">
+      <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
+        <div>
+          <p class="uppercase tracking-[0.3em] text-sm text-gray-600 mb-4">
+            Inspiration
+          </p>
+          <h3 class="text-4xl font-serif mb-6 text-black">
+            #VintageFinds
+          </h3>
+          <p class="text-gray-700 mb-8 leading-relaxed">
+            Une sélection de pièces uniques et intemporelles, pensées pour les amateurs
+            de vintage authentique et d'élégance durable.
+          </p>
 
+          <a
+            href="#"
+            class="inline-block border border-black px-8 py-3 uppercase tracking-wider text-black-sm hover:bg-black hover:text-white transition"
+          >
+            Follow Us
+          </a>
+        </div>
+
+        <div class="grid grid-cols-3 gap-4">
+          <img src="/images/inspo1.png" class="h-40 object-cover w-full" />
+          <img src="/images/inspo2.jpeg" class="h-40 object-cover w-full" />
+          <img src="/images/inspo3.jpg" class="h-40 object-cover w-full" />
+        </div>
+      </div>
+    </section>
     <Footer />
   </div>
 </template>

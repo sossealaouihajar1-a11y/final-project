@@ -11,10 +11,13 @@
           Shop
         </p>
         <h1 class="text-4xl md:text-5xl font-serif text-gray-900 mb-4">
-          Vintage Collection
+          {{ selectedCategoryName || 'Vintage Collection' }}
         </h1>
         <p class="text-gray-600 max-w-2xl">
-          Discover timeless vintage pieces curated with care.
+          {{ selectedCategoryName 
+            ? `Discover our curated selection of ${selectedCategoryName.toLowerCase()} pieces.`
+            : 'Discover timeless vintage pieces curated with care.'
+          }}
         </p>
       </div>
     </section>
@@ -78,7 +81,7 @@
                     :key="cat"
                     :value="cat"
                   >
-                    {{ cat }}
+                    {{ formatCategoryName(cat) }}
                   </option>
                 </select>
                 <svg class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8b7355] pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -361,14 +364,15 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, computed, onMounted, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
 import productService from '@/services/productService'
 import Header from '@/components/Header.vue'
 import Footer from '@/components/Footer.vue'
 
 const router = useRouter()
+const route = useRoute()
 const authStore = useAuthStore()
 
 // Data
@@ -423,6 +427,25 @@ const visiblePages = computed(() => {
   
   return range.filter((v, i, a) => a.indexOf(v) === i)
 })
+
+// ⭐ Nouveau: Computed pour le nom de la catégorie sélectionnée
+const selectedCategoryName = computed(() => {
+  if (!filters.value.category) return null
+  return formatCategoryName(filters.value.category)
+})
+
+// ⭐ Nouveau: Fonction pour formater les noms de catégories
+const formatCategoryName = (category) => {
+  const translations = {
+    'mode': 'Mode',
+    'mobilier': 'Mobilier',
+    'accessoires': 'Accessoires',
+    'electronique_vintage': 'Électronique Vintage',
+    'art': 'Art',
+    'autre': 'Autre'
+  }
+  return translations[category] || category
+}
 
 // Navigation produit
 const encodeTitle = (title) =>
@@ -491,8 +514,10 @@ const loadProducts = async () => {
         total: res.total
       }
     }
+    
+    console.log('✅ Produits chargés:', products.value.length)
   } catch (e) {
-    console.error('Error loading products:', e)
+    console.error('❌ Error loading products:', e)
   } finally {
     loading.value = false
   }
@@ -504,8 +529,9 @@ const loadCategories = async () => {
     const res = await productService.getCategories()
     // Le service retourne déjà response.data
     categories.value = res || []
+    console.log('✅ Catégories chargées:', categories.value)
   } catch (e) {
-    console.error('Error loading categories:', e)
+    console.error('❌ Error loading categories:', e)
   }
 }
 
@@ -586,10 +612,38 @@ const addToCart = (product) => {
   alert(`${product.title} added to cart!`)
 }
 
+// ⭐ IMPORTANT: Watcher pour détecter les changements de catégorie dans l'URL
+watch(
+  () => route.query.category,
+  (newCategory) => {
+    console.log('🔄 Catégorie détectée dans l\'URL:', newCategory)
+    
+    // Mettre à jour le filtre avec la catégorie de l'URL
+    if (newCategory) {
+      filters.value.category = newCategory
+    } else {
+      filters.value.category = ''
+    }
+    
+    // Recharger les produits
+    loadProducts()
+  },
+  { immediate: false } // Ne pas exécuter immédiatement car onMounted s'en charge
+)
+
 // Lifecycle
 onMounted(() => {
-  loadProducts()
+  // Charger les catégories d'abord
   loadCategories()
+  
+  // Si une catégorie est présente dans l'URL, la définir dans les filtres
+  if (route.query.category) {
+    console.log('📍 Catégorie trouvée dans l\'URL au montage:', route.query.category)
+    filters.value.category = route.query.category
+  }
+  
+  // Charger les produits (avec ou sans filtre de catégorie)
+  loadProducts()
 })
 </script>
 
