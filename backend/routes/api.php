@@ -27,6 +27,7 @@ Route::prefix('auth')->group(function () {
     Route::post('/register/vendor', [AuthController::class, 'registerVendor']);
     Route::post('/login', [AuthController::class, 'login']);
 });
+
 Route::get('/products/{productId}/reviews', [ReviewController::class, 'index']);
 
 // Routes protégées (authentification requise)
@@ -167,9 +168,12 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::prefix('products')->group(function () {
     Route::get('/', [ProductController::class, 'index']);
     Route::get('/categories', [ProductController::class, 'categories']);
+    Route::get('/conditions', [ProductController::class, 'conditions']);
     Route::get('/stats', [ProductController::class, 'stats']);
     Route::get('/promotions', [ProductController::class, 'promotions']);
     Route::get('/category/{category}', [ProductController::class, 'byCategory']);
     Route::get('/{id}', [ProductController::class, 'show']);
+    
 });
+
 

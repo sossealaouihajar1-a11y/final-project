@@ -378,11 +378,10 @@ const authStore = useAuthStore()
 // Data
 const products = ref([])
 const categories = ref([])
+const conditions = ref([]) // ⭐ Maintenant une ref réactive au lieu d'une constante
 const loading = ref(false)
 const pagination = ref(null)
 const favorites = ref(JSON.parse(localStorage.getItem('favorites') || '[]'))
-
-const conditions = ['Excellent', 'Very Good', 'Good', 'Fair']
 
 // Filtres
 const filters = ref({
@@ -428,13 +427,13 @@ const visiblePages = computed(() => {
   return range.filter((v, i, a) => a.indexOf(v) === i)
 })
 
-// ⭐ Nouveau: Computed pour le nom de la catégorie sélectionnée
+// ⭐ Computed pour le nom de la catégorie sélectionnée
 const selectedCategoryName = computed(() => {
   if (!filters.value.category) return null
   return formatCategoryName(filters.value.category)
 })
 
-// ⭐ Nouveau: Fonction pour formater les noms de catégories
+// ⭐ Fonction pour formater les noms de catégories
 const formatCategoryName = (category) => {
   const translations = {
     'mode': 'Mode',
@@ -527,11 +526,23 @@ const loadProducts = async () => {
 const loadCategories = async () => {
   try {
     const res = await productService.getCategories()
-    // Le service retourne déjà response.data
     categories.value = res || []
     console.log('✅ Catégories chargées:', categories.value)
   } catch (e) {
     console.error('❌ Error loading categories:', e)
+  }
+}
+
+// ⭐ NOUVEAU: Chargement conditions
+const loadConditions = async () => {
+  try {
+    const res = await productService.getConditions()
+    conditions.value = res || []
+    console.log('✅ Conditions chargées:', conditions.value)
+  } catch (e) {
+    console.error('❌ Error loading conditions:', e)
+    // Fallback sur les valeurs par défaut en cas d'erreur
+    conditions.value = ['Excellent', 'Very Good', 'Good', 'Fair']
   }
 }
 
@@ -590,7 +601,6 @@ const toggleFavorite = (product) => {
 
 // Add to cart (à adapter selon votre logique)
 const addToCart = (product) => {
-  // Exemple basique - à remplacer par votre logique de panier
   const cart = JSON.parse(localStorage.getItem('cart') || '[]')
   const existingItem = cart.find(item => item.id === product.id)
   
@@ -633,8 +643,9 @@ watch(
 
 // Lifecycle
 onMounted(() => {
-  // Charger les catégories d'abord
+  // Charger les métadonnées
   loadCategories()
+  loadConditions() // ⭐ Ajouter cette ligne
   
   // Si une catégorie est présente dans l'URL, la définir dans les filtres
   if (route.query.category) {
