@@ -78,7 +78,7 @@ class ProductController extends Controller
         }
 
         // Pagination
-        $perPage = $request->get('per_page', 12);
+        $perPage = $request->get('per_page', 100);
         $products = $query->paginate($perPage);
 
         return response()->json($products);
@@ -129,7 +129,7 @@ class ProductController extends Controller
                         return trim($value, "'");
                     }, explode(',', $matches[1]));
                     
-                    \Log::info('✅ Catégories trouvées:', $categories);
+                    \Log::info(' Catégories trouvées:', $categories);
                     
                     return response()->json($categories);
                 }

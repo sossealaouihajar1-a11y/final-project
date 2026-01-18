@@ -255,19 +255,20 @@ const router = createRouter({
     {
       path: '/cart',
       name: 'cart',
-      component: () => import('@/views/CartPage.vue'),
+      component: () => import('../views/CartPage.vue'),
       meta: { requiresAuth: true, role: 'client' }
     },
+   
     {
       path: '/orders',
       name: 'orders',
-      component: () => import('@/views/OrdersPage.vue'),
+      component: () => import('../views/OrdersPage.vue'),
       meta: { requiresAuth: true, role: 'client' }
     },
     {
       path: '/favorites',
       name: 'favorites',
-      component: () => import('@/views/FavoritesPage.vue'),
+      component: () => import('../views/FavoritesPage.vue'),
       meta: { requiresAuth: true, role: 'client' }
     },
     {

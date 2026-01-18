@@ -492,9 +492,11 @@ const loadProducts = async () => {
   }
 }
 
-onMounted(() => {
-  loadCategories()
-  loadProducts()
+onMounted(async () => {
+  await Promise.all([
+    loadCategories(),
+    loadProducts()
+  ])
 })
 
 onUnmounted(() => {
