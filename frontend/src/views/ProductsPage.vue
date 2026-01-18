@@ -378,7 +378,7 @@ const authStore = useAuthStore()
 // Data
 const products = ref([])
 const categories = ref([])
-const conditions = ref([]) // ⭐ Maintenant une ref réactive au lieu d'une constante
+const conditions = ref([]) 
 const loading = ref(false)
 const pagination = ref(null)
 const favorites = ref(JSON.parse(localStorage.getItem('favorites') || '[]'))
@@ -427,13 +427,13 @@ const visiblePages = computed(() => {
   return range.filter((v, i, a) => a.indexOf(v) === i)
 })
 
-// ⭐ Computed pour le nom de la catégorie sélectionnée
+// Computed pour le nom de la catégorie sélectionnée
 const selectedCategoryName = computed(() => {
   if (!filters.value.category) return null
   return formatCategoryName(filters.value.category)
 })
 
-// ⭐ Fonction pour formater les noms de catégories
+// Fonction pour formater les noms de catégories
 const formatCategoryName = (category) => {
   const translations = {
     'mode': 'Mode',
@@ -498,7 +498,7 @@ const loadProducts = async () => {
       params.page = filters.value.page
     }
     
-    console.log('🔍 Params envoyés à l\'API:', params)
+    console.log('Params envoyés à l\'API:', params)
     
     const res = await productService.getAllProducts(params)
     
@@ -643,13 +643,13 @@ watch(
 
 // Lifecycle
 onMounted(() => {
-  // Charger les métadonnées
+  
   loadCategories()
-  loadConditions() // ⭐ Ajouter cette ligne
+  loadConditions() 
   
   // Si une catégorie est présente dans l'URL, la définir dans les filtres
   if (route.query.category) {
-    console.log('📍 Catégorie trouvée dans l\'URL au montage:', route.query.category)
+    console.log('Catégorie trouvée dans l\'URL au montage:', route.query.category)
     filters.value.category = route.query.category
   }
   
@@ -658,6 +658,4 @@ onMounted(() => {
 })
 </script>
 
-<style scoped>
-/* Animations personnalisées si nécessaire */
-</style>
+ 
