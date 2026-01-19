@@ -505,7 +505,7 @@ const loadProducts = async () => {
     // Le service retourne déjà response.data
     products.value = res.data || res || []
     
-    // Gestion de la pagination
+    // Gestion de la pagination 
     if (res.current_page) {
       pagination.value = {
         current_page: res.current_page,

@@ -542,6 +542,6 @@ onUnmounted(() => {
 
 /* Smooth scrolling */
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: smooth; 
 }
 </style>
