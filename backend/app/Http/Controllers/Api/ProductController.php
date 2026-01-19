@@ -16,7 +16,7 @@ class ProductController extends Controller
     {
         $query = VintageProduct::with('vendeur')
             ->active()
-            ->inStock()
+           
             ->whereHas('vendeur', function ($q) {
                 $q->where('role', 'vendeur')
                   ->where('vendor_status', 'approved');
@@ -32,7 +32,7 @@ class ProductController extends Controller
             $query->byCondition($request->condition);
         }
 
-        // ✅ FILTRAGE PAR PRIX CORRIGÉ - Accepte min OU max indépendamment
+        //  FILTRAGE PAR PRIX 
         if ($request->filled('min_price') || $request->filled('max_price')) {
             $minPrice = $request->min_price;
             $maxPrice = $request->max_price;

@@ -4,23 +4,66 @@
     <!-- Header -->
     <Header />
 
-    <!-- ================= HERO ================= -->
-    <section class="bg-[#f2f1ed] border-b border-gray-200">
-      <div class="max-w-7xl mx-auto px-6 py-14">
-        <p class="uppercase tracking-[0.35em] text-xs text-gray-500 mb-4">
-          Shop
-        </p>
-        <h1 class="text-4xl md:text-5xl font-serif text-gray-900 mb-4">
-          {{ selectedCategoryName || 'Vintage Collection' }}
-        </h1>
-        <p class="text-gray-600 max-w-2xl">
-          {{ selectedCategoryName 
-            ? `Discover our curated selection of ${selectedCategoryName.toLowerCase()} pieces.`
-            : 'Discover timeless vintage pieces curated with care.'
-          }}
-        </p>
-      </div>
-    </section>
+   <!-- ================= HERO ================= -->
+<!-- ================= HERO ================= -->
+<section class="relative overflow-hidden border-b border-[#d4c5b0]">
+  
+  <!-- Image de fond -->
+  <div class="absolute inset-0">
+    <img
+      src="/images/hero-vintage.png"
+      alt="Vintage Collection"
+      class="w-full h-full object-cover"
+    />
+    <div class="absolute inset-0 bg-[#f2f1ed]/80 backdrop-blur-sm"></div>
+  </div>
+
+  <!-- Contenu -->
+  <div class="relative max-w-7xl mx-auto px-6 py-12 md:py-16">
+    
+    <!-- Breadcrumb -->
+    <nav class="mb-4 text-xs uppercase tracking-widest text-[#8b7355]">
+    
+      <span v-if="selectedCategoryName" class="mx-2">/</span>
+      <span v-if="selectedCategoryName" class="text-[#5a4a3a] font-semibold">
+        {{ selectedCategoryName }}
+      </span>
+    </nav>
+
+    <!-- Titre -->
+    <h1 class="font-serif text-3xl md:text-5xl text-[#3e3226] mb-4 leading-tight max-w-3xl">
+      {{ selectedCategoryName || 'Curated Vintage Collection' }}
+    </h1>
+
+    <!-- Description -->
+    <p class="text-[#5a4a3a] text-base md:text-lg max-w-2xl mb-6">
+      {{ selectedCategoryName 
+        ? `Explore authentic ${selectedCategoryName.toLowerCase()} pieces, carefully selected for their character, history, and timeless appeal.`
+        : 'Discover rare and authentic vintage pieces, curated with passion and attention to detail.'
+      }}
+    </p>
+
+    <!-- CTA -->
+    <div class="flex flex-wrap gap-4">
+      <button
+        @click="resetFilters"
+        class="px-6 py-3 bg-[#5a4a3a] text-[#faf9f6] text-sm uppercase tracking-wider hover:bg-[#3e3226] transition-colors"
+      >
+        View All Products
+      </button>
+
+      <button
+        @click="filters.with_promotion = true; applyFilters()"
+        class="px-6 py-3 border border-[#5a4a3a] text-[#5a4a3a] text-sm uppercase tracking-wider hover:bg-[#5a4a3a] hover:text-[#faf9f6] transition-colors"
+      >
+        On Sale
+      </button>
+    </div>
+
+  </div>
+</section>
+
+
 
     <!-- ================= CONTENT ================= -->
     <main class="max-w-7xl mx-auto px-6 py-16 flex-grow">
@@ -576,6 +619,11 @@ const debouncedSearch = () => {
   }, 500)
 }
 
+// const showNotification = (message, type = 'success') => {
+//   notification.value = { show: true, message, type }
+//   setTimeout(() => (notification.value.show = false), 3000)
+// }
+
 // Pagination
 const goToPage = (page) => {
   if (page === '...') return
@@ -619,7 +667,7 @@ const addToCart = (product) => {
   localStorage.setItem('cart', JSON.stringify(cart))
   
   // Notification (optionnel - vous pouvez utiliser une lib comme vue-toastification)
-  alert(`${product.title} added to cart!`)
+  showNotification('Product added to cart')
 }
 
 // ⭐ IMPORTANT: Watcher pour détecter les changements de catégorie dans l'URL
