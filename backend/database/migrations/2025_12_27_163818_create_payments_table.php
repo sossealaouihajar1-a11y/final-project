@@ -22,6 +22,7 @@ return new class extends Migration
             $table->timestamp('paid_at')->nullable();
             $table->text('gateway_response')->nullable();
             $table->string('failure_reason')->nullable();
+            $table->timestamps();
             $table->softDeletes();
             
             // Foreign keys
