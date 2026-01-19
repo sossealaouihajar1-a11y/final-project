@@ -194,205 +194,24 @@
               <span class="text-indigo-600">{{ totalPrice.toFixed(2) }}€</span>
             </div>
 
-            <!-- Adresse de livraison enregistrée -->
-            <div v-if="hasShippingAddress" class="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-              <h3 class="font-semibold text-gray-900 mb-2 flex items-center space-x-2">
-                <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
-                </svg>
-                <span>Adresse de livraison</span>
-              </h3>
-              <p class="text-sm text-gray-700">
-                {{ shippingAddress.full_name }}<br>
-                {{ shippingAddress.address }}<br>
-                {{ shippingAddress.postal_code }} {{ shippingAddress.city }}<br>
-                {{ shippingAddress.country }}<br>
-                Tél: {{ shippingAddress.phone }}
-              </p>
-              <router-link to="/client/dashboard" class="text-xs text-blue-600 hover:text-blue-700 mt-2 inline-block">
-                Modifier l'adresse →
-              </router-link>
-            </div>
-
-            <!-- Message si pas d'adresse -->
-            <div v-else class="mb-6 p-4 bg-orange-50 border border-orange-200 rounded-lg">
-              <div class="flex items-start space-x-3">
-                <svg class="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                </svg>
-                <div>
-                  <p class="text-sm font-semibold text-orange-800">Adresse de livraison manquante</p>
-                  <p class="text-xs text-orange-700 mt-1">Vous devez enregistrer une adresse avant de commander.</p>
-                  <router-link to="/client/dashboard" class="inline-block mt-2 text-xs text-orange-600 hover:text-orange-700 font-medium underline">
-                    Ajouter une adresse →
-                  </router-link>
-                </div>
-              </div>
-            </div>
-
-            <!-- ÉTAPE 1: Sélection de la méthode de paiement (AVANT confirmation) -->
-            <div v-if="!orderConfirmed && hasShippingAddress" class="mb-6">
-              <h3 class="text-sm font-semibold text-gray-900 mb-3">Méthode de paiement</h3>
-              <div class="space-y-3">
-                <!-- Cash on Delivery -->
-                <label class="flex items-start p-4 border-2 rounded-lg cursor-pointer transition" :class="paymentMethod === 'cash_on_delivery' ? 'border-green-600 bg-green-50' : 'border-gray-200 hover:border-gray-300'">
-                  <input
-                    type="radio"
-                    v-model="paymentMethod"
-                    value="cash_on_delivery"
-                    class="mt-1 h-4 w-4 text-green-600 focus:ring-green-500"
-                  />
-                  <div class="ml-3 flex-1">
-                    <div class="flex items-center space-x-2">
-                      <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                      </svg>
-                      <span class="font-medium text-gray-900">Paiement à la livraison</span>
-                    </div>
-                    <p class="text-xs text-gray-500 mt-1">Payez en espèces lors de la réception</p>
-                  </div>
-                </label>
-
-                <!-- Stripe -->
-                <label class="flex items-start p-4 border-2 rounded-lg cursor-pointer transition" :class="paymentMethod === 'stripe' ? 'border-indigo-600 bg-indigo-50' : 'border-gray-200 hover:border-gray-300'">
-                  <input
-                    type="radio"
-                    v-model="paymentMethod"
-                    value="stripe"
-                    class="mt-1 h-4 w-4 text-indigo-600 focus:ring-indigo-500"
-                  />
-                  <div class="ml-3 flex-1">
-                    <div class="flex items-center space-x-2">
-                      <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                      </svg>
-                      <span class="font-medium text-gray-900">Carte bancaire (Stripe)</span>
-                    </div>
-                    <p class="text-xs text-gray-500 mt-1">Paiement en ligne sécurisé</p>
-                  </div>
-                </label>
-              </div>
-            </div>
-
-            <!-- ÉTAPE 1: Bouton Confirmer (AVANT confirmation) -->
-            <div v-if="!orderConfirmed">
-              <button
-                @click="proceedToCheckout"
-                :disabled="!hasShippingAddress || processing || !paymentMethod"
-                class="w-full px-6 py-4 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl"
-              >
-                <svg v-if="!processing" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <svg v-else class="animate-spin h-6 w-6" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                <span>{{ processing ? 'Traitement...' : 'Confirmer la commande' }}</span>
-              </button>
-              <p class="text-xs text-gray-500 text-center mt-3">
-                En confirmant, vous acceptez nos conditions générales de vente
-              </p>
-            </div>
-
-            <!-- ÉTAPE 2: Après confirmation -->
-            <div v-else>
-              <!-- Si Cash on Delivery: Message de succès -->
-              <div v-if="confirmedOrder?.payment_method === 'cash_on_delivery'" class="space-y-4">
-                <div class="p-4 bg-green-50 border-2 border-green-500 rounded-xl">
-                  <div class="flex items-center space-x-3 mb-3">
-                    <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
-                      <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                      </svg>
-                    </div>
-                    <div>
-                      <p class="font-bold text-green-800 text-lg">Commande confirmée !</p>
-                      <p class="text-sm text-green-700">Paiement à la livraison</p>
-                    </div>
-                  </div>
-                  <p class="text-sm text-green-700 mb-2">
-                    Votre commande a été enregistrée avec succès.
-                  </p>
-                  <p class="text-sm text-green-700">
-                    💰 Montant à régler à la livraison: <strong>{{ confirmedOrder.total_price.toFixed(2) }}€</strong>
-                  </p>
-                </div>
-                <router-link to="/client/dashboard" class="block w-full px-6 py-4 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition text-center">
-                  Voir mes commandes
-                </router-link>
-              </div>
-
-              <!-- Si Stripe: Bouton Payer -->
-              <div v-else-if="confirmedOrder?.payment_method === 'stripe'" class="space-y-4">
-                <div class="p-4 bg-blue-50 border-2 border-blue-500 rounded-xl">
-                  <div class="flex items-center space-x-3 mb-3">
-                    <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
-                      <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
-                        <path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd" />
-                      </svg>
-                    </div>
-                    <div>
-                      <p class="font-bold text-blue-800 text-lg">Commande confirmée !</p>
-                      <p class="text-sm text-blue-700">En attente de paiement</p>
-                    </div>
-                  </div>
-                  <p class="text-sm text-blue-700 mb-2">
-                    Votre commande a été enregistrée. Veuillez procéder au paiement.
-                  </p>
-                  <p class="text-sm text-blue-700">
-                    💳 Montant à payer: <strong>{{ confirmedOrder.total_price.toFixed(2) }}€</strong>
-                  </p>
-                </div>
-                <button
-                  @click="proceedToPayment"
-                  :disabled="paymentProcessing"
-                  class="w-full px-6 py-4 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition disabled:opacity-50 flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl"
-                >
-                  <svg v-if="!paymentProcessing" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                  </svg>
-                  <svg v-else class="animate-spin h-6 w-6" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  <span>{{ paymentProcessing ? 'Traitement...' : 'Procéder au paiement' }}</span>
-                </button>
-              </div>
-            </div>
-
-            <!-- Informations complémentaires -->
-            <div v-if="!orderConfirmed" class="mt-6 pt-6 border-t space-y-4">
-              <div class="flex items-start space-x-3 text-sm text-gray-600">
-                <svg class="w-5 h-5 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                </svg>
-                <div>
-                  <div class="font-semibold text-gray-900 mb-1">Paiement sécurisé</div>
-                  <p>Vos données sont protégées</p>
-                </div>
-              </div>
-              <div class="flex items-start space-x-3 text-sm text-gray-600">
-                <svg class="w-5 h-5 text-indigo-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
-                  <path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1v-5a1 1 0 00-.293-.707l-2-2A1 1 0 0015 7h-1z" />
-                </svg>
-                <div>
-                  <div class="font-semibold text-gray-900 mb-1">Livraison gratuite</div>
-                  <p>À partir de 400€</p>
-                </div>
-              </div>
-              <div class="flex items-start space-x-3 text-sm text-gray-600">
-                <svg class="w-5 h-5 text-indigo-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
-                </svg>
-                <div>
-                  <div class="font-semibold text-gray-900 mb-1">Livraison rapide</div>
-                  <p>Sous 3 à 5 jours ouvrés</p>
-                </div>
-              </div>
-            </div>
+            <!-- Checkout Button -->
+            <button
+              @click="proceedToCheckout"
+              :disabled="cartStore.isEmpty || processing"
+              class="w-full px-6 py-4 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl"
+            >
+              <svg v-if="!processing" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <svg v-else class="animate-spin h-6 w-6" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <span>{{ processing ? 'Redirection...' : 'Procéder au checkout' }}</span>
+            </button>
+            <p class="text-xs text-gray-500 text-center mt-3">
+              Vous pourrez enregistrer votre adresse et choisir votre méthode de paiement sur la page suivante
+            </p>
           </div>
         </div>
       </div>
@@ -426,18 +245,11 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCartStore } from '@/stores/cartStore'
-import cartService from '@/services/cartService'
-import shippingAddressService from '@/services/shippingAddressService'
 
 const router = useRouter()
 const cartStore = useCartStore()
 
 const processing = ref(false)
-const shippingAddress = ref(null)
-const paymentMethod = ref('cash_on_delivery')
-const orderConfirmed = ref(false)
-const confirmedOrder = ref(null)
-const paymentProcessing = ref(false)
 
 const notification = ref({
   show: false,
@@ -445,13 +257,7 @@ const notification = ref({
   type: 'success'
 })
 
-// Computed property pour vérifier si une adresse existe
-const hasShippingAddress = computed(() => {
-  return shippingAddress.value !== null && 
-         shippingAddress.value !== undefined && 
-         typeof shippingAddress.value === 'object' &&
-         Object.keys(shippingAddress.value).length > 0
-})
+// Removed: hasShippingAddress - no longer needed in cart
 
 // Calculs
 const subtotal = computed(() => {
@@ -511,68 +317,19 @@ const decrementQuantity = (productId) => {
 }
 
 const proceedToCheckout = async () => {
-  console.log('🔍 === DÉBUT VÉRIFICATION CHECKOUT ===')
-  console.log('Panier vide?', cartStore.isEmpty)
-  console.log('Méthode de paiement:', paymentMethod.value)
-  console.log('Adresse existe?', hasShippingAddress.value)
-  console.log('Adresse complète:', shippingAddress.value)
-  
-  // Vérification 1: Panier
   if (cartStore.isEmpty) {
     showNotification('Votre panier est vide', 'error')
     return
   }
 
-  // Vérification 2: Méthode de paiement
-  if (!paymentMethod.value) {
-    showNotification('Veuillez sélectionner une méthode de paiement', 'error')
-    return
-  }
-
-  // Vérification 3: Adresse de livraison
-  if (!hasShippingAddress.value) {
-    console.log('❌ Pas d\'adresse - redirection vers dashboard')
-    showNotification('Veuillez enregistrer une adresse de livraison dans votre compte', 'error')
-    setTimeout(() => {
-      router.push('/client/dashboard')
-    }, 2000)
-    return
-  }
-
-  console.log('✅ Toutes les vérifications passées - Création de la commande')
   processing.value = true
-
+  
   try {
-    const items = cartStore.items.map(item => ({
-      product_id: item.id,
-      quantity: item.quantity
-    }))
-
-    console.log('📦 Items envoyés:', items)
-    console.log('💳 Méthode de paiement:', paymentMethod.value)
-
-    const response = await cartService.checkout(items, paymentMethod.value)
-
-    console.log('✅ Réponse du serveur:', response)
-
-    // Sauvegarder la commande confirmée
-    confirmedOrder.value = response.order
-
-    // Marquer comme confirmé
-    orderConfirmed.value = true
-
-    // Vider le panier local
-    cartStore.clearCart()
-
-    showNotification('Commande créée avec succès !', 'success')
-
+    // Rediriger vers la page de checkout
+    router.push('/checkout')
   } catch (error) {
-    console.error('❌ Erreur lors de la commande:', error)
-    console.error('Détails de l\'erreur:', error.response?.data)
-    showNotification(
-      error.response?.data?.message || 'Erreur lors de la création de la commande',
-      'error'
-    )
+    console.error('Erreur:', error)
+    showNotification('Erreur lors de la redirection', 'error')
   } finally {
     processing.value = false
   }
@@ -598,12 +355,8 @@ const proceedToPayment = async () => {
   }
 }
 
-onMounted(async () => {
-  console.log('🚀 Component monté - Chargement de l\'adresse')
-  await loadShippingAddress()
-  console.log('📊 État final après chargement:')
-  console.log('  - hasShippingAddress:', hasShippingAddress.value)
-  console.log('  - shippingAddress:', shippingAddress.value)
+onMounted(() => {
+  // Component ready
 })
 </script>
 

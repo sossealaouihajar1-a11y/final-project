@@ -14,7 +14,8 @@ use App\Http\Controllers\Api\Vendor\ProductController as VendorProductController
 use App\Http\Controllers\Api\Vendor\ClientController as VendorClientController;
 use App\Http\Controllers\Api\Vendor\OrderController as VendorOrderController;
 use App\Http\Controllers\Api\Vendor\StockController as VendorStockController;
-use App\Http\Controllers\Api\ReviewController;  
+use App\Http\Controllers\Api\ReviewController;
+use App\Http\Controllers\Api\PaymentController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -25,6 +26,9 @@ Route::prefix('auth')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
 });
 Route::get('/products/{productId}/reviews', [ReviewController::class, 'index']);
+
+// Webhook Stripe
+Route::post('/payments/webhook', [PaymentController::class, 'handleWebhook']);
 
 // Routes protégées (authentification requise)
 Route::middleware('auth:sanctum')->group(function () {
@@ -52,6 +56,13 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Routes Panier & Commandes
     Route::post('/cart/checkout', [CartController::class, 'checkout']);
+    
+    // Routes Paiements
+    Route::prefix('payments')->group(function () {
+        Route::post('/create-intent', [PaymentController::class, 'createIntent']);
+        Route::post('/confirm', [PaymentController::class, 'confirmPayment']);
+        Route::get('/{paymentIntentId}/status', [PaymentController::class, 'getStatus']);
+    });
     
     Route::prefix('orders')->group(function () {
         Route::get('/', [OrderController::class, 'index']);
