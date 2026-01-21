@@ -132,7 +132,7 @@
             
             <div style="margin-top: 30px; padding-top: 20px; border-top: 2px solid #e5e7eb; text-align: center; font-size: 12px; color: #6b7280;">
                 <p>Cet email a été envoyé automatiquement, merci de ne pas y répondre.</p>
-                <p>Vintage Shop - 123 Rue du Vintage, 75001 Paris, France</p>
+                <p>Nostalgia Collective - 123 Rue du Vintage, 75001 Fes, Maroc</p>
             </div>
         </div>
     </div>
