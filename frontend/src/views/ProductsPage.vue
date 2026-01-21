@@ -322,8 +322,9 @@
                     
                     <!-- Bouton Favoris -->
                     <button
-                      @click.stop="toggleFavorite(product)"
-                      class="bg-[#faf9f6] text-[#5a4a3a] w-10 h-10 flex items-center justify-center hover:bg-[#5a4a3a] hover:text-[#faf9f6] transition-colors duration-300 border border-[#d4c5b0]"
+                      @click.stop="handleToggleFavorite(product)"
+                      :disabled="favoritesLoading"
+                      class="bg-[#faf9f6] text-[#5a4a3a] w-10 h-10 flex items-center justify-center hover:bg-[#5a4a3a] hover:text-[#faf9f6] transition-colors duration-300 border border-[#d4c5b0] disabled:opacity-50 disabled:cursor-not-allowed"
                       :class="{ 'bg-[#5a4a3a] text-[#faf9f6]': isFavorite(product.id) }"
                     >
                       <svg class="w-5 h-5" :fill="isFavorite(product.id) ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24">
@@ -410,6 +411,7 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
+import { useFavorites } from '@/composables/useFavorites'
 import productService from '@/services/productService'
 import Header from '@/components/Header.vue'
 import Footer from '@/components/Footer.vue'
@@ -417,6 +419,7 @@ import Footer from '@/components/Footer.vue'
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
+const { isFavorite, toggleFavorite, loadFavorites, isLoading: favoritesLoading } = useFavorites()
 
 // Data
 const products = ref([])
@@ -424,7 +427,6 @@ const categories = ref([])
 const conditions = ref([]) 
 const loading = ref(false)
 const pagination = ref(null)
-const favorites = ref(JSON.parse(localStorage.getItem('favorites') || '[]'))
 
 // Filtres
 const filters = ref({
@@ -632,19 +634,20 @@ const goToPage = (page) => {
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
-// Favoris
-const isFavorite = (productId) => {
-  return favorites.value.includes(productId)
-}
-
-const toggleFavorite = (product) => {
-  const index = favorites.value.indexOf(product.id)
-  if (index > -1) {
-    favorites.value.splice(index, 1)
-  } else {
-    favorites.value.push(product.id)
+// Favoris - Utilisation du composable useFavorites
+const handleToggleFavorite = async (product) => {
+  if (!authStore.isClient) {
+    router.push('/login')
+    return
   }
-  localStorage.setItem('favorites', JSON.stringify(favorites.value))
+  
+  try {
+    await toggleFavorite(product.id)
+    // Dispatch event pour mettre à jour le compteur dans la navbar
+    window.dispatchEvent(new CustomEvent('favorites-updated'))
+  } catch (err) {
+    console.error('Error toggling favorite:', err)
+  }
 }
 
 // Add to cart (à adapter selon votre logique)
@@ -667,7 +670,7 @@ const addToCart = (product) => {
   localStorage.setItem('cart', JSON.stringify(cart))
   
   // Notification (optionnel - vous pouvez utiliser une lib comme vue-toastification)
-  showNotification('Product added to cart')
+  alert('Product added to cart')
 }
 
 // ⭐ IMPORTANT: Watcher pour détecter les changements de catégorie dans l'URL
@@ -689,8 +692,18 @@ watch(
   { immediate: false } // Ne pas exécuter immédiatement car onMounted s'en charge
 )
 
+// Watcher pour recharger les favoris quand l'utilisateur se connecte
+watch(
+  () => authStore.isClient,
+  async (isClient) => {
+    if (isClient) {
+      await loadFavorites()
+    }
+  }
+)
+
 // Lifecycle
-onMounted(() => {
+onMounted(async () => {
   
   loadCategories()
   loadConditions() 
@@ -699,6 +712,11 @@ onMounted(() => {
   if (route.query.category) {
     console.log('Catégorie trouvée dans l\'URL au montage:', route.query.category)
     filters.value.category = route.query.category
+  }
+  
+  // Charger les favoris si l'utilisateur est connecté
+  if (authStore.isClient) {
+    await loadFavorites()
   }
   
   // Charger les produits (avec ou sans filtre de catégorie)

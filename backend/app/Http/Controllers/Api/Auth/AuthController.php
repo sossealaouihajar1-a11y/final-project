@@ -68,7 +68,9 @@ class AuthController extends Controller
 {
     $credentials = $request->only('email', 'password');
 
-    if (!Auth::attempt($credentials)) {
+    $user = User::where('email', $credentials['email'])->first();
+
+    if (!$user || !Hash::check($credentials['password'], $user->password)) {
         return response()->json([
             'message' => 'Erreur de connexion',
             'errors' => [
@@ -76,8 +78,6 @@ class AuthController extends Controller
             ]
         ], 422);
     }
-
-    $user = Auth::user();
 
     // Vérification vendeur
     if ($user->role === 'vendeur') {

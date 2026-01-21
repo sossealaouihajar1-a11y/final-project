@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\Admin\ProductManagementController;
 use App\Http\Controllers\Api\Admin\UserManagementController;
 use App\Http\Controllers\Api\Admin\VendorManagementController;
+use App\Http\Controllers\Api\Admin\ReviewManagementController;
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\CartController;
@@ -16,7 +17,6 @@ use App\Http\Controllers\Api\Vendor\OrderController as VendorOrderController;
 use App\Http\Controllers\Api\Vendor\StockController as VendorStockController;
 use App\Http\Controllers\Api\ReviewController;  
 use App\Http\Controllers\ContactController;
-use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\PaymentController;
 
 use Illuminate\Support\Facades\Route;
@@ -87,6 +87,14 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     // Routes Admin
     Route::middleware('role:admin')->prefix('admin')->group(function () {
+        // Comments management
+        Route::prefix('reviews')->group(function () {
+        Route::get('/', [ReviewManagementController::class, 'index']);
+        Route::get('/statistics', [ReviewManagementController::class, 'statistics']);
+        Route::get('/{id}', [ReviewManagementController::class, 'show']);
+        Route::delete('/{id}', [ReviewManagementController::class, 'destroy']);
+    });
+        // Vendor management
         Route::prefix('vendors')->group(function () {
             Route::get('/', [VendorManagementController::class, 'index']);
             Route::get('/pending', [VendorManagementController::class, 'pending']);
@@ -96,7 +104,15 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/{user}/suspend', [VendorManagementController::class, 'suspend']);
             Route::post('/{user}/reactivate', [VendorManagementController::class, 'reactivate']);
         });
-        
+        // Orders management
+         Route::prefix('orders')->group(function () {
+        Route::get('/', [OrderManagementController::class, 'index']);
+        Route::get('/statistics', [OrderManagementController::class, 'statistics']);
+        Route::get('/export', [OrderManagementController::class, 'export']);
+        Route::get('/{id}', [OrderManagementController::class, 'show']);
+        Route::put('/{id}/status', [OrderManagementController::class, 'updateStatus']);
+        Route::delete('/{id}', [OrderManagementController::class, 'destroy']);
+    });
         // Users management
         Route::prefix('users')->group(function () {
             Route::get('/', [UserManagementController::class, 'index']);

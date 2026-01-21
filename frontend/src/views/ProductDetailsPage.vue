@@ -142,7 +142,7 @@
         </div>
 
         <!-- Reviews -->
-        <div v-if="authStore.isClient" class="border-t border-gray-200 pt-16">
+        <div class="border-t border-gray-200 pt-16">
           <ReviewSection :product-id="product.id" />
         </div>
 

@@ -1,148 +1,151 @@
 <template>
-  <div class="border-t border-gray-200 pt-16 space-y-14">
+  <div class="space-y-10">
 
     <!-- Header -->
     <div class="text-center">
       <p class="text-sm uppercase tracking-widest text-gray-500 mb-3">
-        Customer Reviews
+        Avis clients
       </p>
-      <h3 class="text-3xl font-serif text-gray-900">
-        What customers say ({{ total }})
-      </h3>
+      <!-- <h3 class="text-3xl font-serif text-gray-900">
+        Ce que disent les clients ({{ total }})
+      </h3> -->
     </div>
 
-    <!-- Not authenticated -->
-    <div
-      v-if="!authStore.isAuthenticated"
-      class="border border-gray-200 bg-gray-50 p-8 text-center"
+    <!-- Comment form - Only for authenticated clients -->
+    <div v-if="authStore.isClient">
+      <!-- User review -->
+      <div
+        v-if="userReview"
+        class="border border-gray-300 bg-white p-6 rounded-lg shadow-sm"
+      >
+        <div class="flex justify-between items-start mb-4">
+          <div>
+             <p class="text-xs uppercase tracking-widest text-gray-500 mb-1">
+               Votre avis
+            </p> 
+            <p class="text-sm text-gray-600">
+              {{ formatDate(userReview.created_at) }}
+            </p>
+          </div>
+
+          <div class="flex gap-4 text-sm">
+            <button
+              v-if="!editingReview"
+              @click="startEdit"
+              class="text-gray-700 hover:text-gray-900 transition"
+            >
+              Modifier
+            </button>
+            <button
+              @click="showDeleteConfirm = true"
+              class="text-red-600 hover:text-red-700 transition"
+            >
+              Supprimer
+            </button>
+          </div>
+        </div>
+
+        <!-- View -->
+        <p
+          v-if="!editingReview"
+          class="text-gray-800 leading-relaxed"
+        >
+          {{ userReview.comment }}
+        </p>
+
+        <!-- Edit -->
+        <div v-else class="space-y-4">
+          <textarea
+            v-model="editForm.comment"
+            rows="4"
+            class="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-1 focus:ring-gray-900 rounded"
+          />
+
+          <div class="flex gap-3">
+            <button
+              @click="updateReview"
+              :disabled="editForm.comment.length < 10 || submitting"
+              class="px-6 py-2 bg-gray-900 text-white text-sm uppercase tracking-wider hover:bg-gray-800 disabled:opacity-50 transition rounded"
+            >
+              Enregistrer
+            </button>
+            <button
+              @click="cancelEdit"
+              class="px-6 py-2 border border-gray-300 text-gray-700 text-sm hover:bg-gray-50 transition rounded"
+            >
+              Annuler
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Create review -->
+      <div
+        v-else
+        class="border border-gray-300 bg-white p-6 rounded-lg shadow-sm"
+      >
+        <h4 class="text-lg font-serif text-gray-900 mb-4">
+          Écrire un avis
+        </h4>
+
+        <textarea
+          v-model="reviewForm.comment"
+          rows="4"
+          class="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-1 focus:ring-gray-900 rounded"
+          placeholder="Partagez votre expérience avec ce produit..."
+        />
+
+        <button
+          @click="submitReview"
+          :disabled="reviewForm.comment.length < 10 || submitting"
+          class="mt-4 px-8 py-3 bg-gray-900 text-white text-sm uppercase tracking-wider hover:bg-gray-800 disabled:opacity-50 transition rounded"
+        >
+          {{ submitting ? 'Publication...' : 'Publier l\'avis' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Not authenticated message -->
+    <!-- <div
+      v-else-if="!authStore.isAuthenticated"
+      class="border border-gray-200 bg-gray-50 p-6 rounded-lg text-center"
     >
       <p class="text-gray-800 font-medium mb-2">
-        Login required
+        Connexion requise
       </p>
-      <p class="text-sm text-gray-600 mb-6">
-        Only logged-in customers can leave a review.
+      <p class="text-sm text-gray-600 mb-4">
+        Seuls les clients connectés peuvent laisser un avis.
       </p>
       <router-link
         to="/login"
-        class="inline-block px-6 py-3 bg-gray-900 text-white text-sm uppercase tracking-wider hover:bg-gray-800 transition"
+        class="inline-block px-6 py-3 bg-gray-900 text-white text-sm uppercase tracking-wider hover:bg-gray-800 transition rounded"
       >
-        Login
+        Se connecter
       </router-link>
-    </div>
+    </div> -->
 
-    <!-- Not client -->
-    <div
-      v-else-if="!authStore.isClient"
-      class="border border-gray-200 bg-gray-50 p-8 text-center"
+    <!-- Not client message -->
+    <!-- <div
+      v-else-if="authStore.isVendor || authStore.isAdmin"
+      class="border border-gray-200 bg-gray-50 p-6 rounded-lg text-center"
     >
       <p class="text-gray-800 font-medium">
-        Only customers can leave reviews.
+        Seuls les clients peuvent laisser des avis.
       </p>
-    </div>
+    </div> -->
 
-    <!-- User review -->
-    <div
-      v-else-if="userReview"
-      class="border border-gray-300 bg-white p-8"
-    >
-      <div class="flex justify-between items-start mb-4">
-        <div>
-          <p class="text-xs uppercase tracking-widest text-gray-500">
-            Your review
-          </p>
-          <p class="text-sm text-gray-600">
-            {{ formatDate(userReview.created_at) }}
-          </p>
-        </div>
-
-        <div class="flex gap-4 text-sm">
-          <button
-            v-if="!editingReview"
-            @click="startEdit"
-            class="text-gray-700 hover:underline"
-          >
-            Edit
-          </button>
-          <button
-            @click="showDeleteConfirm = true"
-            class="text-red-600 hover:underline"
-          >
-            Delete
-          </button>
-        </div>
-      </div>
-
-      <!-- View -->
-      <p
-        v-if="!editingReview"
-        class="text-gray-800 leading-relaxed"
-      >
-        {{ userReview.comment }}
-      </p>
-
-      <!-- Edit -->
-      <div v-else class="space-y-4">
-        <textarea
-          v-model="editForm.comment"
-          rows="4"
-          class="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-1 focus:ring-gray-900"
-        />
-
-        <div class="flex gap-3">
-          <button
-            @click="updateReview"
-            :disabled="editForm.comment.length < 10 || submitting"
-            class="px-6 py-2 bg-gray-900 text-white text-sm uppercase tracking-wider hover:bg-gray-800 disabled:opacity-50"
-          >
-            Save
-          </button>
-          <button
-            @click="cancelEdit"
-            class="px-6 py-2 border border-gray-300 text-gray-700 text-sm hover:bg-gray-100"
-          >
-            Cancel
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Create review -->
-    <div
-      v-else-if="authStore.isClient"
-      class="border border-gray-300 bg-white p-8"
-    >
-      <h4 class="text-lg font-serif text-gray-900 mb-4">
-        Write a review
-      </h4>
-
-      <textarea
-        v-model="reviewForm.comment"
-        rows="4"
-        class="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-1 focus:ring-gray-900"
-        placeholder="Share your experience with this product..."
-      />
-
-      <button
-        @click="submitReview"
-        :disabled="reviewForm.comment.length < 10 || submitting"
-        class="mt-4 px-8 py-3 bg-gray-900 text-white text-sm uppercase tracking-wider hover:bg-gray-800 disabled:opacity-50"
-      >
-        Publish review
-      </button>
-    </div>
-
-    <!-- Reviews list -->
-    <div v-if="reviews.length" class="space-y-10">
-      <h4 class="text-xl font-serif text-gray-900">
-        All reviews
-      </h4>
+    <!-- Reviews list - Always visible -->
+    <div v-if="reviews.length" class="space-y-6">
+      <!-- <h4 class="text-xl font-serif text-gray-900 border-b border-gray-200 pb-3">
+        Tous les avis
+      </h4> -->
 
       <div
         v-for="review in reviews"
         :key="review.id"
-        class="border-b border-gray-200 pb-6"
+        class="border border-gray-200 bg-white p-6 rounded-lg shadow-sm"
       >
-        <div class="flex justify-between mb-2">
+        <div class="flex justify-between items-start mb-3">
           <p class="font-medium text-gray-900">
             {{ review.user.name }}
           </p>
@@ -157,17 +160,17 @@
       </div>
     </div>
 
-    <!-- Empty -->
+    <!-- Empty state -->
     <div
       v-else
-      class="text-center py-16 border border-dashed border-gray-300"
+      class="text-center py-12 border border-dashed border-gray-300 rounded-lg bg-gray-50"
     >
       <p class="text-gray-700 font-medium">
-        No reviews yet
+        Aucun avis pour le moment
       </p>
-      <p class="text-sm text-gray-500 mt-1">
-        Be the first to share your experience.
-      </p>
+      <!-- <p class="text-sm text-gray-500 mt-1">
+        Soyez le premier à partager votre expérience.
+      </p> -->
     </div>
 
     <!-- Delete modal -->
@@ -178,27 +181,27 @@
     >
       <div
         @click.stop
-        class="bg-white p-8 max-w-md w-full"
+        class="bg-white p-8 max-w-md w-full rounded-lg shadow-xl"
       >
         <h3 class="text-lg font-serif text-gray-900 mb-2">
-          Delete your review?
+          Supprimer votre avis ?
         </h3>
         <p class="text-sm text-gray-600 mb-6">
-          This action cannot be undone.
+          Cette action est irréversible.
         </p>
 
         <div class="flex gap-4">
           <button
             @click="deleteReview"
-            class="flex-1 px-4 py-2 bg-red-600 text-white text-sm hover:bg-red-700"
+            class="flex-1 px-4 py-2 bg-red-600 text-white text-sm hover:bg-red-700 transition rounded"
           >
-            Delete
+            Supprimer
           </button>
           <button
             @click="showDeleteConfirm = false"
-            class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 text-sm"
+            class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 text-sm hover:bg-gray-50 transition rounded"
           >
-            Cancel
+            Annuler
           </button>
         </div>
       </div>

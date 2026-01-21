@@ -63,7 +63,6 @@
                     :alt="product.title"
                     class="w-full h-full object-cover"
                   />
-                  <span v-else class="text-lg">📦</span>
                 </div>
                 <div>
                   <p class="text-sm font-medium text-gray-900">{{ product.title }}</p>

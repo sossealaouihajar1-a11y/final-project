@@ -2,22 +2,22 @@
   <div class="space-y-6">
     <!-- Header -->
     <div>
-      <h3 class="text-lg font-semibold text-gray-900">Suivi des Commandes</h3>
-      <p class="text-sm text-gray-600 mt-1">Gérez et suivez vos commandes</p>
+      <h3 class="text-2xl font-serif font-bold text-gray-900">Suivi des Commandes</h3>
+      <p class="text-sm text-gray-600 mt-1 uppercase tracking-wider">Gérez et suivez vos commandes</p>
     </div>
 
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
-      <StatsCard title="Total" :value="orderStats.total_orders || 0" color="blue" icon="📋" />
-      <StatsCard title="En attente" :value="orderStats.pending_orders || 0" color="yellow" icon="⏳" />
-      <StatsCard title="Confirmées" :value="orderStats.confirmed_orders || 0" color="purple" icon="✓" />
-      <StatsCard title="Expédiées" :value="orderStats.shipped_orders || 0" color="blue" icon="🚚" />
-      <StatsCard title="Livrées" :value="orderStats.delivered_orders || 0" color="green" icon="✅" />
+      <StatsCard title="Total" :value="orderStats.total_orders || 0" color="blue" />
+      <StatsCard title="En attente" :value="orderStats.pending_orders || 0" color="yellow" />
+      <StatsCard title="Confirmées" :value="orderStats.confirmed_orders || 0" color="purple" />
+      <StatsCard title="Expédiées" :value="orderStats.shipped_orders || 0" color="blue" />
+      <StatsCard title="Livrées" :value="orderStats.delivered_orders || 0" color="green" />
     </div>
 
 
     <!-- Filters -->
-    <div class="bg-white rounded-lg shadow p-4">
+    <div class="bg-white border border-gray-200 rounded-lg p-4">
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
         <input 
           v-model="filters.search" 

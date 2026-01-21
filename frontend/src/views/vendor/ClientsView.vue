@@ -2,20 +2,20 @@
   <div class="space-y-6">
     <!-- Header -->
     <div>
-      <h3 class="text-lg font-semibold text-gray-900">Suivi des Clients</h3>
-      <p class="text-sm text-gray-600 mt-1">Gérez vos clients et leurs historiques d'achat</p>
+      <h3 class="text-2xl font-serif font-bold text-gray-900">Suivi des Clients</h3>
+      <p class="text-sm text-gray-600 mt-1 uppercase tracking-wider">Gérez vos clients et leurs historiques d'achat</p>
     </div>
 
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-      <StatsCard title="Clients Totaux" :value="clientStats.total_clients || 0" color="blue" icon="👥" />
-      <StatsCard title="Clients Fidèles" :value="clientStats.repeat_clients || 0" color="green" icon="⭐" />
-      <StatsCard title="Commandes" :value="clientStats.total_orders || 0" color="purple" icon="📋" />
-      <StatsCard title="Revenu Total" :value="'$' + (clientStats.total_revenue || 0)" color="orange" icon="💰" />
+      <StatsCard title="Clients Totaux" :value="clientStats.total_clients || 0" color="blue" />
+      <StatsCard title="Clients Fidèles" :value="clientStats.repeat_clients || 0" color="green" />
+      <StatsCard title="Commandes" :value="clientStats.total_orders || 0" color="purple" />
+      <StatsCard title="Revenu Total" :value="'$' + (clientStats.total_revenue || 0)" color="orange" />
     </div>
 
     <!-- Filters & Search -->
-    <div class="bg-white rounded-lg shadow p-4">
+    <div class="bg-white border border-gray-200 rounded-lg p-4">
       <div class="flex gap-4">
         <input 
           v-model="searchQuery" 
