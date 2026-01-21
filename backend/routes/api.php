@@ -27,8 +27,7 @@ Route::prefix('auth')->group(function () {
 });
 Route::get('/products/{productId}/reviews', [ReviewController::class, 'index']);
 
-// Webhook Stripe
-Route::post('/payments/webhook', [PaymentController::class, 'handleWebhook']);
+// Stripe webhook route removed (webhook handling disabled for local/dev)
 
 // Routes protégées (authentification requise)
 Route::middleware('auth:sanctum')->group(function () {
