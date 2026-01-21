@@ -6,15 +6,15 @@
     <!-- Image -->
     <div class="relative h-56 bg-gray-100 flex items-center justify-center overflow-hidden">
       <img
-        v-if="product.image_url"
-        :src="product.image_url"
+        v-if="product.image_url || product.image"
+        :src="product.image_url || product.image"
         :alt="product.title"
         class="w-full h-full object-cover group-hover:scale-110 transition duration-300"
       />
       <div v-else class="text-gray-400 text-sm">Aucune image</div>
       
       <!-- Badge Promotion -->
-      <div v-if="product.promotion > 0" class="absolute top-3 right-3 bg-red-500 text-white px-3 py-1.5 rounded-full text-sm font-bold shadow-lg animate-pulse">
+      <div v-if="(product.promotion || 0) > 0" class="absolute top-3 right-3 bg-red-500 text-white px-3 py-1.5 rounded-full text-sm font-bold shadow-lg animate-pulse">
         -{{ product.promotion }}%
       </div>
 
@@ -57,11 +57,11 @@
       <!-- Prix -->
       <div class="flex items-center justify-between mb-3">
         <div>
-          <div v-if="product.promotion > 0" class="text-sm text-gray-400 line-through">
-            {{ product.price }}€
+          <div v-if="(product.promotion || 0) > 0" class="text-sm text-gray-400 line-through">
+            {{ product.price || product.final_price }}€
           </div>
           <div class="text-2xl font-bold text-indigo-600">
-            {{ product.final_price }}€
+            {{ product.final_price || product.price }}€
           </div>
         </div>
       </div>
