@@ -18,7 +18,11 @@ export default {
     const response = await apiClient.get('/products/categories')
     return response.data
   },
-
+  // Récupérer toutes les conditions
+ async getConditions() {
+    const response = await apiClient.get('/products/conditions')
+    return response.data
+  },
   // Récupérer les statistiques
   async getStats() {
     const response = await apiClient.get('/products/stats')

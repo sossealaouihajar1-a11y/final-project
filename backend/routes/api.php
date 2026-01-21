@@ -14,10 +14,15 @@ use App\Http\Controllers\Api\Vendor\ProductController as VendorProductController
 use App\Http\Controllers\Api\Vendor\ClientController as VendorClientController;
 use App\Http\Controllers\Api\Vendor\OrderController as VendorOrderController;
 use App\Http\Controllers\Api\Vendor\StockController as VendorStockController;
+use App\Http\Controllers\Api\ReviewController;  
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\PaymentController;
 
 use Illuminate\Support\Facades\Route;
+
+// contact form
+Route::post('/contact', [ContactController::class, 'send']);
 
 // Routes publiques                  
 Route::prefix('auth')->group(function () {
@@ -25,6 +30,7 @@ Route::prefix('auth')->group(function () {
     Route::post('/register/vendor', [AuthController::class, 'registerVendor']);
     Route::post('/login', [AuthController::class, 'login']);
 });
+
 Route::get('/products/{productId}/reviews', [ReviewController::class, 'index']);
 
 // Stripe webhook route removed (webhook handling disabled for local/dev)
@@ -174,8 +180,12 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::prefix('products')->group(function () {
     Route::get('/', [ProductController::class, 'index']);
     Route::get('/categories', [ProductController::class, 'categories']);
+    Route::get('/conditions', [ProductController::class, 'conditions']);
     Route::get('/stats', [ProductController::class, 'stats']);
     Route::get('/promotions', [ProductController::class, 'promotions']);
     Route::get('/category/{category}', [ProductController::class, 'byCategory']);
     Route::get('/{id}', [ProductController::class, 'show']);
+    
 });
+
+

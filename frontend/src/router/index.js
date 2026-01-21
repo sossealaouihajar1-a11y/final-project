@@ -127,21 +127,41 @@ import AdminDashboard from '@/views/admin/DashboardView.vue'
 import VendorsManagement from '@/views/admin/VendorsManagement.vue'
 import UsersManagement from '@/views/admin/UsersManagement.vue'
 import ProductsManagement from '@/views/admin/ProductsManagement.vue'
+import ProductDetailsPage from '@/views/ProductDetailsPage.vue'
+import About from '@/views/About.vue'
+import Contact from '@/views/Contact.vue'
+import Layout from '@/components/Layout.vue'   
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
-      name: 'home',
-      component: HomePage
-    },
+    path: '/',
+    component: Layout,
+    children: [
+      {
+        path: '',
+        name: 'home',
+        component: HomePage,
+      },
+    ],
+  },
     {
       path: '/login',
       name: 'login',
       component: LoginPage,
       meta: { guest: true }
     },
+    {
+    path: '/about',
+    name: 'About',
+    component: About,
+  },
+    {
+    path: '/contact',
+    name: 'Contact',
+    component: Contact,
+  },
     {
       path: '/register-client',
       name: 'register-client',
@@ -232,12 +252,13 @@ const router = createRouter({
       name: 'categories',
       component: () => import('@/views/ProductsPage.vue')
     },
-        {
+    {
       path: '/cart',
       name: 'cart',
-      component: () => import('@/views/CartPage.vue'),
+      component: () => import('../views/CartPage.vue'),
       meta: { requiresAuth: true, role: 'client' }
     },
+   
     {
       path: '/checkout',
       name: 'checkout',
@@ -247,15 +268,27 @@ const router = createRouter({
     {
       path: '/orders',
       name: 'orders',
-      component: () => import('@/views/OrdersPage.vue'),
+      component: () => import('../views/OrdersPage.vue'),
       meta: { requiresAuth: true, role: 'client' }
     },
     {
       path: '/favorites',
       name: 'favorites',
-      component: () => import('@/views/FavoritesPage.vue'),
+      component: () => import('../views/FavoritesPage.vue'),
       meta: { requiresAuth: true, role: 'client' }
     },
+    {
+    path: '/products/:id',
+    name: 'ProductDetails',
+    component: () => import('../views/ProductDetailsPage.vue'),
+    meta: { requiresAuth: false }
+},
+{
+    path: '/products/:id',
+    name: 'ProductDetails',
+    component: () => import('../views/ProductDetailsPage.vue'),
+    meta: { requiresAuth: false }
+    }
   ]
 })
 

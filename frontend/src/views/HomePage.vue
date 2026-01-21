@@ -1,371 +1,515 @@
 <template>
-  <Layout>
-    <!-- Hero Section -->
-    <section class="relative bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 text-white overflow-hidden">
-      <div class="absolute inset-0 bg-black opacity-10"></div>
-      <svg class="absolute inset-0 w-full h-full" preserveAspectRatio="none" viewBox="0 0 1200 1200" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <pattern id="dots" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
-            <circle cx="30" cy="30" r="1" fill="white" opacity="0.05" />
-          </pattern>
-        </defs>
-        <rect width="1200" height="1200" fill="url(#dots)" />
-      </svg>
-      
-      <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32">
-        <div class="text-center">
-          <h1 class="text-4xl md:text-6xl font-bold mb-6 animate-fade-in">
-            Bienvenue dans l'Univers Vintage
-          </h1>
-          <p class="text-xl md:text-2xl mb-8 text-indigo-100 max-w-3xl mx-auto">
-            Découvrez une collection unique de pièces authentiques, soigneusement sélectionnées pour leur caractère et leur histoire.
-          </p>
-          <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <router-link
-              to="/products"
-              class="px-8 py-4 bg-white text-indigo-600 rounded-lg font-bold text-lg hover:bg-gray-100 transition transform hover:scale-105 shadow-xl"
-            >
-              Explorer la Collection
-            </router-link>
-            <router-link
-              to="/categories"
-              class="px-8 py-4 bg-transparent border-2 border-white text-white rounded-lg font-bold text-lg hover:bg-white hover:text-indigo-600 transition transform hover:scale-105"
-            >
-              Parcourir les Catégories
-            </router-link>
-          </div>
-        </div>
-      </div>
+  <div class="bg-white">
 
-      <!-- Wave Separator -->
-      <div class="absolute bottom-0 left-0 right-0">
-        <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M0 120L60 105C120 90 240 60 360 45C480 30 600 30 720 37.5C840 45 960 60 1080 67.5C1200 75 1320 75 1380 75L1440 75V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="white"/>
-        </svg>
-      </div>
-    </section>
-
-    <!-- Features Section -->
-    <section class="py-16 bg-white">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div class="text-center p-6 rounded-xl hover:shadow-lg transition">
-            <div class="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-              </svg>
-            </div>
-            <h3 class="text-xl font-bold text-gray-900 mb-2">Authenticité Garantie</h3>
-            <p class="text-gray-600">Tous nos produits sont vérifiés et authentifiés par nos experts.</p>
-          </div>
-
-          <div class="text-center p-6 rounded-xl hover:shadow-lg transition">
-            <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <h3 class="text-xl font-bold text-gray-900 mb-2">Prix Compétitifs</h3>
-            <p class="text-gray-600">Des prix justes et transparents pour tous les budgets.</p>
-          </div>
-
-          <div class="text-center p-6 rounded-xl hover:shadow-lg transition">
-            <div class="w-16 h-16 bg-gradient-to-br from-pink-500 to-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            <h3 class="text-xl font-bold text-gray-900 mb-2">Livraison Rapide</h3>
-            <p class="text-gray-600">Expédition sécurisée et suivi en temps réel de votre commande.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Produits Populaires -->
-    <section class="py-16 bg-gray-50">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-12">
-          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Produits Populaires
-          </h2>
-          <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-            Découvrez les pièces les plus appréciées par notre communauté
-          </p>
-        </div>
-
-        <div v-if="loading" class="text-center py-16">
-          <div class="inline-block animate-spin rounded-full h-16 w-16 border-b-4 border-indigo-600"></div>
-          <p class="mt-4 text-gray-600 text-lg">Chargement des produits...</p>
-        </div>
-
-        <div v-else-if="featuredProducts.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <ProductCard
-            v-for="product in featuredProducts"
-            :key="product.id"
-            :product="product"
-            :is-favorite="isFavorite(product.id)"
-            @click="openProductModal(product)"
-            @toggle-favorite="toggleFavorite"
-          />
-        </div>
-
-        <div v-else class="text-center py-12">
-          <p class="text-gray-600">Aucun produit disponible pour le moment.</p>
-        </div>
-
-        <div class="text-center mt-12">
-          <router-link
-            to="/products"
-            class="inline-block px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg font-bold hover:from-indigo-700 hover:to-purple-700 transition shadow-lg hover:shadow-xl transform hover:scale-105"
-          >
-            Voir Tous les Produits
-          </router-link>
-        </div>
-      </div>
-    </section>
-
-    <!-- Catégories -->
-    <section class="py-16 bg-white">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-12">
-          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Explorez par Catégorie
-          </h2>
-          <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-            Trouvez exactement ce que vous cherchez
-          </p>
-        </div>
-
-        <div v-if="categories.length > 0" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+    <!-- ================= NAVIGATION CATEGORIES (sous header) ================= -->
+    <nav class="border-b border-gray-200 bg-white sticky top-0 z-40">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="flex items-center justify-center gap-8 py-4 overflow-x-auto">
           <router-link
             v-for="category in categories"
             :key="category"
-            :to="`/products?category=${category}`"
-            class="group relative overflow-hidden rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 p-6 text-center transform hover:scale-105 transition shadow-lg hover:shadow-2xl"
+            :to="`/products?category=${encodeURIComponent(category)}`"
+            class="text-sm uppercase tracking-wider text-gray-700 hover:text-[#8b1c3d] transition-colors whitespace-nowrap font-medium"
           >
-            <div class="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition"></div>
-            <div class="relative z-10">
-              <div class="text-3xl mb-2">🏺</div>
-              <h3 class="text-white font-bold text-sm md:text-base">{{ category }}</h3>
-            </div>
+            {{ formatCategoryName(category) }}
           </router-link>
         </div>
       </div>
-    </section>
+    </nav>
 
-    <!-- CTA Section -->
-    <section class="py-16 bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
-      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h2 class="text-3xl md:text-4xl font-bold mb-4">
-          Prêt à Commencer Votre Collection ?
-        </h2>
-        <p class="text-xl text-indigo-100 mb-8">
-          Rejoignez notre communauté de passionnés de vintage et découvrez des trésors uniques.
-        </p>
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
-          <router-link
-            to="/register-client"
-            class="px-8 py-4 bg-white text-indigo-600 rounded-lg font-bold text-lg hover:bg-gray-100 transition transform hover:scale-105 shadow-xl"
-          >
-            Créer un Compte
-          </router-link>
+    <!-- ================= HERO ================= -->
+    <section class="relative h-[75vh]">
+      <img
+        src="/images/hero-vintage.png"
+        alt="Vintage Collection"
+        class="absolute inset-0 w-full h-full object-cover"
+      />
+      <div class="absolute inset-0 bg-black/30"></div>
+
+      <div class="relative z-10 h-full flex items-center justify-center text-center px-6">
+        <div>
+          <p class="uppercase tracking-[0.3em] text-sm text-white/80 mb-6">
+            Timeless Vintage Pieces
+          </p>
+          <h1 class="text-4xl md:text-6xl font-serif text-white mb-8">
+            The Latest Arrivals
+          </h1>
+
           <router-link
             to="/products"
-            class="px-8 py-4 bg-transparent border-2 border-white text-white rounded-lg font-bold text-lg hover:bg-white hover:text-indigo-600 transition transform hover:scale-105"
+            class="inline-block border border-white px-10 py-3 text-white uppercase tracking-wider text-sm hover:bg-white hover:text-black transition"
           >
-            Explorer Maintenant
+            Shop Collection
           </router-link>
         </div>
       </div>
     </section>
 
-    <!-- Modal Détails Produit -->
-    <transition name="modal">
-      <div v-if="selectedProduct" @click="closeModal" class="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4 overflow-y-auto backdrop-blur-sm">
-        <div @click.stop class="bg-white rounded-2xl max-w-5xl w-full my-8 max-h-[90vh] overflow-y-auto shadow-2xl">
-          <div class="relative">
-            <button @click="closeModal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-3xl z-10 bg-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg hover:shadow-xl transition">
-              ✕
-            </button>
+    <!-- ================= SHOP BY STYLE / VINTAGE FINDS ================= -->
+    <section class="py-32 bg-[#eef0ef]">
+      <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-3 gap-16 items-center">
 
-            <div class="grid grid-cols-1 md:grid-cols-2">
+        <!-- Image gauche -->
+        <div class="overflow-hidden">
+          <img
+            src="/images/style-left.png"
+            alt="Vintage Interior"
+            class="w-full h-[500px] object-cover"
+          />
+        </div>
+
+        <!-- Contenu central -->
+        <div class="text-center px-4">
+          <p class="uppercase tracking-[0.35em] text-xs text-gray-600 mb-6">
+            Shop by style
+          </p>
+
+          <h2 class="font-serif text-4xl md:text-5xl text-gray-900 leading-tight mb-6">
+            Vintage Finds<br />
+            <span class="italic font-normal">that find you</span>
+          </h2>
+
+          <p class="text-gray-600 mb-10 max-w-md mx-auto leading-relaxed">
+            Find your style destination with our curated collections.
+          </p>
+
+          <router-link
+            to="/products"
+            class="inline-block border border-black px-10 py-3 uppercase tracking-widest text-sm hover:bg-black hover:text-white transition"
+          >
+            Visit the style shop
+          </router-link>
+        </div>
+
+        <!-- Image droite -->
+        <div>
+          <div class="overflow-hidden">
+            <img
+              src="/images/style-right.png"
+              alt="Mid Century Style"
+              class="w-full h-[360px] object-cover"
+            />
+          </div>
+
+          <div class="mt-6">
+            <p class="uppercase tracking-widest text-sm font-medium">
+              Mid-century
+            </p>
+            <router-link
+              to="/products?style=mid-century"
+              class="text-xs uppercase tracking-[0.3em] text-gray-700 hover:underline"
+            >
+              Shop now
+            </router-link>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= SHOP BY CATEGORY (Style Vintage Keepers - Horizontal) ================= -->
+    <section class="py-12 bg-[#faf9f5]">
+      <div class="max-w-[1400px] mx-auto px-6">
+        <!-- Titre centré -->
+        <div class="text-center mb-10">
+          <p class="uppercase tracking-[0.35em] text-[10px] text-gray-500 mb-3">
+            INTRODUCING THE ONLINE VINTAGE DESTINATION
+          </p>
+          <h2 class="text-xl md:text-2xl lg:text-3xl font-serif text-gray-800 leading-tight max-w-3xl mx-auto mb-4" style="font-weight: 300;">
+            Connecting vintage lovers around the world with a 
+            <span class="italic">fresh, fun,</span> and 
+            <span class="italic">artfully curated</span> online marketplace.
+          </h2>
+        </div>
+
+        <!-- Scroll horizontal -->
+        <div class="relative -mx-6 px-6">
+          <!-- Gradient edges -->
+          <div class="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-[#faf9f5] to-transparent z-10 pointer-events-none"></div>
+          <div class="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-[#faf9f5] to-transparent z-10 pointer-events-none"></div>
+          
+          <!-- Container horizontal -->
+          <div class="flex gap-3 overflow-x-auto scroll-smooth scrollbar-hide pb-2">
+            <router-link
+              v-for="cat in categoryImages"
+              :key="cat.name"
+              :to="`/products?category=${encodeURIComponent(cat.name)}`"
+              class="group relative overflow-hidden flex-shrink-0 w-48 h-60 bg-[#e8e6df]"
+            >
               <!-- Image -->
-              <div class="relative h-96 md:h-full bg-gray-100 flex items-center justify-center">
+              <img
+                :src="cat.image"
+                :alt="formatCategoryName(cat.name)"
+                class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+              />
+              
+              <!-- Overlay avec dégradé subtil -->
+              <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-70 group-hover:opacity-80 transition-opacity duration-300"></div>
+              
+              <!-- Texte en bas -->
+              <div class="absolute inset-x-0 bottom-0 p-3 text-white">
+                <h3 class="text-xs font-sans uppercase tracking-[0.2em] text-center" style="font-weight: 400; letter-spacing: 0.15em;">
+                  {{ formatCategoryName(cat.name) }}
+                </h3>
+              </div>
+
+              <!-- Hover indicator subtil -->
+              <div class="absolute top-2 right-2 w-5 h-5 border border-white/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <svg class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+              </div>
+            </router-link>
+          </div>
+        </div>
+
+        <!-- Bouton "Our Story" -->
+        <div class="text-center mt-8">
+          <router-link
+            to="/about"
+            class="inline-block border-b border-gray-800 pb-1 uppercase tracking-[0.25em] text-[11px] font-medium text-gray-800 hover:text-gray-600 transition-colors"
+          >
+            Our Story
+          </router-link>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= DISCOVER OUR COLLECTION (Carousel Scrollable) ================= -->
+    <section class="py-20 bg-[#f7f6f3] overflow-hidden">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="mb-10">
+          <!-- Titre à gauche -->
+          <h2 class="text-3xl md:text-4xl font-serif text-gray-900">
+            Discover Our Collection
+          </h2>
+        </div>
+
+        <!-- Loading -->
+        <div v-if="loadingProducts" class="text-center py-20">
+          <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-[#8b1c3d]"></div>
+        </div>
+
+        <!-- Carousel Container -->
+        <div v-else class="relative -mx-6 px-6">
+          <!-- Gradient Edges -->
+          <div class="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-[#f7f6f3] to-transparent z-10 pointer-events-none"></div>
+          <div class="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-[#f7f6f3] to-transparent z-10 pointer-events-none"></div>
+          
+          <!-- Scrollable Container -->
+          <div
+            ref="carouselContainer"
+            @scroll="updateScrollPosition"
+            @mouseenter="handleMouseEnter"
+            @mouseleave="handleMouseLeave"
+            class="flex gap-6 overflow-x-auto scroll-smooth scrollbar-hide pb-4"
+            style="scroll-snap-type: x mandatory;"
+          >
+            <div
+              v-for="(product, index) in allProducts"
+              :key="product.id"
+              class="flex-shrink-0 w-[240px] group relative"
+              style="scroll-snap-align: start;"
+              :style="{ animationDelay: `${index * 0.08}s` }"
+              :class="'animate-fadeInUp'"
+            >
+              <!-- Container image -->
+              <div class="relative overflow-hidden bg-gray-100 aspect-[3/4]">
+                <!-- Image -->
                 <img
-                  v-if="selectedProduct.image_url"
-                  :src="selectedProduct.image_url"
-                  :alt="selectedProduct.title"
-                  class="w-full h-full object-cover"
+                  :src="product.image_url"
+                  :alt="product.title"
+                  class="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
                 />
-                <div v-else class="text-gray-400 text-sm">Aucune image</div>
-                
-                <div v-if="selectedProduct.promotion > 0" class="absolute top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-full text-base font-bold shadow-lg">
-                  -{{ selectedProduct.promotion }}%
+
+                <!-- Overlay hover -->
+                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-500"></div>
+
+                <!-- Quick view button -->
+                <div class="absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                  <router-link
+                    :to="`/products/${encodeTitle(product.title)}`"
+                    class="block w-full bg-white/95 backdrop-blur-sm text-center py-2.5 text-xs uppercase tracking-wider font-medium hover:bg-[#8b1c3d] hover:text-white transition-colors"
+                  >
+                    Quick View
+                  </router-link>
                 </div>
               </div>
 
-              <!-- Détails -->
-              <div class="p-8 md:p-10">
-                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-6">{{ selectedProduct.title }}</h2>
-                
-                <div class="space-y-4 mb-6">
-                  <div class="flex items-center space-x-3">
-                    <span class="text-gray-600 text-sm">Catégorie:</span>
-                    <span class="font-semibold text-indigo-600">{{ selectedProduct.category }}</span>
-                  </div>
-
-                  <div class="flex items-center space-x-3">
-                    <span class="text-gray-600 text-sm">État:</span>
-                    <span class="px-3 py-1.5 text-sm font-semibold rounded-full bg-blue-100 text-blue-800">
-                      {{ getConditionLabel(selectedProduct.condition) }}
-                    </span>
-                  </div>
-
-                  <div class="flex items-center space-x-3">
-                    <span class="text-gray-600 text-sm">Stock:</span>
-                    <span class="font-semibold" :class="selectedProduct.stock < 5 ? 'text-orange-600' : 'text-green-600'">
-                      {{ selectedProduct.stock > 0 ? `${selectedProduct.stock} disponible(s)` : 'Épuisé' }}
-                    </span>
-                  </div>
-                </div>
-
-                <!-- Prix -->
-                <div class="mb-6 p-6 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl">
-                  <div v-if="selectedProduct.promotion > 0" class="flex items-center space-x-3 mb-2">
-                    <span class="text-2xl text-gray-400 line-through">{{ selectedProduct.price }}€</span>
-                    <span class="px-3 py-1.5 bg-red-500 text-white text-sm font-bold rounded-full">
-                      -{{ selectedProduct.promotion }}%
-                    </span>
-                  </div>
-                  <div class="text-5xl font-bold text-indigo-600 mb-2">
-                    {{ selectedProduct.final_price }}€
-                  </div>
-                </div>
-
-                <!-- Description -->
-                <div class="mb-8">
-                  <h3 class="font-bold text-gray-900 mb-3 text-lg">Description</h3>
-                  <p class="text-gray-700 leading-relaxed">{{ selectedProduct.description }}</p>
-                </div>
-
-                <!-- Actions -->
-                <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
-                  <router-link
-                    :to="`/products`"
-                    class="flex-1 px-6 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold rounded-xl hover:from-indigo-700 hover:to-purple-700 transition flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl"
-                  >
-                    Voir Détails
-                  </router-link>
-                  <button
-                    @click="toggleFavorite(selectedProduct.id)"
-                    :class="isFavorite(selectedProduct.id) ? 'bg-red-100 text-red-600 hover:bg-red-200' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'"
-                    class="px-6 py-4 font-bold rounded-xl transition flex items-center justify-center space-x-2 shadow-lg"
-                  >
-                    <svg class="w-5 h-5" :class="isFavorite(selectedProduct.id) ? 'fill-current' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                    </svg>
-                    <span>{{ isFavorite(selectedProduct.id) ? 'Retiré' : 'Ajouter aux favoris' }}</span>
-                  </button>
-                </div>
+              <!-- Infos produit (uniquement le titre) -->
+              <div class="mt-3 text-center">
+                <router-link
+                  :to="`/products/${encodeTitle(product.title)}`"
+                  class="block"
+                >
+                  <h3 class="font-serif text-sm text-gray-900 hover:text-[#8b1c3d] transition-colors line-clamp-2">
+                    {{ product.title }}
+                  </h3>
+                </router-link>
               </div>
             </div>
           </div>
+
+          <!-- Scroll Indicator (optional) -->
+          <div class="flex justify-center gap-1.5 mt-8">
+            <div
+              v-for="i in Math.ceil(allProducts.length / 5)"
+              :key="i"
+              class="h-1 rounded-full transition-all duration-300"
+              :class="currentPage === i - 1 ? 'w-6 bg-[#8b1c3d]' : 'w-1 bg-gray-300'"
+            ></div>
+          </div>
+        </div>
+
+        <!-- Bouton voir plus -->
+        <div class="text-center mt-10">
+          <router-link
+            to="/products"
+            class="inline-block border border-black px-8 py-2.5 uppercase tracking-wider text-xs hover:bg-black hover:text-white transition-all duration-300"
+          >
+            View All Products
+          </router-link>
         </div>
       </div>
-    </transition>
-  </Layout>
+    </section>
+
+    <!-- ================= INSPIRATION ================= -->
+    <section class="py-24 bg-[#e6e7e4]">
+      <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
+        <div>
+          <p class="uppercase tracking-[0.3em] text-sm text-gray-600 mb-4">
+            Inspiration
+          </p>
+          <h3 class="text-4xl font-serif mb-6">
+            #VintageFinds
+          </h3>
+          <p class="text-gray-700 mb-8 leading-relaxed">
+            Une sélection de pièces uniques et intemporelles, pensées pour les amateurs
+            de vintage authentique et d'élégance durable.
+          </p>
+
+          <a
+            href="#"
+            class="inline-block border border-black px-8 py-3 uppercase tracking-wider text-sm hover:bg-black hover:text-white transition"
+          >
+            Follow Us
+          </a>
+        </div>
+
+        <div class="grid grid-cols-3 gap-4">
+          <img src="/images/inspo1.png" class="h-40 object-cover w-full" />
+          <img src="/images/inspo2.jpeg" class="h-40 object-cover w-full" />
+          <img src="/images/inspo3.jpg" class="h-40 object-cover w-full" />
+        </div>
+      </div>
+    </section>
+
+  </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import Layout from '@/components/Layout.vue'
-import ProductCard from '@/components/ProductCard.vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import productService from '@/services/productService'
 
-const router = useRouter()
-const featuredProducts = ref([])
 const categories = ref([])
-const loading = ref(false)
-const selectedProduct = ref(null)
-const favorites = ref(JSON.parse(localStorage.getItem('favorites') || '[]'))
+const allProducts = ref([])
+const loadingProducts = ref(false)
 
-const loadFeaturedProducts = async () => {
-  loading.value = true
-  try {
-    const response = await productService.getAllProducts({ limit: 8, sort_by: 'created_at' })
-    featuredProducts.value = response.data || []
-  } catch (error) {
-    console.error('Erreur chargement produits:', error)
-  } finally {
-    loading.value = false
+// Carousel refs
+const carouselContainer = ref(null)
+const scrollPosition = ref(0)
+const autoScrollInterval = ref(null)
+const isHovering = ref(false)
+
+// Images pour les catégories (à adapter selon vos vraies catégories)
+const categoryImages = ref([
+  { name: 'mode', image: '/images/category-mode.jpg' },
+  { name: 'mobilier', image: '/images/category-mobilier.jpg' },
+  { name: 'accessoires', image: '/images/category-accessoires.jpg' },
+  { name: 'electronique_vintage', image: '/images/category-electronique-vintage.jpg' },
+  { name: 'art', image: '/images/category-art.jpg' },
+  { name: 'autre', image: '/images/category-autre.jpg' },
+])
+
+// Traduction des noms de catégories pour affichage
+const formatCategoryName = (category) => {
+  const translations = {
+    'mode': 'Mode',
+    'mobilier': 'Mobilier',
+    'accessoires': 'Accessoires',
+    'electronique_vintage': 'Électronique Vintage',
+    'art': 'Art',
+    'autre': 'Autre'
+  }
+  return translations[category] || category
+}
+
+// Encoder le titre pour l'URL
+const encodeTitle = (title) =>
+  encodeURIComponent(
+    title.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-')
+  )
+
+// Computed pour le scroll max
+const maxScroll = computed(() => {
+  if (!carouselContainer.value) return 0
+  return carouselContainer.value.scrollWidth - carouselContainer.value.clientWidth
+})
+
+// Computed pour la page actuelle (pour l'indicateur)
+const currentPage = computed(() => {
+  if (!carouselContainer.value) return 0
+  const itemWidth = 240 + 24 // largeur + gap
+  return Math.round(scrollPosition.value / (itemWidth * 5))
+})
+
+// Méthodes de scroll
+const scrollLeft = () => {
+  if (carouselContainer.value) {
+    const scrollAmount = carouselContainer.value.clientWidth * 0.8
+    carouselContainer.value.scrollBy({
+      left: -scrollAmount,
+      behavior: 'smooth'
+    })
   }
 }
 
+const scrollRight = () => {
+  if (carouselContainer.value) {
+    const scrollAmount = carouselContainer.value.clientWidth * 0.8
+    carouselContainer.value.scrollBy({
+      left: scrollAmount,
+      behavior: 'smooth'
+    })
+  }
+}
+
+const updateScrollPosition = () => {
+  if (carouselContainer.value) {
+    scrollPosition.value = carouselContainer.value.scrollLeft
+  }
+}
+
+// Auto-scroll automatique
+const startAutoScroll = () => {
+  stopAutoScroll() // Clear any existing interval
+  
+  autoScrollInterval.value = setInterval(() => {
+    if (!isHovering.value && carouselContainer.value) {
+      // Si on est à la fin, revenir au début
+      if (scrollPosition.value >= maxScroll.value - 10) {
+        carouselContainer.value.scrollTo({
+          left: 0,
+          behavior: 'smooth'
+        })
+      } else {
+        // Sinon, scroller vers la droite
+        scrollRight()
+      }
+    }
+  }, 5000) // 5 secondes
+}
+
+const stopAutoScroll = () => {
+  if (autoScrollInterval.value) {
+    clearInterval(autoScrollInterval.value)
+    autoScrollInterval.value = null
+  }
+}
+
+const handleMouseEnter = () => {
+  isHovering.value = true
+}
+
+const handleMouseLeave = () => {
+  isHovering.value = false
+}
+
+// Charger les catégories
 const loadCategories = async () => {
   try {
-    categories.value = await productService.getCategories()
+    const data = await productService.getCategories()
+    console.log('📦 Catégories reçues de l\'API:', data)
+    
+    // FALLBACK : Si vide ou null, utiliser les catégories par défaut
+    if (!data || data.length === 0) {
+      console.log('⚠️ API retourne vide, utilisation des catégories par défaut')
+      categories.value = [
+        'mode',
+        'mobilier',
+        'accessoires',
+        'electronique_vintage',
+        'art',
+        'autre'
+      ]
+    } else {
+      categories.value = data
+    }
+    
+    // Mettre à jour categoryImages avec les vraies catégories
+    categoryImages.value = categories.value.map(cat => ({
+      name: cat,
+      image: `/images/category-${cat.replace(/_/g, '-')}.jpg`
+    }))
+    
+    console.log('✅ Categories finales:', categories.value)
+    console.log('✅ CategoryImages:', categoryImages.value)
   } catch (error) {
-    console.error('Erreur chargement catégories:', error)
+    console.error('❌ Error loading categories:', error)
+    
+    // FALLBACK en cas d'erreur
+    categories.value = [
+      'mode',
+      'mobilier',
+      'accessoires',
+      'electronique_vintage',
+      'art',
+      'autre'
+    ]
+    
+    categoryImages.value = categories.value.map(cat => ({
+      name: cat,
+      image: `/images/category-${cat.replace(/_/g, '-')}.jpg`
+    }))
   }
 }
 
-const isFavorite = (productId) => favorites.value.includes(productId)
-
-const toggleFavorite = (productId) => {
-  if (isFavorite(productId)) {
-    favorites.value = favorites.value.filter(id => id !== productId)
-  } else {
-    favorites.value.push(productId)
+// Charger tous les produits
+const loadProducts = async () => {
+  loadingProducts.value = true
+  try {
+    const data = await productService.getAllProducts({ per_page: 12 })
+    allProducts.value = data.data || data || []
+  } catch (error) {
+    console.error('Error loading products:', error)
+  } finally {
+    loadingProducts.value = false
+    
+    // Démarrer l'auto-scroll une fois les produits chargés
+    setTimeout(() => {
+      startAutoScroll()
+    }, 1000)
   }
-  localStorage.setItem('favorites', JSON.stringify(favorites.value))
 }
 
-const openProductModal = (product) => {
-  selectedProduct.value = product
-  document.body.style.overflow = 'hidden'
-}
+onMounted(async () => {
+  await Promise.all([
+    loadCategories(),
+    loadProducts()
+  ])
+})
 
-const closeModal = () => {
-  selectedProduct.value = null
-  document.body.style.overflow = 'auto'
-}
-
-const getConditionLabel = (condition) => {
-  const labels = {
-    neuf: 'Neuf',
-    excellent: 'Excellent',
-    tres_bon: 'Très bon état',
-    bon: 'Bon état',
-    acceptable: 'État correct',
-    a_restaurer: 'À restaurer'
-  }
-  return labels[condition] || condition
-}
-
-onMounted(() => {
-  loadFeaturedProducts()
-  loadCategories()
+onUnmounted(() => {
+  stopAutoScroll()
 })
 </script>
 
 <style scoped>
-.modal-enter-active,
-.modal-leave-active {
-  transition: all 0.3s ease;
-}
-
-.modal-enter-from,
-.modal-leave-to {
-  opacity: 0;
-  transform: scale(0.9);
-}
-
-@keyframes fade-in {
+/* Animation fade in up pour les produits */
+@keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(30px);
   }
   to {
     opacity: 1;
@@ -373,7 +517,31 @@ onMounted(() => {
   }
 }
 
-.animate-fade-in {
-  animation: fade-in 1s ease-out;
+.animate-fadeInUp {
+  animation: fadeInUp 0.6s ease-out forwards;
+  opacity: 0;
+}
+
+/* Masquer la scrollbar mais garder le scroll */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
+}
+
+/* Line clamp pour limiter le texte à 2 lignes */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth; 
 }
 </style>

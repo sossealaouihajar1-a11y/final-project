@@ -1,55 +1,32 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="bg-white min-h-screen flex flex-col">
     <!-- Header -->
-    <nav class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center h-16">
-          <div class="flex items-center space-x-8">
-            <router-link to="/products" class="flex items-center space-x-2">
-              <div class="w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center">
-                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <span class="text-xl font-bold text-gray-900">Vintage Shop</span>
-            </router-link>
-            <router-link to="/products" class="text-sm font-medium text-gray-700 hover:text-indigo-600">
-              Catalogue
-            </router-link>
-          </div>
-          <div class="flex items-center space-x-6">
-            <router-link to="/favorites" class="relative text-gray-600 hover:text-red-500 transition">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-              </svg>
-            </router-link>
-            <router-link to="/cart" class="relative text-gray-600 hover:text-indigo-600 transition">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-            </router-link>
-            <button @click="handleLogout" class="text-sm font-medium text-red-600 hover:text-red-700">
-              Déconnexion
-            </button>
-          </div>
-        </div>
-      </div>
-    </nav>
+    <Header />
 
-    <main class="max-w-7xl mx-auto px-4 py-8">
-      <!-- Titre -->
-      <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 mb-2">Mon Compte</h1>
-        <p class="text-gray-600">Bonjour {{ authStore.user?.name }} !</p>
+    <!-- ================= HERO ================= -->
+    <section class="bg-[#f2f1ed] border-b border-gray-200">
+      <div class="max-w-7xl mx-auto px-6 py-14">
+        <p class="uppercase tracking-[0.35em] text-xs text-gray-500 mb-4">
+          Espace client
+        </p>
+        <h1 class="text-4xl md:text-5xl font-serif text-gray-900 mb-4">
+          Mon Compte
+        </h1>
+        <p class="text-gray-600 max-w-2xl">
+          Bienvenue {{ authStore.user?.name }} ! Gérez votre profil et vos commandes.
+        </p>
       </div>
+    </section>
 
+    <!-- ================= CONTENT ================= -->
+    <main class="max-w-7xl mx-auto px-6 py-16 flex-grow">
       <!-- Navigation Tabs -->
-      <div class="mb-8 border-b border-gray-200">
+      <div class="mb-12 border-b border-gray-200 overflow-x-auto">
         <nav class="flex space-x-8">
           <button
             @click="activeTab = 'profile'"
-            :class="activeTab === 'profile' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
-            class="pb-4 px-1 border-b-2 font-medium text-sm transition"
+            :class="activeTab === 'profile' ? 'border-[#8b1c3d] text-[#8b1c3d]' : 'border-transparent text-gray-500 hover:text-gray-700'"
+            class="pb-4 px-1 border-b-2 font-medium text-sm transition whitespace-nowrap"
           >
             <div class="flex items-center space-x-2">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -61,41 +38,42 @@
 
           <button
             @click="activeTab = 'address'"
-            :class="activeTab === 'address' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
-            class="pb-4 px-1 border-b-2 font-medium text-sm transition"
+            :class="activeTab === 'address' ? 'border-[#8b1c3d] text-[#8b1c3d]' : 'border-transparent text-gray-500 hover:text-gray-700'"
+            class="pb-4 px-1 border-b-2 font-medium text-sm transition whitespace-nowrap"
           >
             <div class="flex items-center space-x-2">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
-              <span>Adresse de Livraison</span>
+              <span>Adresse</span>
             </div>
           </button>
 
           <button
             @click="activeTab = 'orders'"
-            :class="activeTab === 'orders' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
-            class="pb-4 px-1 border-b-2 font-medium text-sm transition"
+            :class="activeTab === 'orders' ? 'border-[#8b1c3d] text-[#8b1c3d]' : 'border-transparent text-gray-500 hover:text-gray-700'"
+            class="pb-4 px-1 border-b-2 font-medium text-sm transition whitespace-nowrap"
           >
             <div class="flex items-center space-x-2">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
               </svg>
-              <span>Mes Commandes</span>
+              <span>Commandes</span>
             </div>
           </button>
+          
           <button
             @click="activeTab = 'favorites'"
-            :class="activeTab === 'favorites' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
-            class="pb-4 px-1 border-b-2 font-medium text-sm transition relative"
+            :class="activeTab === 'favorites' ? 'border-[#8b1c3d] text-[#8b1c3d]' : 'border-transparent text-gray-500 hover:text-gray-700'"
+            class="pb-4 px-1 border-b-2 font-medium text-sm transition whitespace-nowrap relative"
           >
             <div class="flex items-center space-x-2">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
               </svg>
-              <span>Mes Favoris</span>
-              <span v-if="favoriteCount > 0" class="ml-2 bg-indigo-600 text-white text-xs font-bold rounded-full px-2 py-0.5">
+              <span>Favoris</span>
+              <span v-if="favoriteCount > 0" class="ml-2 bg-[#8b1c3d] text-white text-xs font-bold rounded-full px-2 py-0.5">
                 {{ favoriteCount }}
               </span>
             </div>
@@ -103,14 +81,14 @@
 
           <button
             @click="activeTab = 'reviews'"
-            :class="activeTab === 'reviews' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
-            class="pb-4 px-1 border-b-2 font-medium text-sm transition"
+            :class="activeTab === 'reviews' ? 'border-[#8b1c3d] text-[#8b1c3d]' : 'border-transparent text-gray-500 hover:text-gray-700'"
+            class="pb-4 px-1 border-b-2 font-medium text-sm transition whitespace-nowrap"
           >
             <div class="flex items-center space-x-2">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
               </svg>
-              <span>Mes Avis</span>
+              <span>Avis</span>
             </div>
           </button>
         </nav>
@@ -121,7 +99,7 @@
         <!-- Informations Personnelles -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center space-x-2">
-            <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-6 h-6 text-[#8b1c3d]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
             <span>Informations Personnelles</span>
@@ -134,7 +112,7 @@
                 v-model="profileForm.name"
                 type="text"
                 required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1c3d] focus:border-transparent"
               />
             </div>
 
@@ -144,7 +122,7 @@
                 v-model="profileForm.email"
                 type="email"
                 required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1c3d] focus:border-transparent"
               />
             </div>
 
@@ -153,7 +131,7 @@
               <input
                 v-model="profileForm.phone"
                 type="tel"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1c3d] focus:border-transparent"
                 placeholder="+33 6 12 34 56 78"
               />
             </div>
@@ -165,7 +143,7 @@
             <button
               type="submit"
               :disabled="profileLoading"
-              class="w-full px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition disabled:opacity-50"
+              class="w-full px-6 py-3 bg-[#8b1c3d] text-white font-semibold rounded-lg hover:bg-[#5a4a3a] transition disabled:opacity-50"
             >
               {{ profileLoading ? 'Enregistrement...' : 'Enregistrer les modifications' }}
             </button>
@@ -175,7 +153,7 @@
         <!-- Changer le Mot de Passe -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center space-x-2">
-            <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-6 h-6 text-[#8b1c3d]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
             <span>Changer le Mot de Passe</span>
@@ -188,7 +166,7 @@
                 v-model="passwordForm.current_password"
                 type="password"
                 required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1c3d] focus:border-transparent"
               />
             </div>
 
@@ -221,7 +199,7 @@
             <button
               type="submit"
               :disabled="passwordLoading"
-              class="w-full px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition disabled:opacity-50"
+              class="w-full px-6 py-3 bg-[#8b1c3d] text-white font-semibold rounded-lg hover:bg-[#5a4a3a] transition disabled:opacity-50"
             >
               {{ passwordLoading ? 'Modification...' : 'Changer le mot de passe' }}
             </button>
@@ -233,7 +211,7 @@
       <div v-if="activeTab === 'address'" class="max-w-2xl">
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center space-x-2">
-            <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-6 h-6 text-[#8b1c3d]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
@@ -241,12 +219,12 @@
           </h2>
 
           <!-- Adresse Actuelle -->
-          <div v-if="shippingAddress && !editingAddress" class="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+          <div v-if="shippingAddress && !editingAddress" class="mb-6 p-4 bg-[#f2f1ed] rounded-lg border border-gray-200">
             <div class="flex justify-between items-start mb-3">
               <h3 class="font-semibold text-gray-900">Adresse Enregistrée</h3>
               <button
                 @click="startEditingAddress"
-                class="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                class="text-[#8b1c3d] hover:text-[#5a4a3a] text-sm font-medium"
               >
                 Modifier
               </button>
@@ -353,7 +331,7 @@
               <button
                 type="submit"
                 :disabled="addressLoading"
-                class="flex-1 px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition disabled:opacity-50"
+                class="flex-1 px-6 py-3 bg-[#8b1c3d] text-white font-semibold rounded-lg hover:bg-[#5a4a3a] transition disabled:opacity-50"
               >
                 {{ addressLoading ? 'Enregistrement...' : 'Enregistrer l\'adresse' }}
               </button>
@@ -398,14 +376,14 @@
           </svg>
           <h3 class="mt-2 text-sm font-medium text-gray-900">Aucun favori</h3>
           <p class="mt-1 text-sm text-gray-500">Vous n'avez pas encore sauvegardé de produits.</p>
-          <router-link to="/products" class="mt-6 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+          <router-link to="/products" class="mt-6 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#8b1c3d] hover:bg-[#5a4a3a]">
             Découvrir les produits
           </router-link>
         </div>
 
         <!-- Loading State -->
         <div v-if="favoritesLoading" class="flex justify-center items-center py-12">
-          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#8b1c3d]"></div>
         </div>
 
         <!-- Error State -->
@@ -448,7 +426,7 @@
 
               <!-- Content -->
               <div class="p-5">
-                <h3 class="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 min-h-[3.5rem] group-hover:text-indigo-600 transition cursor-pointer" @click="goToProduct(favorite.product.id)">
+                <h3 class="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 min-h-[3.5rem] group-hover:text-[#8b1c3d] transition cursor-pointer" @click="goToProduct(favorite.product.id)">
                   {{ favorite.product?.title }}
                 </h3>
                 
@@ -458,7 +436,7 @@
                 
                 <!-- Price -->
                 <div class="flex items-center justify-between mb-3">
-                  <div class="text-2xl font-bold text-indigo-600">
+                  <div class="text-2xl font-bold text-[#8b1c3d]">
                     {{ favorite.product?.price }}€
                   </div>
                 </div>
@@ -473,7 +451,7 @@
                 <!-- View Button -->
                 <button
                   @click="goToProduct(favorite.product.id)"
-                  class="w-full px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-medium text-sm"
+                  class="w-full px-4 py-2 bg-[#8b1c3d] text-white rounded-lg hover:bg-[#5a4a3a] transition font-medium text-sm"
                 >
                   Voir le produit
                 </button>
@@ -519,6 +497,7 @@ import profileService from '@/services/profileService'
 import shippingAddressService from '@/services/shippingAddressService'
 import orderService from '@/services/orderService'
 import favoritesService from '@/services/favoritesService'
+import Header from '@/components/Header.vue'
 import OrdersHistory from '@/components/OrdersHistory.vue'
 import MyReviews from '@/components/MyReviews.vue'
 
