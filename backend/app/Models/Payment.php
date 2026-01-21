@@ -11,7 +11,7 @@ class Payment extends Model
 {
     use HasFactory, HasUuids, SoftDeletes;
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'order_id',
