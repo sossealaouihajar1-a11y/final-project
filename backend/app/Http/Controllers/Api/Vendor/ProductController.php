@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\VintageProduct;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -39,6 +41,14 @@ class ProductController extends Controller
         // Pagination
         $perPage = $request->input('per_page', 15);
         $products = $query->orderBy('created_at', 'desc')->paginate($perPage);
+
+        // Transform image URLs to full URLs
+        $products->getCollection()->transform(function ($product) {
+            if ($product->image_url && !filter_var($product->image_url, FILTER_VALIDATE_URL)) {
+                $product->image_url = url($product->image_url);
+            }
+            return $product;
+        });
 
         return response()->json($products);
     }
@@ -78,16 +88,67 @@ class ProductController extends Controller
     }
 
     /**
-     * Get categories list
+     * Get categories list from database enum
      */
     public function categories()
     {
-        $categories = VintageProduct::distinct('category')
-            ->pluck('category')
-            ->filter()
-            ->values();
-
-        return response()->json($categories);
+        try {
+            // Récupérer depuis l'enum de la base de données
+            $enumValues = DB::select("
+                SHOW COLUMNS 
+                FROM vintage_products 
+                WHERE Field = 'category'
+            ");
+            
+            if (!empty($enumValues)) {
+                $type = $enumValues[0]->Type;
+                
+                // Log pour debug
+                \Log::info('🔍 Enum type trouvé:', ['type' => $type]);
+                
+                // Parser l'enum : enum('mode','mobilier',...)
+                preg_match('/^enum\((.*)\)$/', $type, $matches);
+                
+                if (!empty($matches[1])) {
+                    // Extraire les valeurs
+                    $categories = array_map(function($value) {
+                        return trim($value, "'");
+                    }, explode(',', $matches[1]));
+                    
+                    \Log::info('✅ Catégories trouvées:', $categories);
+                    
+                    return response()->json($categories);
+                }
+            }
+            
+            // Si la méthode enum ne fonctionne pas, fallback
+            \Log::warning('⚠️ Enum non trouvé, utilisation du fallback');
+            
+            return response()->json([
+                'mode',
+                'mobilier',
+                'accessoires',
+                'electronique_vintage',
+                'art',
+                'autre'
+            ]);
+            
+        } catch (\Exception $e) {
+            \Log::error('❌ Erreur categories:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            // Fallback en cas d'erreur
+            return response()->json([
+                'mode',
+                'mobilier',
+                'accessoires',
+                'electronique_vintage',
+                'art',
+                'autre'
+            ]);
+        }
     }
 
     /**
@@ -95,33 +156,88 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'category' => 'required|string',
-            'price' => 'required|numeric|min:0',
-            'promotion' => 'nullable|numeric|min:0|max:100',
-            'condition' => 'required|in:neuf,excellent,tres_bon,bon,acceptable,a_restaurer',
-            'stock' => 'required|integer|min:0',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
-            'status' => 'nullable|in:active,inactive,sold_out,pending',
-        ]);
+        try {
+            \Log::info('📦 Product creation request received', [
+                'data' => $request->except(['image']),
+                'has_image' => $request->hasFile('image')
+            ]);
 
-        $validated['vendeur_id'] = Auth::id();
-        $validated['status'] = $validated['status'] ?? 'active';
-        $validated['promotion'] = $validated['promotion'] ?? 0;
+            $validated = $request->validate([
+                'title' => 'required|string|max:255',
+                'description' => 'required|string',
+                'category' => 'required|string|in:mode,mobilier,accessoires,electronique_vintage,art,autre',
+                'price' => 'required|numeric|min:0',
+                'promotion' => 'nullable|numeric|min:0|max:100',
+                'condition' => 'required|in:neuf,excellent,tres_bon,bon,acceptable,a_restaurer',
+                'stock' => 'required|integer|min:0',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+                'status' => 'nullable|in:active,inactive,sold_out,pending',
+            ]);
 
-        // Handle image upload
-        if ($request->hasFile('image')) {
-            $file = $request->file('image');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $path = $file->storeAs('products', $filename, 'public');
-            $validated['image_url'] = '/storage/' . $path;
+            $validated['vendeur_id'] = Auth::id();
+            $validated['status'] = $validated['status'] ?? 'active';
+            $validated['promotion'] = $validated['promotion'] ?? 0;
+
+            // Handle image upload - save to public/images
+            if ($request->hasFile('image')) {
+                try {
+                    $file = $request->file('image');
+                    $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                    
+                    // Ensure the directory exists
+                    $imagesDir = public_path('images');
+                    if (!file_exists($imagesDir)) {
+                        mkdir($imagesDir, 0755, true);
+                    }
+                    
+                    // Move file to public/images
+                    if ($file->move($imagesDir, $filename)) {
+                        // Return full URL for the image
+                        $validated['image_url'] = url('/images/' . $filename);
+                        \Log::info('✅ Image uploaded successfully:', ['path' => $validated['image_url']]);
+                    } else {
+                        \Log::error('❌ Failed to move image file');
+                        return response()->json([
+                            'message' => 'Erreur lors de l\'upload de l\'image',
+                        ], 500);
+                    }
+                } catch (\Exception $e) {
+                    \Log::error('❌ Image upload error:', ['message' => $e->getMessage()]);
+                    return response()->json([
+                        'message' => 'Erreur lors de l\'upload de l\'image: ' . $e->getMessage(),
+                    ], 500);
+                }
+            }
+
+            $product = VintageProduct::create($validated);
+
+            // Transform image URL to full URL if needed
+            if ($product->image_url && !filter_var($product->image_url, FILTER_VALIDATE_URL)) {
+                $product->image_url = url($product->image_url);
+            }
+
+            \Log::info('✅ Product created successfully:', ['id' => $product->id]);
+
+            return response()->json([
+                'message' => 'Produit créé avec succès',
+                'product' => $product
+            ], 201);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('❌ Product validation error:', ['errors' => $e->errors()]);
+            return response()->json([
+                'message' => 'Erreur de validation',
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (\Exception $e) {
+            \Log::error('❌ Product creation error:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json([
+                'message' => 'Erreur lors de la création du produit: ' . $e->getMessage(),
+            ], 500);
         }
-
-        $product = VintageProduct::create($validated);
-
-        return response()->json($product, 201);
     }
 
     /**
@@ -132,6 +248,11 @@ class ProductController extends Controller
         $user = Auth::user();
         $product = VintageProduct::where('vendeur_id', $user->id)
             ->findOrFail($id);
+
+        // Transform image URL to full URL if needed
+        if ($product->image_url && !filter_var($product->image_url, FILTER_VALIDATE_URL)) {
+            $product->image_url = url($product->image_url);
+        }
 
         return response()->json($product);
     }
@@ -157,15 +278,50 @@ class ProductController extends Controller
             'status' => 'nullable|in:active,inactive,sold_out,pending',
         ]);
 
-        // Handle image upload
+        // Handle image upload - save to public/images
         if ($request->hasFile('image')) {
-            $file = $request->file('image');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $path = $file->storeAs('products', $filename, 'public');
-            $validated['image_url'] = '/storage/' . $path;
+            try {
+                // Delete old image if exists
+                if ($product->image_url) {
+                    // Extract filename from full URL or relative path
+                    $oldImagePath = str_replace(url('/'), '', $product->image_url);
+                    $oldImageFullPath = public_path($oldImagePath);
+                    if (file_exists($oldImageFullPath)) {
+                        unlink($oldImageFullPath);
+                    }
+                }
+                
+                $file = $request->file('image');
+                $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                
+                // Ensure the directory exists
+                $imagesDir = public_path('images');
+                if (!file_exists($imagesDir)) {
+                    mkdir($imagesDir, 0755, true);
+                }
+                
+                // Move file to public/images
+                if ($file->move($imagesDir, $filename)) {
+                    // Return full URL for the image
+                    $validated['image_url'] = url('/images/' . $filename);
+                    \Log::info('✅ Image updated successfully:', ['path' => $validated['image_url']]);
+                } else {
+                    \Log::error('❌ Failed to move image file');
+                }
+            } catch (\Exception $e) {
+                \Log::error('❌ Image update error:', ['message' => $e->getMessage()]);
+            }
         }
 
         $product->update(array_filter($validated));
+
+        // Refresh product to get updated data
+        $product->refresh();
+
+        // Transform image URL to full URL if needed
+        if ($product->image_url && !filter_var($product->image_url, FILTER_VALIDATE_URL)) {
+            $product->image_url = url($product->image_url);
+        }
 
         return response()->json($product);
     }
