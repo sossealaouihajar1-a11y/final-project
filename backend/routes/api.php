@@ -16,6 +16,9 @@ use App\Http\Controllers\Api\Vendor\OrderController as VendorOrderController;
 use App\Http\Controllers\Api\Vendor\StockController as VendorStockController;
 use App\Http\Controllers\Api\ReviewController;  
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\Api\ReviewController;
+use App\Http\Controllers\Api\PaymentController;
+
 use Illuminate\Support\Facades\Route;
 
 // contact form
@@ -29,6 +32,8 @@ Route::prefix('auth')->group(function () {
 });
 
 Route::get('/products/{productId}/reviews', [ReviewController::class, 'index']);
+
+// Stripe webhook route removed (webhook handling disabled for local/dev)
 
 // Routes protégées (authentification requise)
 Route::middleware('auth:sanctum')->group(function () {
@@ -56,6 +61,13 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Routes Panier & Commandes
     Route::post('/cart/checkout', [CartController::class, 'checkout']);
+    
+    // Routes Paiements
+    Route::prefix('payments')->group(function () {
+        Route::post('/create-intent', [PaymentController::class, 'createIntent']);
+        Route::post('/confirm', [PaymentController::class, 'confirmPayment']);
+        Route::get('/{paymentIntentId}/status', [PaymentController::class, 'getStatus']);
+    });
     
     Route::prefix('orders')->group(function () {
         Route::get('/', [OrderController::class, 'index']);

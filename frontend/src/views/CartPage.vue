@@ -415,11 +415,6 @@ const router = useRouter()
 const cartStore = useCartStore()
 
 const processing = ref(false)
-const shippingAddress = ref(null)
-const paymentMethod = ref('cash_on_delivery')
-const orderConfirmed = ref(false)
-const confirmedOrder = ref(null)
-const paymentProcessing = ref(false)
 
 const notification = ref({
   show: false,
@@ -427,13 +422,7 @@ const notification = ref({
   type: 'success'
 })
 
-// Computed property pour vérifier si une adresse existe
-const hasShippingAddress = computed(() => {
-  return shippingAddress.value !== null && 
-         shippingAddress.value !== undefined && 
-         typeof shippingAddress.value === 'object' &&
-         Object.keys(shippingAddress.value).length > 0
-})
+// Removed: hasShippingAddress - no longer needed in cart
 
 // Calculs
 const subtotal = computed(() => {
@@ -505,25 +494,8 @@ const proceedToCheckout = async () => {
     return
   }
 
-  // Vérification 2: Méthode de paiement
-  if (!paymentMethod.value) {
-    showNotification('Veuillez sélectionner une méthode de paiement', 'error')
-    return
-  }
-
-  // Vérification 3: Adresse de livraison
-  if (!hasShippingAddress.value) {
-    console.log('❌ Pas d\'adresse - redirection vers dashboard')
-    showNotification('Veuillez enregistrer une adresse de livraison dans votre compte', 'error')
-    setTimeout(() => {
-      router.push('/client/dashboard')
-    }, 2000)
-    return
-  }
-
-  console.log('✅ Toutes les vérifications passées - Création de la commande')
   processing.value = true
-
+  
   try {
     const items = cartStore.items.map(item => ({
       product_id: item.id,
@@ -549,12 +521,8 @@ const proceedToCheckout = async () => {
     showNotification('Commande créée avec succès !', 'success')
 
   } catch (error) {
-    console.error('❌ Erreur lors de la commande:', error)
-    console.error('Détails de l\'erreur:', error.response?.data)
-    showNotification(
-      error.response?.data?.message || 'Erreur lors de la création de la commande',
-      'error'
-    )
+    console.error('Erreur:', error)
+    showNotification('Erreur lors de la redirection', 'error')
   } finally {
     processing.value = false
   }
@@ -580,12 +548,8 @@ const proceedToPayment = async () => {
   }
 }
 
-onMounted(async () => {
-  console.log('🚀 Component monté - Chargement de l\'adresse')
-  await loadShippingAddress()
-  console.log('📊 État final après chargement:')
-  console.log('  - hasShippingAddress:', hasShippingAddress.value)
-  console.log('  - shippingAddress:', shippingAddress.value)
+onMounted(() => {
+  // Component ready
 })
 </script>
 

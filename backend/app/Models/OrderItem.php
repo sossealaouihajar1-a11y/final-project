@@ -45,4 +45,9 @@ class OrderItem extends Model
     {
         return $this->price * $this->quantity;
     }
+
+    public function getTotalPriceAttribute()
+    {
+        return $this->price * $this->quantity;
+    }
 }
