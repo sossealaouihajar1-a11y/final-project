@@ -265,6 +265,11 @@
         <p class="mt-3 text-xs italic">Ces cartes ne fonctionnent qu'en mode test. N'utilisez jamais de vraies cartes ici.</p>
       </div>
     </div>
+    
+    <div class="flex justify-end mt-4">
+      <button type="submit" @click.prevent="handleStripePayment" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">Payer maintenant</button>
+    </div>
+
   </form>
             </div>
 
@@ -379,7 +384,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { loadStripe } from '@stripe/stripe-js'
 import { useCartStore } from '@/stores/cartStore'
@@ -679,6 +684,43 @@ onMounted(async () => {
   }
   loadShippingAddress()
   await initializeStripe()
+})
+
+// Ensure the Stripe card element is mounted whenever we enter step 2 and Stripe is selected
+watch(
+  [currentStep, paymentMethod, stripeLoaded],
+  ([step, method, loaded]) => {
+    if (step === 2 && method === 'stripe' && loaded) {
+      // If card element already exists, do nothing
+      if (!cardElement.value) {
+        // Defer to next tick to ensure DOM is ready
+        setTimeout(() => {
+          setupCardElement()
+        }, 0)
+      }
+    } else {
+      // If leaving Stripe payment or step, unmount card element to avoid duplicates
+      if (cardElement.value) {
+        try {
+          cardElement.value.unmount()
+        } catch (e) {
+          // ignore
+        }
+        cardElement.value = null
+      }
+    }
+  }
+)
+
+onBeforeUnmount(() => {
+  if (cardElement.value) {
+    try {
+      cardElement.value.unmount()
+    } catch (e) {
+      // ignore
+    }
+    cardElement.value = null
+  }
 })
 </script>
 
