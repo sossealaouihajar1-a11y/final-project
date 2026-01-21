@@ -8,6 +8,7 @@ use App\Models\OrderItem;
 use App\Models\VintageProduct;
 use App\Models\Invoice;
 use App\Models\ShippingAddress;
+use App\Models\Payment;
 use App\Mail\OrderConfirmationMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -21,12 +22,38 @@ class CartController extends Controller
      */
    public function checkout(Request $request)
 {
+    // Log incoming data
+    Log::info('Checkout request:', [
+        'items' => $request->items,
+        'product_ids' => collect($request->items)->pluck('product_id')->toArray()
+    ]);
+
+    // Validations de base
     $request->validate([
         'items' => 'required|array|min:1',
-        'items.*.product_id' => 'required|uuid|exists:vintage_products,id',
+        'items.*.product_id' => 'required|string',
         'items.*.quantity' => 'required|integer|min:1',
-        'payment_method' => 'required|in:stripe,cash_on_delivery', // NOUVEAU
+        'payment_method' => 'required|in:stripe,cash_on_delivery',
     ]);
+
+    // Vérifier que les products_id existent
+    $productIds = collect($request->items)->pluck('product_id')->toArray();
+    $existingProducts = VintageProduct::whereIn('id', $productIds)->pluck('id')->toArray();
+    
+    Log::info('Product check:', [
+        'requested_ids' => $productIds,
+        'existing_ids' => $existingProducts,
+        'total_products_in_db' => VintageProduct::count()
+    ]);
+    
+    foreach ($productIds as $productId) {
+        if (!in_array($productId, $existingProducts)) {
+            return response()->json([
+                'message' => 'Un ou plusieurs produits n\'existent pas',
+                'product_id' => $productId
+            ], 422);
+        }
+    }
 
     $user = $request->user();
 
@@ -120,14 +147,27 @@ class CartController extends Controller
         $pdfPath = storage_path('app/invoices/invoice-' . $invoiceNumber . '.pdf');
         $pdf->save($pdfPath);
 
-        // Envoyer email
-        Mail::to($user->email)->send(new \App\Mail\OrderConfirmationMail($order, $pdfPath));
+        // Create Payment record
+        $payment = Payment::create([
+            'order_id' => $order->id,
+            'user_id' => $user->id,
+            'payment_method' => $request->payment_method,
+            'amount' => $totalPrice,
+            'status' => $request->payment_method === 'stripe' ? 'pending' : 'pending',
+        ]);
+
+        // Send email only for cash_on_delivery
+        // For stripe, email is sent after successful payment
+        if ($request->payment_method === 'cash_on_delivery') {
+            Mail::to($user->email)->send(new \App\Mail\OrderConfirmationMail($order, $pdfPath));
+        }
 
         DB::commit();
 
         return response()->json([
             'message' => 'Commande créée avec succès',
             'order' => $order->load(['orderItems.vintageProduct', 'invoice']),
+            'payment' => $request->payment_method === 'stripe' ? $payment : null,
         ], 201);
 
     } catch (\Exception $e) {

@@ -6,7 +6,7 @@
         <h3 class="text-lg font-semibold text-gray-900">Mes Produits</h3>
         <p class="text-sm text-gray-600 mt-1">Gérez vos produits vintage</p>
       </div>
-      <button @click="showAddModal = true" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+      <button @click="openAddModal" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
         + Ajouter un produit
       </button>
     </div>
@@ -102,7 +102,7 @@
 
     <!-- Add/Edit Modal -->
     <div v-if="showAddModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+      <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md max-h-[90vh] flex flex-col">
         <h3 class="text-lg font-semibold text-gray-900 mb-4">
           {{ editingProduct ? 'Modifier le produit' : 'Ajouter un produit' }}
         </h3>
@@ -147,7 +147,7 @@
           </div>
 
           <div class="flex justify-end gap-3 mt-6">
-            <button type="button" @click="showAddModal = false" class="px-4 py-2 text-gray-700 border rounded-lg hover:bg-gray-50">
+            <button type="button" @click="closeModal" class="px-4 py-2 text-gray-700 border rounded-lg hover:bg-gray-50">
               Annuler
             </button>
             <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
@@ -227,6 +227,22 @@ const applyFilters = () => {
   loadProducts()
 }
 
+const openAddModal = () => {
+  editingProduct.value = null
+  form.value = {
+    title: '',
+    description: '',
+    category: '',
+    price: 0,
+    stock: 0,
+    condition: 'bon',
+    promotion: 0,
+    image: null,
+    image_preview: ''
+  }
+  showAddModal.value = true
+}
+
 const editProduct = (product) => {
   editingProduct.value = product
   form.value = { 
@@ -235,6 +251,22 @@ const editProduct = (product) => {
     image_preview: product.image_url || ''
   }
   showAddModal.value = true
+}
+
+const closeModal = () => {
+  showAddModal.value = false
+  editingProduct.value = null
+  form.value = {
+    title: '',
+    description: '',
+    category: '',
+    price: 0,
+    stock: 0,
+    condition: 'bon',
+    promotion: 0,
+    image: null,
+    image_preview: ''
+  }
 }
 
 const onImageSelected = (event) => {

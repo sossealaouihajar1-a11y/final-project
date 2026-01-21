@@ -13,11 +13,11 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         // CORS must be first in the middleware stack
-        $middleware->statefulApi();
-        
-        // Add CORS handling for credentials
         $middleware->append(\Illuminate\Http\Middleware\HandleCors::class);
-
+        
+        // We're using stateless Bearer token auth, NOT session-based auth
+        // So we don't call statefulApi() which would enable sessions/cookies
+        
         // Alias middleware personnalisés
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckRole::class,

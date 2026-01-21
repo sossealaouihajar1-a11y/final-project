@@ -15,6 +15,7 @@
       <StatsCard title="Livrées" :value="orderStats.delivered_orders || 0" color="green" icon="✅" />
     </div>
 
+
     <!-- Filters -->
     <div class="bg-white rounded-lg shadow p-4">
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -83,7 +84,7 @@
               {{ formatDate(order.created_at) }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-              {{ order.items.length }} article(s)
+              {{ order.order_items.length  }} article(s)
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
               {{ order.total_price }}€
@@ -127,9 +128,12 @@
         <div class="mb-4">
           <h4 class="font-semibold text-gray-900 mb-2">Articles</h4>
           <div class="space-y-2">
-            <div v-for="item in selectedOrder.items" :key="item.id" class="flex justify-between p-2 bg-gray-50 rounded">
-              <span class="text-sm text-gray-600">{{ item.product.title }}</span>
-              <span class="text-sm font-medium text-gray-900">{{ item.quantity }}x {{ item.total_price }}€</span>
+            <div v-for="item in selectedOrder.order_items" :key="item.id" class="flex justify-between p-2 bg-gray-50 rounded">
+              <span class="text-sm text-gray-600">{{ item.vintage_product?.title }}</span>
+              <span class="text-sm font-medium text-gray-900">{{ item.quantity }}x {{ item.price }}€</span>
+            </div>
+            <div v-if="!selectedOrder.order_items || selectedOrder.order_items.length === 0" class="text-sm text-gray-500">
+              Aucun article trouvé
             </div>
           </div>
         </div>

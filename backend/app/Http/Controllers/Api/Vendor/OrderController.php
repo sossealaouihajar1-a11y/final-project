@@ -16,24 +16,24 @@ class OrderController extends Controller
     {
         $user = Auth::user();
 
-        $query = Order::whereHas('items', function ($q) use ($user) {
-            $q->whereHas('product', function ($subQ) use ($user) {
+        $query = Order::whereHas('orderItems', function ($q) use ($user) {
+            $q->whereHas('vintageProduct', function ($subQ) use ($user) {
                 $subQ->where('vendeur_id', $user->id);
             });
         })->with(['user' => function ($q) {
             $q->select('id', 'name', 'email', 'phone');
-        }, 'items' => function ($q) use ($user) {
-            $q->whereHas('product', function ($subQ) use ($user) {
+        }, 'orderItems' => function ($q) use ($user) {
+            $q->whereHas('vintageProduct', function ($subQ) use ($user) {
                 $subQ->where('vendeur_id', $user->id);
-            })->with('product');
+            })->with('vintageProduct');
         }, 'shippingAddress']);
 
         // Filters
-        if ($request->has('status')) {
+        if ($request->filled('status')) {
             $query->where('status', $request->input('status'));
         }
 
-        if ($request->has('search')) {
+        if ($request->filled('search')) {
             $search = $request->input('search');
             $query->whereHas('user', function ($q) use ($search) {
                 $q->where('name', 'like', '%' . $search . '%')
@@ -41,16 +41,17 @@ class OrderController extends Controller
             });
         }
 
-        if ($request->has('date_from')) {
+        if ($request->filled('date_from')) {
             $query->whereDate('created_at', '>=', $request->input('date_from'));
         }
 
-        if ($request->has('date_to')) {
+        if ($request->filled('date_to')) {
             $query->whereDate('created_at', '<=', $request->input('date_to'));
         }
 
         $orders = $query->orderBy('created_at', 'desc')
             ->paginate($request->input('per_page', 15));
+
 
         return response()->json($orders);
     }
@@ -62,15 +63,15 @@ class OrderController extends Controller
     {
         $user = Auth::user();
 
-        $order = Order::whereHas('items', function ($q) use ($user) {
-            $q->whereHas('product', function ($subQ) use ($user) {
+        $order = Order::whereHas('orderItems', function ($q) use ($user) {
+            $q->whereHas('vintageProduct', function ($subQ) use ($user) {
                 $subQ->where('vendeur_id', $user->id);
             });
-        })->with(['user', 'items' => function ($q) use ($user) {
-            $q->whereHas('product', function ($subQ) use ($user) {
+        })->with(['user', 'orderItems' => function ($q) use ($user) {
+            $q->whereHas('vintageProduct', function ($subQ) use ($user) {
                 $subQ->where('vendeur_id', $user->id);
-            })->with('product');
-        }, 'shippingAddress', 'payment'])
+            })->with('vintageProduct');
+        }, 'shippingAddress', 'payments'])
         ->findOrFail($orderId);
 
         return response()->json($order);
@@ -83,8 +84,8 @@ class OrderController extends Controller
     {
         $user = Auth::user();
 
-        $order = Order::whereHas('items', function ($q) use ($user) {
-            $q->whereHas('product', function ($subQ) use ($user) {
+        $order = Order::whereHas('orderItems', function ($q) use ($user) {
+            $q->whereHas('vintageProduct', function ($subQ) use ($user) {
                 $subQ->where('vendeur_id', $user->id);
             });
         })->findOrFail($orderId);
@@ -106,8 +107,8 @@ class OrderController extends Controller
     {
         $user = Auth::user();
 
-        $orders = Order::whereHas('items', function ($q) use ($user) {
-            $q->whereHas('product', function ($subQ) use ($user) {
+        $orders = Order::whereHas('orderItems', function ($q) use ($user) {
+            $q->whereHas('vintageProduct', function ($subQ) use ($user) {
                 $subQ->where('vendeur_id', $user->id);
             });
         })->get();
@@ -127,7 +128,7 @@ class OrderController extends Controller
         $details = \DB::table('order_items')
             ->join('vintage_products', 'order_items.vintage_product_id', '=', 'vintage_products.id')
             ->where('vintage_products.vendeur_id', $user->id)
-            ->select(\DB::raw('COUNT(*) as items_count'), \DB::raw('SUM(order_items.total_price) as revenue'))
+            ->select(\DB::raw('COUNT(*) as items_count'), \DB::raw('SUM(order_items.price * order_items.quantity) as revenue'))
             ->first();
 
         $stats['total_items_sold'] = $details->items_count ?? 0;
@@ -144,17 +145,17 @@ class OrderController extends Controller
         $user = Auth::user();
 
         $orders = Order::where('status', $status)
-            ->whereHas('items', function ($q) use ($user) {
-                $q->whereHas('product', function ($subQ) use ($user) {
+            ->whereHas('orderItems', function ($q) use ($user) {
+                $q->whereHas('vintageProduct', function ($subQ) use ($user) {
                     $subQ->where('vendeur_id', $user->id);
                 });
             })
             ->with(['user' => function ($q) {
                 $q->select('id', 'name', 'email', 'phone');
-            }, 'items' => function ($q) use ($user) {
-                $q->whereHas('product', function ($subQ) use ($user) {
+            }, 'orderItems' => function ($q) use ($user) {
+                $q->whereHas('vintageProduct', function ($subQ) use ($user) {
                     $subQ->where('vendeur_id', $user->id);
-                })->with('product');
+                })->with('vintageProduct');
             }])
             ->orderBy('created_at', 'desc')
             ->paginate(15);
@@ -169,11 +170,11 @@ class OrderController extends Controller
     {
         $user = Auth::user();
 
-        $query = Order::whereHas('items', function ($q) use ($user) {
-            $q->whereHas('product', function ($subQ) use ($user) {
+        $query = Order::whereHas('orderItems', function ($q) use ($user) {
+            $q->whereHas('vintageProduct', function ($subQ) use ($user) {
                 $subQ->where('vendeur_id', $user->id);
             });
-        })->with(['user', 'items']);
+        })->with(['user', 'orderItems']);
 
         if ($request->has('status')) {
             $query->where('status', $request->input('status'));
@@ -183,7 +184,7 @@ class OrderController extends Controller
 
         $csv = "ID Commande,Date,Client,Email,Statut,Total,Produits\n";
         foreach ($orders as $order) {
-            $productCount = $order->items->count();
+            $productCount = $order->orderItems->count();
             $csv .= "{$order->id},{$order->created_at},{$order->user->name},{$order->user->email},{$order->status}," . number_format($order->total_price, 2) . ",{$productCount}\n";
         }
 

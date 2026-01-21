@@ -22,8 +22,8 @@ class ClientController extends Controller
         $query = User::query()
             ->where('role', 'client')
             ->whereHas('orders', function ($q) use ($user) {
-                $q->whereHas('items', function ($subQ) use ($user) {
-                    $subQ->whereHas('product', function ($prodQ) use ($user) {
+                $q->whereHas('orderItems', function ($subQ) use ($user) {
+                    $subQ->whereHas('vintageProduct', function ($prodQ) use ($user) {
                         $prodQ->where('vendeur_id', $user->id);
                     });
                 });
@@ -56,15 +56,15 @@ class ClientController extends Controller
 
         // Get all orders from this client that include products from this vendor
         $orders = Order::where('user_id', $clientId)
-            ->whereHas('items', function ($q) use ($user) {
-                $q->whereHas('product', function ($subQ) use ($user) {
+            ->whereHas('orderItems', function ($q) use ($user) {
+                $q->whereHas('vintageProduct', function ($subQ) use ($user) {
                     $subQ->where('vendeur_id', $user->id);
                 });
             })
-            ->with(['items' => function ($q) use ($user) {
-                $q->whereHas('product', function ($subQ) use ($user) {
+            ->with(['orderItems' => function ($q) use ($user) {
+                $q->whereHas('vintageProduct', function ($subQ) use ($user) {
                     $subQ->where('vendeur_id', $user->id);
-                })->with('product');
+                })->with('vintageProduct');
             }, 'shippingAddress'])
             ->orderBy('created_at', 'desc')
             ->get();
@@ -73,11 +73,11 @@ class ClientController extends Controller
         $stats = [
             'total_purchases' => $orders->count(),
             'total_spent' => $orders->sum(function ($order) {
-                return $order->items->sum('total_price');
+                return $order->orderItems->sum('total_price');
             }),
             'last_purchase' => $orders->first()?->created_at,
             'average_order_value' => $orders->count() > 0 
-                ? round($orders->sum(function ($order) { return $order->items->sum('total_price'); }) / $orders->count(), 2)
+                ? round($orders->sum(function ($order) { return $order->orderItems->sum('total_price'); }) / $orders->count(), 2)
                 : 0,
         ];
 
@@ -98,15 +98,15 @@ class ClientController extends Controller
         $stats = [
             'total_clients' => User::where('role', 'client')
                 ->whereHas('orders', function ($q) use ($user) {
-                    $q->whereHas('items', function ($subQ) use ($user) {
-                        $subQ->whereHas('product', function ($prodQ) use ($user) {
+                    $q->whereHas('orderItems', function ($subQ) use ($user) {
+                        $subQ->whereHas('vintageProduct', function ($prodQ) use ($user) {
                             $prodQ->where('vendeur_id', $user->id);
                         });
                     });
                 })->count(),
             'repeat_clients' => 0, // Will be calculated below
-            'total_orders' => Order::whereHas('items', function ($q) use ($user) {
-                $q->whereHas('product', function ($subQ) use ($user) {
+            'total_orders' => Order::whereHas('orderItems', function ($q) use ($user) {
+                $q->whereHas('vintageProduct', function ($subQ) use ($user) {
                     $subQ->where('vendeur_id', $user->id);
                 });
             })->count(),
@@ -117,7 +117,8 @@ class ClientController extends Controller
         $revenue = \DB::table('order_items')
             ->join('vintage_products', 'order_items.vintage_product_id', '=', 'vintage_products.id')
             ->where('vintage_products.vendeur_id', $user->id)
-            ->sum('order_items.total_price');
+            ->selectRaw('SUM(order_items.price * order_items.quantity) as total')
+            ->value('total') ?? 0;
         $stats['total_revenue'] = round($revenue, 2);
 
         // Count repeat clients
@@ -142,17 +143,17 @@ class ClientController extends Controller
         $user = Auth::user();
         $limit = $request->input('limit', 10);
 
-        $orders = Order::whereHas('items', function ($q) use ($user) {
-            $q->whereHas('product', function ($subQ) use ($user) {
+        $orders = Order::whereHas('orderItems', function ($q) use ($user) {
+            $q->whereHas('vintageProduct', function ($subQ) use ($user) {
                 $subQ->where('vendeur_id', $user->id);
             });
         })
         ->with(['user' => function ($q) {
             $q->select('id', 'name', 'email', 'phone');
-        }, 'items' => function ($q) use ($user) {
-            $q->whereHas('product', function ($subQ) use ($user) {
+        }, 'orderItems' => function ($q) use ($user) {
+            $q->whereHas('vintageProduct', function ($subQ) use ($user) {
                 $subQ->where('vendeur_id', $user->id);
-            })->with('product');
+            })->with('vintageProduct');
         }])
         ->orderBy('created_at', 'desc')
         ->limit($limit)
@@ -170,8 +171,8 @@ class ClientController extends Controller
 
         $clients = User::where('role', 'client')
             ->whereHas('orders', function ($q) use ($user) {
-                $q->whereHas('items', function ($subQ) use ($user) {
-                    $subQ->whereHas('product', function ($prodQ) use ($user) {
+                $q->whereHas('orderItems', function ($subQ) use ($user) {
+                    $subQ->whereHas('vintageProduct', function ($prodQ) use ($user) {
                         $prodQ->where('vendeur_id', $user->id);
                     });
                 });
