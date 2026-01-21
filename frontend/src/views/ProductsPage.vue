@@ -357,10 +357,10 @@
                     v-if="product.promotion > 0"
                     class="line-through text-gray-400"
                   >
-                    {{ product.price }}€
+                    {{ product.price }} MAD
                   </span>
                   <span class="font-medium" :class="{ 'text-[#8b1c3d] font-semibold': product.promotion > 0 }">
-                    {{ product.final_price }}€
+                    {{ product.final_price }} MAD
                   </span>
                 </div>
               </div>

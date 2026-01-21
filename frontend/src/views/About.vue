@@ -5,7 +5,7 @@
     <Header />
 
     <!-- ================= HERO ================= -->
-    <section class="relative h-[70vh] md:h-[80vh]">
+    <section class="relative h-[55vh] md:h-[60vh]">
       <img
         src="/images/about-hero.jpeg"
         alt="About Us"
@@ -52,10 +52,9 @@
 
       <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-3 gap-14">
 
-        <!-- Step 1 -->
         <div class="text-center">
           <img
-            src="/images/inspo1.png"
+            src="/images/about1.jpeg"
             alt="Sourcing"
             class="w-full h-[380px] object-cover mb-6 rounded-lg shadow-lg"
           />
@@ -68,7 +67,6 @@
           </p>
         </div>
 
-        <!-- Step 2 -->
         <div class="text-center">
           <img
             src="/images/about-hero.jpeg"
@@ -84,10 +82,9 @@
           </p>
         </div>
 
-        <!-- Step 3 -->
         <div class="text-center">
           <img
-            src="/images/inspo3.jpg"
+            src="/images/about2.jpeg"
             alt="Delivery"
             class="w-full h-[380px] object-cover mb-6 rounded-lg shadow-lg"
           />
@@ -107,15 +104,17 @@
     <section class="py-24 bg-[#f5f1ec]">
       <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
         <div class="overflow-hidden rounded-xl shadow-lg hover:scale-105 transition-transform duration-300">
-          <img src="/images/inspo1.png" alt="Curated Vintage" class="w-full h-[500px] object-cover"/>
+          <img src="/images/about3.jpeg" alt="Curated Vintage" class="w-full h-[500px] object-cover"/>
         </div>
         <div class="space-y-6">
           <h3 class="text-3xl md:text-4xl text-[#2a2a28] font-light">
-            Curated Vintage Treasures
+            Crafted by Collectors, for True Enthusiasts
           </h3>
           <p class="text-[#6b4f3a]/80 leading-relaxed text-lg">
-            Every item in our marketplace is carefully handpicked, authenticated, 
-            and presented with care. We believe in objects that tell a story.
+             Born from a shared love for authentic vintage pieces, our community
+        unites passionate collectors who value history, craftsmanship,
+        and timeless design. Every object tells a story — and we preserve
+        its soul.
           </p>
         </div>
       </div>
@@ -126,15 +125,16 @@
       <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
         <div class="space-y-6">
           <h3 class="text-3xl md:text-4xl text-[#2a2a28] font-light">
-            Built by Collectors, for Collectors
+            Timeless Curated Treasures
           </h3>
           <p class="text-[#6b4f3a]/80 leading-relaxed text-lg">
-            Our community brings together vintage enthusiasts and collectors 
-            who share a passion for timeless design.
+             Every piece in our collection is meticulously handpicked, carefully authenticated, 
+        and presented with love. Each object carries its own story, waiting to be cherished 
+        by those who appreciate history, craftsmanship, and enduring style.
           </p>
         </div>
         <div class="overflow-hidden rounded-xl shadow-lg hover:scale-105 transition-transform duration-300">
-          <img src="/images/inspo2.jpeg" alt="Community Vintage" class="w-full h-[500px] object-cover"/>
+          <img src="/images/about4.jpeg" alt="Community Vintage" class="w-full h-[500px] object-cover"/>
         </div>
       </div>
     </section>
@@ -149,7 +149,6 @@
 
       <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-3 gap-12">
 
-        <!-- Authenticity -->
         <div class="bg-[#faf9f5] p-8 rounded-2xl shadow-lg border border-[#d4af37]/30">
           <h4 class="text-xl mb-3 font-semibold">Authenticity</h4>
           <p class="text-[#6b4f3a]/80">
@@ -157,7 +156,6 @@
           </p>
         </div>
 
-        <!-- Curation -->
         <div class="bg-[#faf9f5] p-8 rounded-2xl shadow-lg border border-[#d4af37]/30">
           <h4 class="text-xl mb-3 font-semibold">Curation</h4>
           <p class="text-[#6b4f3a]/80">
@@ -165,7 +163,6 @@
           </p>
         </div>
 
-        <!-- Sustainability -->
         <div class="bg-[#faf9f5] p-8 rounded-2xl shadow-lg border border-[#d4af37]/30">
           <h4 class="text-xl mb-3 font-semibold">Sustainability</h4>
           <p class="text-[#6b4f3a]/80">
@@ -193,8 +190,9 @@
         </router-link>
       </div>
     </section>
-<!--  -->
-  <section class="py-24 bg-[#e6e7e4]">
+
+    <!-- ================= INSPIRATION ================= -->
+    <section class="py-24 bg-[#e6e7e4]">
       <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
         <div>
           <p class="uppercase tracking-[0.3em] text-sm text-gray-600 mb-4">
@@ -207,10 +205,9 @@
             Une sélection de pièces uniques et intemporelles, pensées pour les amateurs
             de vintage authentique et d'élégance durable.
           </p>
-
           <a
             href="#"
-            class="inline-block border border-black px-8 py-3 uppercase tracking-wider text-black-sm hover:bg-black hover:text-white transition"
+            class="inline-block border border-black px-8 py-3 uppercase tracking-wider hover:bg-black hover:text-white transition"
           >
             Follow Us
           </a>
@@ -223,6 +220,7 @@
         </div>
       </div>
     </section>
+
     <Footer />
   </div>
 </template>

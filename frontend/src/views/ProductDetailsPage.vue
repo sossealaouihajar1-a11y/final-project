@@ -89,15 +89,16 @@
             </h1>
 
             <p class="text-2xl text-gray-900 font-medium">
-              ${{ product.final_price }}
+              MAD {{ product.final_price }}
             </p>
 
             <div class="border-t border-b border-gray-200 py-6 text-gray-700 leading-relaxed">
               {{ product.description }}
             </div>
 
-            <p class="text-sm text-gray-600">
-              <strong>{{ product.stock }}</strong> in stock
+            <p class="text-sm text-gray-600" :class="product.stock === 0 ? 'text-red-600 font-semibold' : ''">
+              <strong v-if="product.stock === 0">Rupture de stock</strong>
+              <strong v-else>{{ product.stock }} in stock</strong>
             </p>
 
             <!-- Add to cart -->

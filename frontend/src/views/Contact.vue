@@ -175,45 +175,45 @@
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
       
       <!-- Item 1 -->
-      <div class="relative group overflow-hidden rounded-xl shadow-lg border border-[#6b4f3a]">
-        <img src="/images/inspo1.png" alt="Vintage Chair" class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110"/>
+    <a href="/products/sac-main-de-soire-vintage-dentelle-de-calais-perles-de-culture-et-broche-came-royale"><div class="relative group overflow-hidden rounded-xl shadow-lg border border-[#6b4f3a]">
+        <img src="/images/Inspiration1.jpeg" alt="Vintage Chair" class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110"/>
         <div class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
           <p class="text-[#faf0e0] font-semibold text-center px-2">
-            Vintage Chair 1950
+            Sac Bijou "Marquise en Dentelle"
           </p>
         </div>
-      </div>
+      </div></a>
 
       <!-- Item 2 -->
-      <div class="relative group overflow-hidden rounded-xl shadow-lg border border-[#6b4f3a]">
-        <img src="/images/inspo2.jpeg" alt="Antique Lamp" class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110"/>
+      <a href="products/gants-de-soire-en-dentelle-noire-style-rtro-avec-motifs-floraux-et-poignets-volants"><div class="relative group overflow-hidden rounded-xl shadow-lg border border-[#6b4f3a]">
+        <img src="/images/Inspiration2.jpeg" alt="Antique Lamp" class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110"/>
         <div class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
           <p class="text-[#faf0e0] font-semibold text-center px-2">
-            Antique Lamp 1920
+            Gants en Dentelle "Mystère à Paris"
           </p>
         </div>
       </div>
-
+      </a>
       <!-- Item 3 -->
-      <div class="relative group overflow-hidden rounded-xl shadow-lg border border-[#6b4f3a]">
-        <img src="/images/inspo3.jpg" alt="Retro Clock" class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110"/>
+      <a href="/products/cadre-ovale-ornemental-en-bronze-dor-paysage-champtre-et-arabesques-baroque"><div class="relative group overflow-hidden rounded-xl shadow-lg border border-[#6b4f3a]">
+        <img src="/images/Inspiration3.jpeg" alt="Retro Clock" class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110"/>
         <div class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
           <p class="text-[#faf0e0] font-semibold text-center px-2">
-            Retro Clock 1965
+            Cadre "L’Échapée Belle"
           </p>
         </div>
       </div>
-
+      </a>
       <!-- Item 4 -->
-      <div class="relative group overflow-hidden rounded-xl shadow-lg border border-[#6b4f3a]">
-        <img src="/images/about-style1.jpeg" alt="Vintage Radio" class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110"/>
+      <a href="/products/montre-bracelet-fine-dore-cadran-ovale-chocolat-index-cristaux-et-bracelet-maillons-sculpts"><div class="relative group overflow-hidden rounded-xl shadow-lg border border-[#6b4f3a]">
+        <img src="/images/Inspiration4.jpeg" alt="Vintage Radio" class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110"/>
         <div class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
           <p class="text-[#faf0e0] font-semibold text-center px-2">
-            Vintage Radio 1958
+            Montre-Bijou "Éclat du Soir"
           </p>
         </div>
       </div>
-
+      </a>
 
     </div>
 

@@ -17,9 +17,9 @@
         <input v-model="filters.search" type="text" placeholder="Rechercher..." class="border rounded-lg px-3 py-2" />
         <select v-model="filters.category" class="border rounded-lg px-3 py-2">
           <option value="">Toutes les catégories</option>
-          <option value="furniture">Mobilier</option>
-          <option value="clothing">Vêtements</option>
-          <option value="jewelry">Bijoux</option>
+          <option v-for="cat in categories" :key="cat" :value="cat">
+            {{ cat.charAt(0).toUpperCase() + cat.slice(1).replace(/_/g, ' ') }}
+          </option>
         </select>
         <select v-model="filters.status" class="border rounded-lg px-3 py-2">
           <option value="">Tous les statuts</option>
@@ -79,7 +79,7 @@
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
               <span :class="getStockClass(product.stock)" class="px-3 py-1 rounded-full text-xs font-semibold">
-                {{ product.stock }}
+                {{ product.stock === 0 ? 'Rupture de stock' : product.stock }}
               </span>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
@@ -111,9 +111,9 @@
           <textarea v-model="form.description" placeholder="Description" class="w-full border rounded-lg px-3 py-2 h-20" required></textarea>
           <select v-model="form.category" class="w-full border rounded-lg px-3 py-2" required>
             <option value="">Sélectionnez une catégorie</option>
-            <option value="furniture">Mobilier</option>
-            <option value="clothing">Vêtements</option>
-            <option value="jewelry">Bijoux</option>
+            <option v-for="cat in categories" :key="cat" :value="cat">
+              {{ cat.charAt(0).toUpperCase() + cat.slice(1).replace(/_/g, ' ') }}
+            </option>
           </select>
           <input v-model.number="form.price" type="number" placeholder="Prix" class="w-full border rounded-lg px-3 py-2" required />
           <input v-model.number="form.stock" type="number" placeholder="Stock" class="w-full border rounded-lg px-3 py-2" required />
@@ -171,6 +171,7 @@ const products = ref([])
 const loading = ref(false)
 const showAddModal = ref(false)
 const editingProduct = ref(null)
+const categories = ref([])
 
 const filters = ref({
   search: '',
@@ -192,7 +193,19 @@ const form = ref({
 
 onMounted(() => {
   loadProducts()
+  loadCategories()
 })
+
+const loadCategories = async () => {
+  try {
+    const response = await vendorProductService.getCategories()
+    categories.value = response.data || []
+  } catch (error) {
+    console.error('Error loading categories:', error)
+    // Fallback si erreur
+    categories.value = ['mode', 'mobilier', 'accessoires', 'electronique_vintage', 'art', 'autre']
+  }
+}
 
 const loadProducts = async () => {
   loading.value = true
@@ -259,25 +272,43 @@ const saveProduct = async () => {
   try {
     const method = editingProduct.value ? 'update' : 'create'
     
+    // Validation basique
+    if (!form.value.title || !form.value.description || !form.value.category) {
+      alert('Veuillez remplir tous les champs obligatoires')
+      return
+    }
+    
     // Create FormData for file upload
     const formData = new FormData()
     formData.append('title', form.value.title)
     formData.append('description', form.value.description)
     formData.append('category', form.value.category)
-    formData.append('price', form.value.price)
-    formData.append('stock', form.value.stock)
+    formData.append('price', form.value.price.toString())
+    formData.append('stock', form.value.stock.toString())
     formData.append('condition', form.value.condition)
-    formData.append('promotion', form.value.promotion)
+    formData.append('promotion', (form.value.promotion || 0).toString())
     
     if (form.value.image instanceof File) {
       formData.append('image', form.value.image)
     }
     
+    console.log('Saving product...', {
+      method,
+      title: form.value.title,
+      hasImage: form.value.image instanceof File
+    })
+    
+    let response
     if (method === 'create') {
-      await vendorProductService.createProduct(formData)
+      response = await vendorProductService.createProduct(formData)
     } else {
-      await vendorProductService.updateProduct(editingProduct.value.id, formData)
+      response = await vendorProductService.updateProduct(editingProduct.value.id, formData)
     }
+    
+    console.log('Product saved successfully:', response.data)
+    
+    // Success message
+    alert(method === 'create' ? 'Produit ajouté avec succès!' : 'Produit mis à jour avec succès!')
     
     showAddModal.value = false
     editingProduct.value = null
@@ -295,6 +326,17 @@ const saveProduct = async () => {
     await loadProducts()
   } catch (error) {
     console.error('Error saving product:', error)
+    
+    // Afficher les erreurs de validation ou autres erreurs
+    if (error.response?.status === 422) {
+      const errors = error.response.data.errors || {}
+      const errorMessages = Object.values(errors).flat().join('\n')
+      alert('Erreur de validation:\n' + errorMessages)
+    } else if (error.response?.data?.message) {
+      alert('Erreur: ' + error.response.data.message)
+    } else {
+      alert('Erreur lors de l\'enregistrement du produit. Veuillez réessayer.')
+    }
   }
 }
 
