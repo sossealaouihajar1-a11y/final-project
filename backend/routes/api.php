@@ -18,9 +18,7 @@ use App\Http\Controllers\Api\Vendor\StockController as VendorStockController;
 use App\Http\Controllers\Api\ReviewController;  
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\Api\PaymentController;
-use App\Http\Controllers\ContactController;
-use App\Http\Controllers\Api\ReviewController;
-use App\Http\Controllers\Api\PaymentController;
+
 
 use Illuminate\Support\Facades\Route;
 
