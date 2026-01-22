@@ -172,104 +172,24 @@
             <span class="text-[#8b1c3d]">{{ totalPrice.toFixed(2) }}€</span>
           </div>
 
-          <!-- Adresse de livraison enregistrée -->
-          <div v-if="hasShippingAddress" class="mb-6 p-4 bg-[#f2f1ed] rounded-lg border border-gray-200">
-            <h3 class="font-semibold text-gray-900 mb-2 flex items-center space-x-2">
-              <svg class="w-5 h-5 text-[#8b1c3d]" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
-              </svg>
-              <span>Adresse de livraison</span>
-            </h3>
-            <p class="text-sm text-gray-700">
-              {{ shippingAddress.full_name }}<br>
-              {{ shippingAddress.address }}<br>
-              {{ shippingAddress.postal_code }} {{ shippingAddress.city }}<br>
-              {{ shippingAddress.country }}<br>
-              Tél: {{ shippingAddress.phone }}
-            </p>
-            <router-link to="/client/dashboard" class="text-xs text-[#8b1c3d] hover:text-[#5a4a3a] mt-2 inline-block">
-              Modifier l'adresse →
-            </router-link>
-          </div>
-
-          <!-- Message si pas d'adresse -->
-          <div v-else class="mb-6 p-4 bg-orange-50 border border-orange-200 rounded-lg">
-            <div class="flex items-start space-x-3">
-              <svg class="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-              </svg>
-              <div>
-                <p class="text-sm font-semibold text-orange-800">Adresse de livraison manquante</p>
-                <p class="text-xs text-orange-700 mt-1">Vous devez enregistrer une adresse avant de commander.</p>
-                <router-link to="/client/dashboard" class="inline-block mt-2 text-xs text-orange-600 hover:text-orange-700 font-medium underline">
-                  Ajouter une adresse →
-                </router-link>
-              </div>
-            </div>
-          </div>
-
-          <!-- ÉTAPE 1: Sélection de la méthode de paiement (AVANT confirmation) -->
-          <div v-if="!orderConfirmed && hasShippingAddress" class="mb-6">
-            <h3 class="text-sm font-semibold text-gray-900 mb-3">Méthode de paiement</h3>
-            <div class="space-y-3">
-              <!-- Cash on Delivery -->
-              <label class="flex items-start p-4 border-2 rounded-lg cursor-pointer transition" :class="paymentMethod === 'cash_on_delivery' ? 'border-[#8b1c3d] bg-[#f2f1ed]' : 'border-gray-200 hover:border-gray-300'">
-                <input
-                  type="radio"
-                  v-model="paymentMethod"
-                  value="cash_on_delivery"
-                  class="mt-1 h-4 w-4 text-[#8b1c3d] focus:ring-[#8b1c3d]"
-                />
-                <div class="ml-3 flex-1">
-                  <div class="flex items-center space-x-2">
-                    <svg class="w-5 h-5 text-[#8b1c3d]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                    <span class="font-medium text-gray-900">Paiement à la livraison</span>
-                  </div>
-                  <p class="text-xs text-gray-500 mt-1">Payez en espèces lors de la réception</p>
-                </div>
-              </label>
-
-              <!-- Stripe -->
-              <label class="flex items-start p-4 border-2 rounded-lg cursor-pointer transition" :class="paymentMethod === 'stripe' ? 'border-[#8b1c3d] bg-[#f2f1ed]' : 'border-gray-200 hover:border-gray-300'">
-                <input
-                  type="radio"
-                  v-model="paymentMethod"
-                  value="stripe"
-                  class="mt-1 h-4 w-4 text-[#8b1c3d] focus:ring-[#8b1c3d]"
-                />
-                <div class="ml-3 flex-1">
-                  <div class="flex items-center space-x-2">
-                    <svg class="w-5 h-5 text-[#8b1c3d]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                    </svg>
-                    <span class="font-medium text-gray-900">Carte bancaire (Stripe)</span>
-                  </div>
-                  <p class="text-xs text-gray-500 mt-1">Paiement en ligne sécurisé</p>
-                </div>
-              </label>
-            </div>
-          </div>
-
-          <!-- ÉTAPE 1: Bouton Confirmer (AVANT confirmation) -->
+          <!-- ÉTAPE 1: Bouton Procéder au paiement -->
           <div v-if="!orderConfirmed">
             <button
               @click="proceedToCheckout"
-              :disabled="!hasShippingAddress || processing || !paymentMethod"
+              :disabled="processing"
               class="w-full px-6 py-4 bg-[#8b1c3d] text-white font-bold rounded-xl hover:bg-[#5a4a3a] transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl"
             >
               <svg v-if="!processing" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
               </svg>
               <svg v-else class="animate-spin h-6 w-6" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              <span>{{ processing ? 'Traitement...' : 'Confirmer la commande' }}</span>
+              <span>{{ processing ? 'Traitement...' : 'Procéder au paiement' }}</span>
             </button>
             <p class="text-xs text-gray-500 text-center mt-3">
-              En confirmant, vous acceptez nos conditions générales de vente
+              Vous finaliserez votre commande à l'étape suivante
             </p>
           </div>
 
@@ -482,50 +402,13 @@ const decrementQuantity = (productId) => {
 }
 
 const proceedToCheckout = async () => {
-  console.log('🛒 === DÉBUT VÉRIFICATION CHECKOUT ===')
-  console.log('Panier vide?', cartStore.isEmpty)
-  console.log('Méthode de paiement:', paymentMethod.value)
-  console.log('Adresse existe?', hasShippingAddress.value)
-  console.log('Adresse complète:', shippingAddress.value)
-  
-  // Vérification 1: Panier
   if (cartStore.isEmpty) {
     showNotification('Votre panier est vide', 'error')
     return
   }
 
-  processing.value = true
-  
-  try {
-    const items = cartStore.items.map(item => ({
-      product_id: item.id,
-      quantity: item.quantity
-    }))
-
-    console.log('Items envoyés:', items)
-    console.log('Méthode de paiement:', paymentMethod.value)
-
-    const response = await cartService.checkout(items, paymentMethod.value)
-
-    console.log('✅ Réponse du serveur:', response)
-
-    // Sauvegarder la commande confirmée
-    confirmedOrder.value = response.order
-
-    // Marquer comme confirmé
-    orderConfirmed.value = true
-
-    // Vider le panier local
-    cartStore.clearCart()
-
-    showNotification('Commande créée avec succès !', 'success')
-
-  } catch (error) {
-    console.error('Erreur:', error)
-    showNotification('Erreur lors de la redirection', 'error')
-  } finally {
-    processing.value = false
-  }
+  // Redirect to checkout page
+  router.push('/checkout')
 }
 
 const proceedToPayment = async () => {
