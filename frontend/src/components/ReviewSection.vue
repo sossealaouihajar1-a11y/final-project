@@ -165,9 +165,9 @@
       v-else
       class="text-center py-12 border border-dashed border-gray-300 rounded-lg bg-gray-50"
     >
-      <p class="text-gray-700 font-medium">
+      <!-- <p class="text-gray-700 font-medium">
         Aucun avis pour le moment
-      </p>
+      </p> -->
       <!-- <p class="text-sm text-gray-500 mt-1">
         Soyez le premier à partager votre expérience.
       </p> -->
