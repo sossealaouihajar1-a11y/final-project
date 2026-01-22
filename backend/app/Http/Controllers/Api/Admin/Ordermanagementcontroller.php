@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
@@ -8,7 +8,7 @@ use App\Models\OrderItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class OrderManagementController extends Controller
+class Ordermanagementcontroller extends Controller
 {
     /**
      * Récupérer toutes les commandes avec filtres

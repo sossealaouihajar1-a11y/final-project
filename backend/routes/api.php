@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\Admin\Ordermanagementcontroller;
 use App\Http\Controllers\Api\Admin\ProductManagementController;
 use App\Http\Controllers\Api\Admin\UserManagementController;
 use App\Http\Controllers\Api\Admin\VendorManagementController;
@@ -120,12 +121,12 @@ Route::middleware('auth:sanctum')->group(function () {
         });
         // Orders management
          Route::prefix('orders')->group(function () {
-        Route::get('/', [OrderManagementController::class, 'index']);
-        Route::get('/statistics', [OrderManagementController::class, 'statistics']);
-        Route::get('/export', [OrderManagementController::class, 'export']);
-        Route::get('/{id}', [OrderManagementController::class, 'show']);
-        Route::put('/{id}/status', [OrderManagementController::class, 'updateStatus']);
-        Route::delete('/{id}', [OrderManagementController::class, 'destroy']);
+        Route::get('/', [Ordermanagementcontroller::class, 'index']);
+        Route::get('/statistics', [Ordermanagementcontroller::class, 'statistics']);
+        Route::get('/export', [Ordermanagementcontroller::class, 'export']);
+        Route::get('/{id}', [Ordermanagementcontroller::class, 'show']);
+        Route::put('/{id}/status', [Ordermanagementcontroller::class, 'updateStatus']);
+        Route::delete('/{id}', [Ordermanagementcontroller::class, 'destroy']);
     });
         // Users management
         Route::prefix('users')->group(function () {
