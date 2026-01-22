@@ -398,8 +398,8 @@
               <!-- Image -->
               <div class="relative h-56 bg-gray-100 flex items-center justify-center overflow-hidden">
                 <img
-                  v-if="favorite.product?.image"
-                  :src="favorite.product.image"
+                  v-if="favorite.product?.image_url || favorite.product?.image"
+                  :src="favorite.product.image_url || favorite.product.image"
                   :alt="favorite.product.title"
                   class="w-full h-full object-cover group-hover:scale-110 transition duration-300"
                 />

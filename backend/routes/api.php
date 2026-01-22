@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\Admin\ProductManagementController;
 use App\Http\Controllers\Api\Admin\UserManagementController;
 use App\Http\Controllers\Api\Admin\VendorManagementController;
+use App\Http\Controllers\Api\Admin\ReviewManagementController;
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\CartController;
@@ -14,11 +15,17 @@ use App\Http\Controllers\Api\Vendor\ProductController as VendorProductController
 use App\Http\Controllers\Api\Vendor\ClientController as VendorClientController;
 use App\Http\Controllers\Api\Vendor\OrderController as VendorOrderController;
 use App\Http\Controllers\Api\Vendor\StockController as VendorStockController;
+use App\Http\Controllers\Api\ReviewController;  
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\PaymentController;
 
 use Illuminate\Support\Facades\Route;
+
+// contact form
+Route::post('/contact', [ContactController::class, 'send']);
 
 // contact form
 Route::post('/contact', [ContactController::class, 'send']);
@@ -30,7 +37,10 @@ Route::prefix('auth')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
 });
 
+
 Route::get('/products/{productId}/reviews', [ReviewController::class, 'index']);
+
+// Stripe webhook route removed (webhook handling disabled for local/dev)
 
 // Stripe webhook route removed (webhook handling disabled for local/dev)
 
@@ -68,6 +78,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{paymentIntentId}/status', [PaymentController::class, 'getStatus']);
     });
     
+    // Routes Paiements
+    Route::prefix('payments')->group(function () {
+        Route::post('/create-intent', [PaymentController::class, 'createIntent']);
+        Route::post('/confirm', [PaymentController::class, 'confirmPayment']);
+        Route::get('/{paymentIntentId}/status', [PaymentController::class, 'getStatus']);
+    });
+    
     Route::prefix('orders')->group(function () {
         Route::get('/', [OrderController::class, 'index']);
         Route::get('/{id}', [OrderController::class, 'show']);
@@ -86,6 +103,14 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     // Routes Admin
     Route::middleware('role:admin')->prefix('admin')->group(function () {
+        // Comments management
+        Route::prefix('reviews')->group(function () {
+        Route::get('/', [ReviewManagementController::class, 'index']);
+        Route::get('/statistics', [ReviewManagementController::class, 'statistics']);
+        Route::get('/{id}', [ReviewManagementController::class, 'show']);
+        Route::delete('/{id}', [ReviewManagementController::class, 'destroy']);
+    });
+        // Vendor management
         Route::prefix('vendors')->group(function () {
             Route::get('/', [VendorManagementController::class, 'index']);
             Route::get('/pending', [VendorManagementController::class, 'pending']);
@@ -95,7 +120,15 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/{user}/suspend', [VendorManagementController::class, 'suspend']);
             Route::post('/{user}/reactivate', [VendorManagementController::class, 'reactivate']);
         });
-        
+        // Orders management
+         Route::prefix('orders')->group(function () {
+        Route::get('/', [OrderManagementController::class, 'index']);
+        Route::get('/statistics', [OrderManagementController::class, 'statistics']);
+        Route::get('/export', [OrderManagementController::class, 'export']);
+        Route::get('/{id}', [OrderManagementController::class, 'show']);
+        Route::put('/{id}/status', [OrderManagementController::class, 'updateStatus']);
+        Route::delete('/{id}', [OrderManagementController::class, 'destroy']);
+    });
         // Users management
         Route::prefix('users')->group(function () {
             Route::get('/', [UserManagementController::class, 'index']);
@@ -180,11 +213,16 @@ Route::prefix('products')->group(function () {
     Route::get('/', [ProductController::class, 'index']);
     Route::get('/categories', [ProductController::class, 'categories']);
     Route::get('/conditions', [ProductController::class, 'conditions']);
+    Route::get('/conditions', [ProductController::class, 'conditions']);
     Route::get('/stats', [ProductController::class, 'stats']);
     Route::get('/promotions', [ProductController::class, 'promotions']);
     Route::get('/category/{category}', [ProductController::class, 'byCategory']);
     Route::get('/{id}', [ProductController::class, 'show']);
     
+    
 });
+
+
+
 
 

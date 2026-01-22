@@ -1,152 +1,193 @@
 <template>
-  <div class="min-h-screen bg-gray-100">
-    <nav class="bg-white shadow-sm">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-          <div class="flex items-center space-x-4">
-            <router-link to="/admin/dashboard" class="text-gray-700 hover:text-gray-900 font-medium">
-              Dashboard
-            </router-link>
-            <span class="text-indigo-600 font-semibold">Gestion Vendeurs</span>
-          </div>
-          <div class="flex items-center space-x-4">
-            <span class="text-gray-700">{{ userName }}</span>
-            <button @click="handleLogout" class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700">
-              Déconnexion
-            </button>
-          </div>
-        </div>
+  <div class="min-h-screen bg-[#f6f3ee] text-[#2a2a28] font-serif">
+    
+    <section class="border-b border-[#d6cdbf]">
+      <div class="max-w-7xl mx-auto px-6 py-12 text-center">
+        <p class="uppercase tracking-[0.3em] text-xs text-[#6b7b4b] mb-3">
+          Administration
+        </p>
+        <h1 class="text-4xl md:text-5xl font-serif text-[#4a3728] mb-4">
+          Gestion des Vendeurs
+        </h1>
+        <p class="text-[#5a564f] max-w-xl mx-auto">
+          Approuvez, rejetez ou suspendez les vendeurs
+        </p>
       </div>
-    </nav>
+    </section>
 
-    <main class="max-w-7xl mx-auto py-6 px-4">
-      <div class="mb-6">
-        <h1 class="text-2xl font-bold text-gray-900 mb-4">Gestion des Vendeurs</h1>
-        
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div class="bg-white p-4 rounded-lg shadow">
-            <div class="text-sm text-gray-600">Total</div>
-            <div class="text-2xl font-bold text-gray-900">{{ stats.total }}</div>
-          </div>
-          <div class="bg-yellow-50 p-4 rounded-lg shadow border-l-4 border-yellow-500">
-            <div class="text-sm text-yellow-800">En Attente</div>
-            <div class="text-2xl font-bold text-yellow-900">{{ stats.pending }}</div>
-          </div>
-          <div class="bg-green-50 p-4 rounded-lg shadow border-l-4 border-green-500">
-            <div class="text-sm text-green-800">Approuvés</div>
-            <div class="text-2xl font-bold text-green-900">{{ stats.approved }}</div>
-          </div>
-          <div class="bg-red-50 p-4 rounded-lg shadow border-l-4 border-red-500">
-            <div class="text-sm text-red-800">Rejetés</div>
-            <div class="text-2xl font-bold text-red-900">{{ stats.rejected }}</div>
-          </div>
+    <!-- Content -->
+    <main class="max-w-7xl mx-auto px-6 py-10 space-y-10">
+
+      <!-- Statistics -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="bg-[#fbfaf7] border border-[#d6cdbf] rounded-xl p-6 text-center">
+          <p class="text-xs uppercase tracking-wider text-[#6b7b4b]">Total</p>
+          <p class="mt-3 text-3xl font-serif text-[#4a3728]">{{ stats.total }}</p>
+        </div>
+        <div class="bg-[#fbfaf7] border border-[#d6cdbf] rounded-xl p-6 text-center">
+          <p class="text-xs uppercase tracking-wider text-[#6b7b4b]">En attente</p>
+          <p class="mt-3 text-3xl font-serif text-[#4a3728]">{{ stats.pending }}</p>
+        </div>
+        <div class="bg-[#fbfaf7] border border-[#d6cdbf] rounded-xl p-6 text-center">
+          <p class="text-xs uppercase tracking-wider text-[#6b7b4b]">Approuvés</p>
+          <p class="mt-3 text-3xl font-serif text-[#4a3728]">{{ stats.approved }}</p>
+        </div>
+        <div class="bg-[#fbfaf7] border border-[#d6cdbf] rounded-xl p-6 text-center">
+          <p class="text-xs uppercase tracking-wider text-[#6b7b4b]">Rejetés</p>
+          <p class="mt-3 text-3xl font-serif text-[#4a3728]">{{ stats.rejected }}</p>
         </div>
       </div>
 
-      <div class="bg-white rounded-lg shadow p-4 mb-6">
+      <!-- Filters -->
+      <div class="bg-[#fbfaf7] border border-[#d6cdbf] rounded-xl p-6">
         <div class="flex flex-wrap gap-3">
-          <button @click="filterStatus = null" :class="getButtonClass(null)" class="px-4 py-2 rounded-md text-sm font-medium">
+          <button
+            @click="filterStatus = null"
+            :class="filterStatus === null ? 'bg-[#4a3728] text-white' : 'bg-[#fbfaf7] text-[#4a3728] hover:bg-[#f4f1eb]'"
+            class="px-5 py-2.5 rounded-lg text-sm font-semibold transition"
+          >
             Tous
           </button>
-          <button @click="filterStatus = 'pending'" :class="getButtonClass('pending')" class="px-4 py-2 rounded-md text-sm font-medium">
+          <button
+            @click="filterStatus = 'pending'"
+            :class="filterStatus === 'pending' ? 'bg-[#6b7b4b] text-white' : 'bg-[#fbfaf7] text-[#4a3728] hover:bg-[#f4f1eb]'"
+            class="px-5 py-2.5 rounded-lg text-sm font-semibold transition"
+          >
             En attente
           </button>
-          <button @click="filterStatus = 'approved'" :class="getButtonClass('approved')" class="px-4 py-2 rounded-md text-sm font-medium">
+          <button
+            @click="filterStatus = 'approved'"
+            :class="filterStatus === 'approved' ? 'bg-[#4a3728] text-white' : 'bg-[#fbfaf7] text-[#4a3728] hover:bg-[#f4f1eb]'"
+            class="px-5 py-2.5 rounded-lg text-sm font-semibold transition"
+          >
             Approuvés
           </button>
-          <button @click="filterStatus = 'rejected'" :class="getButtonClass('rejected')" class="px-4 py-2 rounded-md text-sm font-medium">
+          <button
+            @click="filterStatus = 'rejected'"
+            :class="filterStatus === 'rejected' ? 'bg-[#8b1c3d] text-white' : 'bg-[#fbfaf7] text-[#4a3728] hover:bg-[#f4f1eb]'"
+            class="px-5 py-2.5 rounded-lg text-sm font-semibold transition"
+          >
             Rejetés
           </button>
         </div>
       </div>
 
-      <div v-if="successMessage" class="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
-        <p class="text-sm text-green-800">{{ successMessage }}</p>
-      </div>
-
-      <div v-if="errorMessage" class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-        <p class="text-sm text-red-800">{{ errorMessage }}</p>
-      </div>
-
-      <div v-if="loading" class="bg-white rounded-lg shadow p-8 text-center">
-        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-        <p class="mt-2 text-gray-600">Chargement...</p>
-      </div>
-
-      <div v-else class="space-y-4">
-        <div v-for="vendor in filteredVendors" :key="vendor.id" class="bg-white rounded-lg shadow-md overflow-hidden">
+      <!-- Vendors List -->
+      <div class="space-y-6">
+        <div
+          v-for="vendor in filteredVendors"
+          :key="vendor.id"
+          class="bg-[#fbfaf7] border border-[#d6cdbf] rounded-xl overflow-hidden hover:bg-[#f4f1eb] transition"
+        >
           <div class="p-6">
-            <div class="flex items-start justify-between mb-4">
+
+            <!-- Header -->
+            <div class="flex items-start justify-between mb-6">
               <div>
-                <h3 class="text-xl font-bold text-gray-900">{{ vendor.name }}</h3>
-                <p class="text-sm text-gray-500">{{ vendor.email }}</p>
+                <h3 class="text-2xl font-serif font-bold text-[#4a3728] mb-1">{{ vendor.name }}</h3>
+                <p class="text-sm text-[#5a564f]">{{ vendor.email }}</p>
               </div>
-              <span :class="getStatusClass(vendor.vendor_status)" class="px-4 py-2 rounded-full text-sm font-semibold">
+              <span
+                :class="{
+                  'bg-yellow-100 text-yellow-800': vendor.vendor_status === 'pending',
+                  'bg-green-100 text-green-800': vendor.vendor_status === 'approved',
+                  'bg-red-100 text-red-800': vendor.vendor_status === 'rejected',
+                  'bg-gray-100 text-gray-800': vendor.vendor_status === 'suspended'
+                }"
+                class="px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wider"
+              >
                 {{ getStatusLabel(vendor.vendor_status) }}
               </span>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-              <div class="space-y-2">
-                <h4 class="font-semibold text-gray-700 border-b pb-1">Contact</h4>
-                <div class="space-y-1 text-sm">
-                  <p><span class="text-gray-600">Email:</span> <span class="font-medium">{{ vendor.email }}</span></p>
-                  <p><span class="text-gray-600">Téléphone:</span> <span class="font-medium">{{ vendor.phone || 'N/A' }}</span></p>
-                </div>
+            <!-- Info Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6 pb-6 border-b border-[#d6cdbf]">
+              <div class="space-y-3">
+                <h4 class="text-xs font-semibold text-[#6b7b4b] uppercase tracking-wider">Contact</h4>
+                <p class="text-sm text-[#5a564f]">Email: {{ vendor.email }}</p>
+                <p class="text-sm text-[#5a564f]">Téléphone: {{ vendor.phone || 'Non renseigné' }}</p>
               </div>
-
-              <div class="space-y-2">
-                <h4 class="font-semibold text-gray-700 border-b pb-1">Localisation</h4>
-                <div class="space-y-1 text-sm">
-                  <p><span class="text-gray-600">Ville:</span> <span class="font-medium">{{ vendor.city || 'N/A' }}</span></p>
-                  <p><span class="text-gray-600">Adresse:</span> <span class="font-medium">{{ vendor.address || 'N/A' }}</span></p>
-                </div>
+              <div class="space-y-3">
+                <h4 class="text-xs font-semibold text-[#6b7b4b] uppercase tracking-wider">Localisation</h4>
+                <p class="text-sm text-[#5a564f]">Ville: {{ vendor.city || 'Non renseignée' }}</p>
+                <p class="text-sm text-[#5a564f]">Adresse: {{ vendor.address || 'Non renseignée' }}</p>
               </div>
-
-              <div class="space-y-2">
-                <h4 class="font-semibold text-gray-700 border-b pb-1">Identité</h4>
-                <div class="space-y-2 text-sm">
-                  <p><span class="text-gray-600">Type:</span> <span class="font-medium">{{ getIdentityType(vendor.identity_type) }}</span></p>
-                  <a v-if="vendor.identity_document" :href="getDocumentUrl(vendor.identity_document)" target="_blank" class="inline-block px-3 py-1.5 bg-indigo-600 text-white text-xs font-medium rounded hover:bg-indigo-700">
-                    Voir le document
-                  </a>
-                  <p v-else class="text-gray-400 italic">Aucun document</p>
-                </div>
+              <div class="space-y-3">
+                <h4 class="text-xs font-semibold text-[#6b7b4b] uppercase tracking-wider">Identité</h4>
+                <p class="text-sm text-[#5a564f]">Type: {{ getIdentityType(vendor.identity_type) }}</p>
+                <a
+                  v-if="vendor.identity_document"
+                  :href="getDocumentUrl(vendor.identity_document)"
+                  target="_blank"
+                  class="inline-flex items-center px-4 py-2 bg-[#4a3728] text-white text-xs font-semibold rounded-lg hover:bg-[#6b7b4b] transition"
+                >
+                  Voir le document
+                </a>
+                <p v-else class="text-gray-400 italic">Aucun document</p>
               </div>
             </div>
 
-            <div class="flex flex-wrap gap-2 pt-4 border-t">
-              <button v-if="vendor.vendor_status === 'pending'" @click="approveVendor(vendor.id)" :disabled="actionLoading" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm font-medium disabled:opacity-50">
+            <!-- Actions -->
+            <div class="flex flex-wrap gap-3">
+              <button
+                v-if="vendor.vendor_status === 'pending'"
+                @click="approveVendor(vendor.id)"
+                :disabled="actionLoading"
+                class="px-5 py-2.5 bg-[#6b7b4b] text-white rounded-lg hover:bg-[#4a3728] text-sm font-semibold disabled:opacity-50 transition"
+              >
                 Approuver
               </button>
-              <button v-if="vendor.vendor_status === 'pending'" @click="rejectVendor(vendor.id)" :disabled="actionLoading" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm font-medium disabled:opacity-50">
+              <button
+                v-if="vendor.vendor_status === 'pending'"
+                @click="rejectVendor(vendor.id)"
+                :disabled="actionLoading"
+                class="px-5 py-2.5 bg-[#8b1c3d] text-white rounded-lg hover:bg-[#6d1530] text-sm font-semibold disabled:opacity-50 transition"
+              >
                 Rejeter
               </button>
-              <button v-if="vendor.vendor_status === 'approved'" @click="suspendVendor(vendor.id)" :disabled="actionLoading" class="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 text-sm font-medium disabled:opacity-50">
+              <button
+                v-if="vendor.vendor_status === 'approved'"
+                @click="suspendVendor(vendor.id)"
+                :disabled="actionLoading"
+                class="px-5 py-2.5 bg-[#f4a261] text-white rounded-lg hover:bg-[#e07b3c] text-sm font-semibold disabled:opacity-50 transition"
+              >
                 Suspendre
               </button>
-              <button v-if="vendor.vendor_status === 'suspended'" @click="reactivateVendor(vendor.id)" :disabled="actionLoading" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium disabled:opacity-50">
+              <button
+                v-if="vendor.vendor_status === 'suspended'"
+                @click="reactivateVendor(vendor.id)"
+                :disabled="actionLoading"
+                class="px-5 py-2.5 bg-[#4a3728] text-white rounded-lg hover:bg-[#6b7b4b] text-sm font-semibold disabled:opacity-50 transition"
+              >
                 Réactiver
               </button>
-              <button v-if="vendor.vendor_status === 'rejected'" @click="approveVendor(vendor.id)" :disabled="actionLoading" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm font-medium disabled:opacity-50">
+              <button
+                v-if="vendor.vendor_status === 'rejected'"
+                @click="approveVendor(vendor.id)"
+                :disabled="actionLoading"
+                class="px-5 py-2.5 bg-[#6b7b4b] text-white rounded-lg hover:bg-[#4a3728] text-sm font-semibold disabled:opacity-50 transition"
+              >
                 Approuver
               </button>
             </div>
           </div>
         </div>
 
-        <div v-if="filteredVendors.length === 0" class="bg-white rounded-lg shadow p-12 text-center">
-          <p class="text-gray-500">Aucun vendeur trouvé</p>
+        <!-- Empty State -->
+        <div v-if="filteredVendors.length === 0" class="bg-[#fbfaf7] border border-[#d6cdbf] rounded-xl p-12 text-center text-[#5a564f]">
+          Aucun vendeur trouvé
         </div>
       </div>
     </main>
   </div>
 </template>
 
+
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
+import Header from '@/components/Header.vue'
 import authService from '@/services/authService'
 
 const router = useRouter()
@@ -175,24 +216,6 @@ const filteredVendors = computed(() => {
   return vendors.value.filter(v => v.vendor_status === filterStatus.value)
 })
 
-const getButtonClass = (status) => {
-  if (filterStatus.value === status) {
-    if (status === 'pending') return 'bg-yellow-600 text-white'
-    if (status === 'approved') return 'bg-green-600 text-white'
-    if (status === 'rejected') return 'bg-red-600 text-white'
-    return 'bg-indigo-600 text-white'
-  }
-  return 'bg-gray-200 text-gray-700'
-}
-
-const getStatusClass = (status) => {
-  if (status === 'pending') return 'bg-yellow-100 text-yellow-800'
-  if (status === 'approved') return 'bg-green-100 text-green-800'
-  if (status === 'rejected') return 'bg-red-100 text-red-800'
-  if (status === 'suspended') return 'bg-gray-100 text-gray-800'
-  return 'bg-gray-100 text-gray-800'
-}
-
 const getStatusLabel = (status) => {
   const labels = {
     pending: 'En attente',
@@ -206,7 +229,7 @@ const getStatusLabel = (status) => {
 const getIdentityType = (type) => {
   if (type === 'cin') return 'CIN'
   if (type === 'passport') return 'Passeport'
-  return 'N/A'
+  return 'Non renseigné'
 }
 
 const getDocumentUrl = (path) => {
@@ -220,7 +243,7 @@ const loadVendors = async () => {
     const response = await authService.getAllVendors()
     vendors.value = response || []
   } catch (error) {
-    errorMessage.value = 'Erreur lors du chargement'
+    errorMessage.value = 'Erreur lors du chargement des vendeurs'
     vendors.value = []
   } finally {
     loading.value = false
@@ -232,11 +255,11 @@ const approveVendor = async (vendorId) => {
   actionLoading.value = true
   try {
     await authService.approveVendor(vendorId)
-    successMessage.value = 'Vendeur approuvé'
+    successMessage.value = 'Vendeur approuvé avec succès'
     setTimeout(() => successMessage.value = '', 3000)
     await loadVendors()
   } catch (error) {
-    errorMessage.value = 'Erreur'
+    errorMessage.value = 'Erreur lors de l\'approbation'
     setTimeout(() => errorMessage.value = '', 3000)
   } finally {
     actionLoading.value = false
@@ -252,7 +275,7 @@ const rejectVendor = async (vendorId) => {
     setTimeout(() => successMessage.value = '', 3000)
     await loadVendors()
   } catch (error) {
-    errorMessage.value = 'Erreur'
+    errorMessage.value = 'Erreur lors du rejet'
     setTimeout(() => errorMessage.value = '', 3000)
   } finally {
     actionLoading.value = false
@@ -268,7 +291,7 @@ const suspendVendor = async (vendorId) => {
     setTimeout(() => successMessage.value = '', 3000)
     await loadVendors()
   } catch (error) {
-    errorMessage.value = 'Erreur'
+    errorMessage.value = 'Erreur lors de la suspension'
     setTimeout(() => errorMessage.value = '', 3000)
   } finally {
     actionLoading.value = false
@@ -284,16 +307,11 @@ const reactivateVendor = async (vendorId) => {
     setTimeout(() => successMessage.value = '', 3000)
     await loadVendors()
   } catch (error) {
-    errorMessage.value = 'Erreur'
+    errorMessage.value = 'Erreur lors de la réactivation'
     setTimeout(() => errorMessage.value = '', 3000)
   } finally {
     actionLoading.value = false
   }
-}
-
-const handleLogout = async () => {
-  await authStore.logout()
-  router.push('/login')
 }
 
 onMounted(() => {

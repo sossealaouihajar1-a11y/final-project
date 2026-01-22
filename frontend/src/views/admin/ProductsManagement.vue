@@ -1,335 +1,130 @@
 <template>
-  <div class="min-h-screen bg-white">
-    <Header />
+  <div class="min-h-screen bg-[#f6f3ee] text-[#2a2a28] font-serif">
 
-    <!-- Hero Section -->
-    <section class="bg-[#f2f1ed] border-b border-gray-200">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div class="text-center">
-          <p class="text-sm font-semibold uppercase tracking-wider text-[#8b1c3d] mb-2">Administration</p>
-          <h1 class="text-4xl md:text-5xl font-serif font-bold text-gray-900 mb-4">Gestion des Produits</h1>
-          <p class="text-lg text-gray-600">Gérez tous les produits de la plateforme</p>
-        </div>
+    <!-- Hero -->
+    <section class="border-b border-[#d6cdbf]">
+      <div class="max-w-7xl mx-auto px-6 py-12 text-center">
+        <p class="uppercase tracking-[0.3em] text-xs text-[#6b7b4b] mb-3">
+          Administration
+        </p>
+        <h1 class="text-4xl md:text-5xl font-serif text-[#4a3728] mb-4">
+          Gestion des Produits
+        </h1>
+        <p class="text-[#5a564f] max-w-xl mx-auto">
+          Suivi, contrôle et gestion des produits de la plateforme
+        </p>
       </div>
     </section>
 
-    <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Content -->
+    <div class="max-w-7xl mx-auto px-6 py-10 space-y-10">
+
       <!-- Statistics -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div class="bg-white rounded-lg shadow p-6">
-          <div class="text-gray-500 text-sm font-medium">Total Produits</div>
-          <div class="text-3xl font-bold text-gray-900 mt-2">{{ statistics.total_products }}</div>
-        </div>
-        <div class="bg-white rounded-lg shadow p-6">
-          <div class="text-gray-500 text-sm font-medium">Produits Actifs</div>
-          <div class="text-3xl font-bold text-green-600 mt-2">{{ statistics.active_products }}</div>
-        </div>
-        <div class="bg-white rounded-lg shadow p-6">
-          <div class="text-gray-500 text-sm font-medium">Stock Total</div>
-          <div class="text-3xl font-bold text-blue-600 mt-2">{{ statistics.total_stock }}</div>
-        </div>
-        <div class="bg-white rounded-lg shadow p-6">
-          <div class="text-gray-500 text-sm font-medium">Catégories</div>
-          <div class="text-3xl font-bold text-purple-600 mt-2">{{ (statistics.categories || []).length }}</div>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div
+          v-for="stat in [
+            { label: 'Total produits', value: statistics.total_products },
+            { label: 'Produits actifs', value: statistics.active_products },
+            { label: 'Stock total', value: statistics.total_stock },
+            { label: 'Catégories', value: (statistics.categories || []).length }
+          ]"
+          :key="stat.label"
+          class="bg-[#fbfaf7] border border-[#d6cdbf] rounded-xl p-6 text-center"
+        >
+          <p class="text-xs uppercase tracking-wider text-[#6b7b4b]">
+            {{ stat.label }}
+          </p>
+          <p class="mt-3 text-3xl font-serif text-[#4a3728]">
+            {{ stat.value || 0 }}
+          </p>
         </div>
       </div>
 
-      <!-- Filters and Search -->
-      <div class="bg-white rounded-lg shadow p-6 mb-8">
+      <!-- Filters -->
+      <div class="bg-[#fbfaf7] border border-[#d6cdbf] rounded-xl p-6">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Rechercher</label>
-            <input
-              v-model="searchQuery"
-              type="text"
-              placeholder="Titre ou description..."
-              @input="handleSearch"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1c3d] focus:border-transparent"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Catégorie</label>
-            <select
-              v-model="filterCategory"
-              @change="loadProducts"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1c3d] focus:border-transparent"
-            >
-              <option value="">Toutes les catégories</option>
-              <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Statut</label>
-            <select
-              v-model="filterStatus"
-              @change="loadProducts"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1c3d] focus:border-transparent"
-            >
-              <option value="">Tous</option>
-              <option value="active">Actifs</option>
-              <option value="inactive">Inactifs</option>
-            </select>
-          </div>
-          <div class="flex items-end">
-            <button
-              @click="loadProducts"
-              class="w-full px-4 py-2 bg-[#8b1c3d] text-white rounded-lg hover:bg-[#5a4a3a] transition"
-            >
-              Charger
-            </button>
-          </div>
+          <input
+            v-model="searchQuery"
+            @input="handleSearch"
+            placeholder="Recherche par titre ou description"
+            class="px-4 py-3 border border-[#d6cdbf] rounded-lg bg-white focus:outline-none focus:ring-1 focus:ring-[#6b7b4b] col-span-2"
+          />
+          <select v-model="filterCategory" @change="loadProducts"
+            class="px-4 py-3 border border-[#d6cdbf] rounded-lg bg-white">
+            <option value="">Toutes les catégories</option>
+            <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
+          </select>
+          <select v-model="filterStatus" @change="loadProducts"
+            class="px-4 py-3 border border-[#d6cdbf] rounded-lg bg-white">
+            <option value="">Tous les statuts</option>
+            <option value="active">Actifs</option>
+            <option value="inactive">Inactifs</option>
+          </select>
         </div>
       </div>
 
-      <!-- Products Table -->
-      <div class="bg-white rounded-lg shadow overflow-hidden">
-        <div v-if="loading" class="p-8 text-center">
-          <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#8b1c3d]"></div>
-          <p class="mt-2 text-gray-600">Chargement...</p>
-        </div>
-
-        <table v-else class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
-            <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Produit</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Catégorie</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prix</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">État</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+      <!-- Table -->
+      <div class="bg-[#fbfaf7] border border-[#d6cdbf] rounded-xl overflow-hidden">
+        <table class="min-w-full text-sm">
+          <thead class="bg-[#f1ede6]">
+            <tr class="text-left text-xs uppercase tracking-wider text-[#6b7b4b]">
+              <th class="px-6 py-4">Produit</th>
+              <th class="px-6 py-4">Catégorie</th>
+              <th class="px-6 py-4">Prix</th>
+              <th class="px-6 py-4">Stock</th>
+              <th class="px-6 py-4">État</th>
+              <th class="px-6 py-4">Statut</th>
+              <th class="px-6 py-4">Actions</th>
             </tr>
           </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="product in products" :key="product.id" class="hover:bg-gray-50 transition">
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="flex items-center">
-                  <img
-                    v-if="product.image_url"
-                    :src="product.image_url"
-                    :alt="product.title"
-                    class="h-10 w-10 rounded object-cover mr-3"
-                  />
-                  <div class="text-sm font-medium text-gray-900">{{ product.title }}</div>
+
+          <tbody>
+            <tr
+              v-for="product in products"
+              :key="product.id"
+              class="border-t border-[#e4dccf] hover:bg-[#f4f1eb]"
+            >
+              <td class="px-6 py-4 font-medium text-[#4a3728]">
+                <div class="flex items-center space-x-3">
+                  <img v-if="product.image_url" :src="product.image_url" alt="image" class="h-12 w-12 rounded-lg object-cover"/>
+                  <span>{{ product.title }}</span>
                 </div>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ product.category }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ product.price }}€</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ product.stock }}</td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span class="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+              <td class="px-6 py-4 text-[#5a564f]">{{ product.category }}</td>
+              <td class="px-6 py-4 font-semibold text-[#4a3728]">{{ product.price }} MAD</td>
+              <td class="px-6 py-4 text-[#5a564f]">{{ product.stock }}</td>
+              <td class="px-6 py-4">
+                <span class="px-3 py-1 rounded-full text-xs bg-[#e9e4d7] text-[#4a3728]">
                   {{ getConditionLabel(product.condition) }}
                 </span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span
-                  :class="{
-                    'bg-green-100 text-green-800': product.status === 'active',
-                    'bg-gray-100 text-gray-800': product.status !== 'active',
-                  }"
-                  class="px-3 py-1 rounded-full text-xs font-medium"
-                >
+              <td class="px-6 py-4">
+                <span class="px-3 py-1 rounded-full text-xs"
+                  :class="product.status === 'active' ? 'bg-[#d4e4c8] text-[#4a3728]' : 'bg-[#f5e4e4] text-[#4a3728]'">
                   {{ product.status === 'active' ? 'Actif' : 'Inactif' }}
                 </span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
-                <button
-                  @click="editProduct(product)"
-                  class="text-[#8b1c3d] hover:text-[#5a4a3a] font-medium"
-                >
-                  Éditer
-                </button>
-                <button
-                  @click="toggleActive(product)"
-                  :class="product.status === 'active' ? 'text-orange-600 hover:text-orange-900' : 'text-green-600 hover:text-green-900'"
-                  class="font-medium"
-                >
+              <td class="px-6 py-4 space-x-2">
+                <button @click="editProduct(product)" class="text-[#6b7b4b] hover:underline">Éditer</button>
+                <button @click="toggleActive(product)" class="text-[#4a3728] hover:underline">
                   {{ product.status === 'active' ? 'Désactiver' : 'Activer' }}
                 </button>
-                <button
-                  @click="confirmDelete(product)"
-                  class="text-red-600 hover:text-red-900 font-medium"
-                >
-                  Supprimer
-                </button>
+                <button @click="confirmDelete(product)" class="text-red-600 hover:underline">Supprimer</button>
               </td>
             </tr>
           </tbody>
         </table>
+
+        <div v-if="products.length === 0" class="p-10 text-center text-gray-500">
+          Aucun produit trouvé
+        </div>
       </div>
 
-      <!-- Pagination -->
-      <div v-if="!loading && pagination" class="mt-6 flex justify-between items-center">
-        <div class="text-sm text-gray-600">
-          Page {{ pagination.current_page }} de {{ pagination.last_page }} ({{ pagination.total }} produits)
-        </div>
-        <div class="space-x-2">
-          <button
-            v-if="pagination.current_page > 1"
-            @click="loadProducts(pagination.current_page - 1)"
-            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-          >
-            Précédent
-          </button>
-          <button
-            v-if="pagination.current_page < pagination.last_page"
-            @click="loadProducts(pagination.current_page + 1)"
-            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-          >
-            Suivant
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Edit/Create Modal -->
-    <div
-      v-if="editingProduct || showNewProductModal"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto"
-    >
-      <div class="bg-white rounded-lg max-w-lg w-full p-8 my-8">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6">
-          {{ editingProduct ? 'Éditer le produit' : 'Nouveau produit' }}
-        </h2>
-        <div class="space-y-4 mb-6">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Titre</label>
-            <input
-              v-model="productForm.title"
-              type="text"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1c3d] focus:border-transparent"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
-            <textarea
-              v-model="productForm.description"
-              rows="3"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1c3d] focus:border-transparent"
-            ></textarea>
-          </div>
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Catégorie</label>
-              <input
-                v-model="productForm.category"
-                type="text"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1c3d] focus:border-transparent"
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">État</label>
-              <select
-                v-model="productForm.condition"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1c3d] focus:border-transparent"
-              >
-                <option value="neuf">Neuf</option>
-                <option value="excellent">Excellent</option>
-                <option value="tres_bon">Très bon</option>
-                <option value="bon">Bon</option>
-                <option value="acceptable">Acceptable</option>
-                <option value="a_restaurer">À restaurer</option>
-              </select>
-            </div>
-          </div>
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Prix (€)</label>
-              <input
-                v-model.number="productForm.price"
-                type="number"
-                step="0.01"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1c3d] focus:border-transparent"
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Promotion (%)</label>
-              <input
-                v-model.number="productForm.promotion"
-                type="number"
-                min="0"
-                max="100"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1c3d] focus:border-transparent"
-              />
-            </div>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Stock</label>
-            <input
-              v-model.number="productForm.stock"
-              type="number"
-              min="0"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1c3d] focus:border-transparent"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Image du Produit</label>
-            <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-[#8b1c3d] transition cursor-pointer" @click="$refs.imageInput.click()">
-              <div v-if="imagePreview" class="mb-4">
-                <img :src="imagePreview" alt="Preview" class="h-40 w-40 object-cover mx-auto rounded" />
-              </div>
-              <div v-else-if="editingProduct && editingProduct.image_url" class="mb-4">
-                <img :src="editingProduct.image_url" alt="Current" class="h-40 w-40 object-cover mx-auto rounded" />
-              </div>
-              <svg v-else class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
-                <path d="M28 8H12a4 4 0 00-4 4v20a4 4 0 004 4h24a4 4 0 004-4V20m-18-8l-4 4m0 0l4 4m-4-4h20" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-              </svg>
-              <p class="mt-2 text-sm text-gray-600">Cliquez pour importer une image</p>
-              <p class="text-xs text-gray-500">PNG, JPG, GIF jusqu'à 5MB</p>
-            </div>
-            <input
-              ref="imageInput"
-              type="file"
-              accept="image/jpeg,image/png,image/jpg,image/gif"
-              @change="handleImageSelect"
-              class="hidden"
-            />
-          </div>
-        </div>
-        <div class="flex gap-4">
-          <button
-            @click="saveProduct"
-            class="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
-          >
-            {{ editingProduct ? 'Mettre à jour' : 'Créer' }}
-          </button>
-          <button
-            @click="closeProductModal"
-            class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
-          >
-            Annuler
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Confirmation Modal -->
-    <div
-      v-if="confirmModal"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-    >
-      <div class="bg-white rounded-lg max-w-sm w-full p-8">
-        <h2 class="text-xl font-bold text-gray-900 mb-4">{{ confirmModal.title }}</h2>
-        <p class="text-gray-600 mb-6">{{ confirmModal.message }}</p>
-        <div class="flex gap-4">
-          <button
-            @click="confirmModal.action"
-            class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
-          >
-            Confirmer
-          </button>
-          <button
-            @click="confirmModal = null"
-            class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
-          >
-            Annuler
-          </button>
-        </div>
-      </div>
     </div>
   </div>
 </template>
+
+
 
 <script setup>
 import { ref, onMounted } from 'vue'
@@ -451,7 +246,6 @@ const saveProduct = async () => {
     console.error('Response data:', error.response?.data)
     console.error('Validation errors:', error.response?.data?.errors)
     
-    // Show detailed error message
     if (error.response?.data?.errors) {
       const errorMessages = Object.entries(error.response.data.errors)
         .map(([field, messages]) => `${field}: ${Array.isArray(messages) ? messages.join(', ') : messages}`)
@@ -515,6 +309,10 @@ const handleImageSelect = (event) => {
     }
     reader.readAsDataURL(file)
   }
+}
+const formatPrice = (price) => {
+  if (!price) return '0 MAD'
+  return new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(price) + ' MAD'
 }
 
 onMounted(() => {

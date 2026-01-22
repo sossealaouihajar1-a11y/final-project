@@ -2,24 +2,21 @@
   <div class="space-y-6">
     <!-- Header -->
     <div>
-      <h3 class="text-lg font-semibold text-gray-900">Gestion du Stock</h3>
-      <p class="text-sm text-gray-600 mt-1">Suivez et gérez votre inventaire</p>
+      <h3 class="text-2xl font-serif font-bold text-gray-900">Gestion du Stock</h3>
+      <p class="text-sm text-gray-600 mt-1 uppercase tracking-wider">Suivez et gérez votre inventaire</p>
     </div>
 
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-      <StatsCard title="Total Articles" :value="stockStats.total_items || 0" color="blue" icon="📦" />
-      <StatsCard title="Stock Insuffisant" :value="stockStats.low_stock_products || 0" color="yellow" icon="⚠️" />
-      <StatsCard title="Rupture" :value="stockStats.out_of_stock_products || 0" color="red" icon="❌" />
-      <StatsCard title="Valeur Stock" :value="'$' + (stockStats.inventory_value || 0)" color="green" icon="💰" />
+      <StatsCard title="Total Articles" :value="stockStats.total_items || 0" color="blue" />
+      <StatsCard title="Stock Insuffisant" :value="stockStats.low_stock_products || 0" color="yellow" />
+      <StatsCard title="Rupture" :value="stockStats.out_of_stock_products || 0" color="red" />
+      <StatsCard title="Valeur Stock" :value="'$' + (stockStats.inventory_value || 0)" color="green" />
     </div>
 
     <!-- Alerts -->
     <div v-if="alerts.low_stock > 0 || alerts.out_of_stock > 0" class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
       <div class="flex">
-        <div class="flex-shrink-0">
-          <span class="text-2xl">⚠️</span>
-        </div>
         <div class="ml-3">
           <p class="text-sm text-yellow-700">
             <strong>{{ alerts.low_stock }}</strong> produit(s) avec stock faible et
@@ -30,7 +27,7 @@
     </div>
 
     <!-- Filters & Search -->
-    <div class="bg-white rounded-lg shadow p-4">
+    <div class="bg-white border border-gray-200 rounded-lg p-4">
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
         <input 
           v-model="filters.search" 
