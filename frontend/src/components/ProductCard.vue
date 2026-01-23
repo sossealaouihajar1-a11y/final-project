@@ -58,10 +58,10 @@
       <div class="flex items-center justify-between mb-3">
         <div>
           <div v-if="(product.promotion || 0) > 0" class="text-sm text-gray-400 line-through">
-            {{ product.price || product.final_price }}€
+            {{ product.price || product.final_price }} MAD
           </div>
           <div class="text-2xl font-bold text-indigo-600">
-            {{ product.final_price || product.price }}€
+            {{ product.final_price || product.price }} MAD
           </div>
         </div>
       </div>

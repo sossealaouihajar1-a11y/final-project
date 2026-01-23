@@ -20,21 +20,23 @@ class ProductController extends Controller
         $query = VintageProduct::where('vendeur_id', $user->id);
 
         // Filters
-        if ($request->has('search')) {
+        if ($request->has('search') && !empty($request->input('search'))) {
             $search = $request->input('search');
-            $query->where('title', 'like', '%' . $search . '%')
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', '%' . $search . '%')
                   ->orWhere('description', 'like', '%' . $search . '%');
+            });
         }
 
-        if ($request->has('category')) {
+        if ($request->has('category') && !empty($request->input('category'))) {
             $query->where('category', $request->input('category'));
         }
 
-        if ($request->has('status')) {
+        if ($request->has('status') && !empty($request->input('status'))) {
             $query->where('status', $request->input('status'));
         }
 
-        if ($request->has('condition')) {
+        if ($request->has('condition') && !empty($request->input('condition'))) {
             $query->where('condition', $request->input('condition'));
         }
 

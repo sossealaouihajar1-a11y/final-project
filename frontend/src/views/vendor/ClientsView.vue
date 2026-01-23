@@ -1,136 +1,160 @@
 <template>
-  <div class="space-y-6">
-    <!-- Header -->
-    <div>
-      <h3 class="text-2xl font-serif font-bold text-gray-900">Suivi des Clients</h3>
-      <p class="text-sm text-gray-600 mt-1 uppercase tracking-wider">Gérez vos clients et leurs historiques d'achat</p>
-    </div>
-
-    <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-      <StatsCard title="Clients Totaux" :value="clientStats.total_clients || 0" color="blue" />
-      <StatsCard title="Clients Fidèles" :value="clientStats.repeat_clients || 0" color="green" />
-      <StatsCard title="Commandes" :value="clientStats.total_orders || 0" color="purple" />
-      <StatsCard title="Revenu Total" :value="'$' + (clientStats.total_revenue || 0)" color="orange" />
-    </div>
-
-    <!-- Filters & Search -->
-    <div class="bg-white border border-gray-200 rounded-lg p-4">
-      <div class="flex gap-4">
-        <input 
-          v-model="searchQuery" 
-          type="text" 
-          placeholder="Rechercher par nom, email ou téléphone..." 
-          class="flex-1 border rounded-lg px-3 py-2"
-          @keyup.enter="loadClients"
-        />
-        <button @click="loadClients" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-          Rechercher
-        </button>
-        <button @click="exportClients" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
-          📥 Exporter
-        </button>
+  <div class="bg-[#f6f3ee] min-h-screen text-[#2a2a28]">
+    <!-- Hero -->
+    <section class="border-b border-[#d6cdbf]">
+      <div class="max-w-7xl mx-auto px-6 py-12 text-center">
+        <p class="uppercase tracking-[0.3em] text-xs text-[#6b7b4b] mb-3">
+          Gestion clients
+        </p>
+        <h1 class="text-4xl md:text-5xl font-serif text-[#4a3728] mb-4">
+          Mes Clients
+        </h1>
+        <p class="text-[#5a564f] max-w-xl mx-auto">
+          Gérez vos clients et leurs historiques d'achat
+        </p>
       </div>
-    </div>
+    </section>
 
-    <!-- Clients Table -->
-    <div class="bg-white rounded-lg shadow overflow-hidden">
-      <div v-if="loading" class="p-8 text-center text-gray-500">
-        Chargement...
+    <!-- Content -->
+    <div class="max-w-7xl mx-auto px-6 py-10 space-y-10">
+
+      <!-- Statistics -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div
+          v-for="stat in [
+            { label: 'Clients totaux', value: clientStats.total_clients || 0 },
+            { label: 'Clients fidèles', value: clientStats.repeat_clients || 0 },
+            { label: 'Commandes', value: clientStats.total_orders || 0 },
+            { label: 'Revenu total', value: formatPrice(clientStats.total_revenue || 0) }
+          ]"
+          :key="stat.label"
+          class="bg-[#fbfaf7] border border-[#d6cdbf] rounded-xl p-6"
+        >
+          <p class="text-xs uppercase tracking-wider text-[#6b7b4b]">
+            {{ stat.label }}
+          </p>
+          <p class="mt-3 text-3xl font-serif text-[#4a3728]">
+            {{ stat.value }}
+          </p>
+        </div>
       </div>
-      <div v-else-if="clients.length === 0" class="p-8 text-center text-gray-500">
-        Aucun client trouvé
+
+      <!-- Filters & Search -->
+      <div class="bg-[#fbfaf7] border border-[#d6cdbf] rounded-xl p-6">
+        <div class="flex gap-4">
+          <input 
+            v-model="searchQuery" 
+            type="text" 
+            placeholder="Rechercher par nom, email ou téléphone..." 
+            class="flex-1 px-4 py-3 border border-[#d6cdbf] rounded-lg bg-white focus:outline-none focus:ring-1 focus:ring-[#6b7b4b]"
+            @keyup.enter="loadClients"
+          />
+          <button @click="loadClients" class="px-6 py-3 bg-[#6b8043] text-white rounded-lg hover:bg-[#556b2f] font-medium transition">
+            Rechercher
+          </button>
+        </div>
       </div>
-      <table v-else class="w-full">
-        <thead class="bg-gray-50 border-b">
-          <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nom</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Téléphone</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ville</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date d'inscription</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y">
-          <tr v-for="client in clients" :key="client.id" class="hover:bg-gray-50">
-            <td class="px-6 py-4 whitespace-nowrap">
-              <div class="flex items-center">
-                <div class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center mr-3 text-sm font-medium">
-                  {{ client.name.charAt(0) }}
+
+      <!-- Clients Table -->
+      <div class="bg-[#fbfaf7] border border-[#d6cdbf] rounded-xl overflow-hidden">
+        <div v-if="loading" class="p-10 text-center text-[#7a7465]">
+          Chargement...
+        </div>
+        <table v-else class="min-w-full text-sm">
+          <thead class="bg-[#f1ede6]">
+            <tr class="text-left text-xs uppercase tracking-wider text-[#6b7b4b]">
+              <th class="px-6 py-4">Nom</th>
+              <th class="px-6 py-4">Email</th>
+              <th class="px-6 py-4">Téléphone</th>
+              <th class="px-6 py-4">Ville</th>
+              <th class="px-6 py-4">Date d'inscription</th>
+              <th class="px-6 py-4">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="client in clients" :key="client.id" class="border-t border-[#e4dccf] hover:bg-[#f4f1eb]">
+              <td class="px-6 py-4">
+                <div class="flex items-center space-x-3">
+                  <div class="w-10 h-10 rounded-full bg-[#d6cdbf] flex items-center justify-center text-sm font-semibold text-[#4a3728]">
+                    {{ client.name.charAt(0) }}
+                  </div>
+                  <p class="font-medium text-[#4a3728]">{{ client.name }}</p>
                 </div>
-                <p class="text-sm font-medium text-gray-900">{{ client.name }}</p>
-              </div>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-              {{ client.email }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-              {{ client.phone || '-' }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-              {{ client.city || '-' }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-              {{ formatDate(client.created_at) }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
-              <button @click="viewClientDetails(client.id)" class="text-blue-600 hover:text-blue-800">
-                👁️ Voir
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+              </td>
+              <td class="px-6 py-4 text-[#7a7465]">
+                {{ client.email }}
+              </td>
+              <td class="px-6 py-4 text-[#7a7465]">
+                {{ client.phone || '-' }}
+              </td>
+              <td class="px-6 py-4 text-[#7a7465]">
+                {{ client.city || '-' }}
+              </td>
+              <td class="px-6 py-4 text-[#7a7465]">
+                {{ formatDate(client.created_at) }}
+              </td>
+              <td class="px-6 py-4">
+                <button @click="viewClientDetails(client.id)" class="text-[#6b8043] hover:underline text-sm font-medium">
+                  Détails
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div v-if="!loading && clients.length === 0" class="p-10 text-center text-[#7a7465]">
+          Aucun client trouvé
+        </div>
+      </div>
     </div>
 
     <!-- Client Details Modal -->
-    <div v-if="showDetailsModal && selectedClient" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl max-h-96 overflow-y-auto">
-        <div class="flex justify-between items-start mb-4">
+    <div v-if="showDetailsModal && selectedClient" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <div class="bg-[#fbfaf7] rounded-xl shadow-xl p-8 w-full max-w-2xl max-h-96 overflow-y-auto border border-[#d6cdbf]">
+        <div class="flex justify-between items-start mb-6 pb-4 border-b border-[#d6cdbf]">
           <div>
-            <h3 class="text-lg font-semibold text-gray-900">{{ selectedClient.name }}</h3>
-            <p class="text-sm text-gray-600">{{ selectedClient.email }}</p>
+            <h3 class="text-lg font-serif text-[#4a3728]">{{ selectedClient.name }}</h3>
+            <p class="text-sm text-[#7a7465]">{{ selectedClient.email }}</p>
           </div>
-          <button @click="showDetailsModal = false" class="text-gray-500 hover:text-gray-700">✕</button>
+          <button @click="showDetailsModal = false" class="text-[#7a7465] hover:text-[#4a3728] text-lg font-bold">✕</button>
         </div>
 
         <div class="grid grid-cols-2 gap-4 mb-6">
-          <div class="p-3 bg-gray-50 rounded">
-            <p class="text-xs text-gray-600">Total d'achats</p>
-            <p class="text-lg font-semibold text-gray-900">{{ clientDetails.statistics.total_purchases }}</p>
+          <div class="p-4 bg-[#f1ede6] rounded-lg border border-[#e4dccf]">
+            <p class="text-xs uppercase tracking-wider text-[#6b7b4b]">Total d'achats</p>
+            <p class="text-xl font-serif text-[#4a3728] mt-2">{{ clientDetails.statistics.total_purchases }}</p>
           </div>
-          <div class="p-3 bg-gray-50 rounded">
-            <p class="text-xs text-gray-600">Dépense totale</p>
-            <p class="text-lg font-semibold text-gray-900">${{ clientDetails.statistics.total_spent }}</p>
+          <div class="p-4 bg-[#f1ede6] rounded-lg border border-[#e4dccf]">
+            <p class="text-xs uppercase tracking-wider text-[#6b7b4b]">Dépense totale</p>
+            <p class="text-xl font-serif text-[#4a3728] mt-2">{{ formatPrice(clientDetails.statistics.total_spent) }}</p>
           </div>
-          <div class="p-3 bg-gray-50 rounded">
-            <p class="text-xs text-gray-600">Valeur moyenne panier</p>
-            <p class="text-lg font-semibold text-gray-900">${{ clientDetails.statistics.average_order_value }}</p>
+          <div class="p-4 bg-[#f1ede6] rounded-lg border border-[#e4dccf]">
+            <p class="text-xs uppercase tracking-wider text-[#6b7b4b]">Valeur moyenne</p>
+            <p class="text-xl font-serif text-[#4a3728] mt-2">{{ formatPrice(clientDetails.statistics.average_order_value) }}</p>
           </div>
-          <div class="p-3 bg-gray-50 rounded">
-            <p class="text-xs text-gray-600">Dernier achat</p>
-            <p class="text-sm font-semibold text-gray-900">{{ formatDate(clientDetails.statistics.last_purchase) }}</p>
+          <div class="p-4 bg-[#f1ede6] rounded-lg border border-[#e4dccf]">
+            <p class="text-xs uppercase tracking-wider text-[#6b7b4b]">Dernier achat</p>
+            <p class="text-sm font-medium text-[#4a3728] mt-2">{{ formatDate(clientDetails.statistics.last_purchase) }}</p>
           </div>
         </div>
 
-        <h4 class="font-semibold text-gray-900 mb-3">Historique des commandes</h4>
+        <h4 class="font-serif text-[#4a3728] mb-3 uppercase tracking-wider text-sm">Historique des commandes</h4>
         <div class="space-y-2 max-h-48 overflow-y-auto">
-          <div v-for="order in clientDetails.orders" :key="order.id" class="p-3 border rounded bg-gray-50">
+          <div v-for="order in clientDetails.orders" :key="order.id" class="p-3 border border-[#d6cdbf] rounded-lg bg-white">
             <div class="flex justify-between items-start">
               <div>
-                <p class="text-sm font-medium text-gray-900">Commande #{{ order.id.substring(0, 8) }}</p>
-                <p class="text-xs text-gray-600">{{ formatDate(order.created_at) }}</p>
+                <p class="text-sm font-medium text-[#4a3728]">Commande #{{ order.id.substring(0, 8) }}</p>
+                <p class="text-xs text-[#7a7465]">{{ formatDate(order.created_at) }}</p>
               </div>
               <span :class="getStatusClass(order.status)" class="px-2 py-1 rounded text-xs font-semibold">
                 {{ order.status }}
               </span>
             </div>
-            <p class="text-sm text-gray-600 mt-2">{{ order.order_items.length }} article(s) - {{ order.total_price }}€</p>
+            <p class="text-sm text-[#7a7465] mt-2">{{ order.order_items.length }} article(s) - {{ formatPrice(order.total_price) }}</p>
           </div>
         </div>
 
-        <button @click="showDetailsModal = false" class="mt-6 w-full px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
+        <button @click="showDetailsModal = false" class="mt-6 w-full px-6 py-3 bg-[#6b8043] text-white rounded-lg hover:bg-[#556b2f] font-medium transition">
           Fermer
         </button>
       </div>
@@ -140,11 +164,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useAuthStore } from '@/stores/authStore'
 import vendorClientService from '@/services/vendorClientService'
-import StatsCard from '@/components/vendor/StatsCard.vue'
-
-const authStore = useAuthStore()
 
 const clients = ref([])
 const loading = ref(false)
@@ -197,32 +217,26 @@ const viewClientDetails = async (clientId) => {
   }
 }
 
-const exportClients = async () => {
-  try {
-    const response = await vendorClientService.exportClients()
-    const blob = response.data
-    const url = window.URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = 'clients.csv'
-    a.click()
-  } catch (error) {
-    console.error('Error exporting clients:', error)
-  }
-}
-
 const formatDate = (date) => {
   return new Date(date).toLocaleDateString('fr-FR')
 }
 
+const formatPrice = (price) => {
+  if (!price) return '0 MAD'
+  return new Intl.NumberFormat('fr-FR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(price) + ' MAD'
+}
+
 const getStatusClass = (status) => {
   const classes = {
-    'pending': 'bg-yellow-100 text-yellow-800',
-    'confirmed': 'bg-blue-100 text-blue-800',
-    'shipped': 'bg-purple-100 text-purple-800',
-    'delivered': 'bg-green-100 text-green-800',
-    'cancelled': 'bg-red-100 text-red-800'
+    'pending': 'bg-[#fef3c7] text-[#92400e]',
+    'confirmed': 'bg-[#c7d2fe] text-[#312e81]',
+    'shipped': 'bg-[#ddd6fe] text-[#5b21b6]',
+    'delivered': 'bg-[#bbf7d0] text-[#065f46]',
+    'cancelled': 'bg-[#fecaca] text-[#7f1d1d]'
   }
-  return classes[status] || 'bg-gray-100 text-gray-800'
+  return classes[status] || 'bg-[#e5e7eb] text-[#374151]'
 }
 </script>

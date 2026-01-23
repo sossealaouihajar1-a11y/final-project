@@ -66,7 +66,7 @@
                 </div>
               </div>
               <button
-                @click="confirmDelete(review)"
+                @click="handleConfirmDelete(review)"
                 class="text-red-600 hover:underline text-sm"
               >
                 Supprimer
@@ -113,12 +113,16 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useNotification } from '@/composables/useNotification'
+import { useConfirmDialog } from '@/composables/useConfirmDialog'
 import reviewManagementService from '@/services/reviewManagementService'
 
 const reviews = ref([])
 const loading = ref(false)
 const searchQuery = ref('')
 const pagination = ref({ current_page: 1, last_page: 1, total: 0 })
+const { showError } = useNotification()
+const { confirmDelete } = useConfirmDialog()
 let searchTimeout = null
 
 const loadReviews = async (page = 1) => {
@@ -138,7 +142,7 @@ const loadReviews = async (page = 1) => {
   } catch (error) {
     reviews.value = []
     pagination.value = { current_page: 1, last_page: 1, total: 0 }
-    alert('Erreur lors du chargement des commentaires')
+    showError('Erreur lors du chargement des commentaires', 'Erreur')
   } finally {
     loading.value = false
   }
@@ -149,8 +153,9 @@ const handleSearch = () => {
   searchTimeout = setTimeout(() => loadReviews(1), 500)
 }
 
-const confirmDelete = (review) => {
-  if (confirm(`Supprimer le commentaire de ${review.user_name}?`)) {
+const handleConfirmDelete = async (review) => {
+  const confirmed = await confirmDelete(`le commentaire de ${review.user_name}`)
+  if (confirmed) {
     deleteReview(review.id)
   }
 }
@@ -160,7 +165,7 @@ const deleteReview = async (reviewId) => {
     await reviewManagementService.deleteReview(reviewId)
     loadReviews()
   } catch (error) {
-    alert('Erreur lors de la suppression')
+    showError('Erreur lors de la suppression', 'Erreur')
   }
 }
 

@@ -129,7 +129,10 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import Header from '@/components/Header.vue'
+import { useNotification } from '@/composables/useNotification'
 import productManagementService from '@/services/productManagementService'
+
+const { showError, showSuccess } = useNotification()
 
 const products = ref([])
 const loading = ref(false)
@@ -251,9 +254,9 @@ const saveProduct = async () => {
         .map(([field, messages]) => `${field}: ${Array.isArray(messages) ? messages.join(', ') : messages}`)
         .join('\n')
       console.error('Full validation errors:', error.response.data.errors)
-      alert('Erreurs de validation:\n' + errorMessages)
+      showError('Erreurs de validation:\n' + errorMessages, 'Erreur de validation')
     } else {
-      alert('Erreur: ' + (error.response?.data?.message || error.message))
+      showError(error.response?.data?.message || error.message, 'Erreur')
     }
   }
 }

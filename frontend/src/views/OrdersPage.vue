@@ -94,7 +94,7 @@
             <div class="flex items-center justify-between">
               <div>
                 <p class="text-sm text-gray-600 mb-1">Total dépensé</p>
-                <p class="text-2xl font-bold text-indigo-600">{{ formatPrice(stats.total_spent) }}€</p>
+                <p class="text-2xl font-bold text-indigo-600">{{ formatPrice(stats.total_spent) }} MAD</p>
               </div>
               <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
                 <svg class="w-6 h-6 text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
@@ -180,8 +180,8 @@
                   <p class="text-sm text-gray-500">{{ item.vintage_product?.category }}</p>
                 </div>
                 <div class="text-right">
-                  <p class="text-sm text-gray-600">{{ item.quantity }} × {{ formatPrice(item.price) }}€</p>
-                  <p class="font-semibold text-gray-900">{{ formatPrice(item.price * item.quantity) }}€</p>
+                  <p class="text-sm text-gray-600">{{ item.quantity }} × {{ formatPrice(item.price) }} MAD</p>
+                  <p class="font-semibold text-gray-900">{{ formatPrice(item.price * item.quantity) }} MAD</p>
                 </div>
               </div>
             </div>
@@ -198,7 +198,7 @@
               </div>
               <div class="text-left sm:text-right">
                 <p class="text-sm text-gray-600 mb-1">Total</p>
-                <p class="text-2xl font-bold text-indigo-600">{{ formatPrice(order.total_price) }}€</p>
+                <p class="text-2xl font-bold text-indigo-600">{{ formatPrice(order.total_price) }} MAD</p>
               </div>
             </div>
           </div>
@@ -252,7 +252,10 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useConfirmDialog } from '@/composables/useConfirmDialog'
 import orderService from '@/services/orderService'
+
+const { confirmDelete } = useConfirmDialog()
 
 const orders = ref([])
 const stats = ref(null)
@@ -299,7 +302,8 @@ const loadStats = async () => {
 }
 
 const cancelOrder = async (orderId) => {
-  if (!confirm('Êtes-vous sûr de vouloir annuler cette commande ?')) {
+  const confirmed = await confirmDelete('cette commande')
+  if (!confirmed) {
     return
   }
 

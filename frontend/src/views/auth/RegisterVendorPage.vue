@@ -152,11 +152,13 @@
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
+import { useNotification } from '@/composables/useNotification'
 import Header from '@/components/Header.vue'
 import Footer from '@/components/Footer.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
+const { showError } = useNotification()
 const success = ref(false)
 const fileName = ref('')
 
@@ -176,7 +178,7 @@ const handleFileChange = (event) => {
   const file = event.target.files[0]
   if (file) {
     if (file.size > 2 * 1024 * 1024) {
-      alert('Fichier trop volumineux (max 2MB)')
+      showError('Fichier trop volumineux (max 2MB)', 'Erreur')
       event.target.value = ''
       return
     }
@@ -187,7 +189,7 @@ const handleFileChange = (event) => {
 
 const handleRegister = async () => {
   if (!form.identity_document) {
-    alert('Veuillez sélectionner votre document d\'identité')
+    showError('Veuillez sélectionner votre document d\'identité', 'Erreur')
     return
   }
 

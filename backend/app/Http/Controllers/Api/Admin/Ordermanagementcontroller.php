@@ -15,23 +15,20 @@ class Ordermanagementcontroller extends Controller
      */
     public function index(Request $request)
     {
-        $query = Order::with(['user', 'vendor', 'items.vintageProduct'])
-            ->select('orders.*')
-            ->leftJoin('users as clients', 'orders.user_id', '=', 'clients.id')
-            ->leftJoin('users as vendors', 'orders.vendor_id', '=', 'vendors.id');
+        $query = Order::with(['user', 'orderItems.vintageProduct.vendeur']);
 
         // Filtre par statut
         if ($request->has('status') && $request->status) {
-            $query->where('orders.status', $request->status);
+            $query->where('status', $request->status);
         }
 
         // Filtre par date
         if ($request->has('date_from') && $request->date_from) {
-            $query->whereDate('orders.created_at', '>=', $request->date_from);
+            $query->whereDate('created_at', '>=', $request->date_from);
         }
 
         if ($request->has('date_to') && $request->date_to) {
-            $query->whereDate('orders.created_at', '<=', $request->date_to);
+            $query->whereDate('created_at', '<=', $request->date_to);
         }
 
         // Recherche
@@ -39,28 +36,34 @@ class Ordermanagementcontroller extends Controller
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->where('orders.id', 'like', "%{$search}%")
-                  ->orWhere('clients.name', 'like', "%{$search}%")
-                  ->orWhere('clients.email', 'like', "%{$search}%")
-                  ->orWhere('vendors.name', 'like', "%{$search}%")
-                  ->orWhere('vendors.email', 'like', "%{$search}%");
+                  ->orWhereHas('user', function($subQuery) use ($search) {
+                      $subQuery->where('name', 'like', "%{$search}%")
+                               ->orWhere('email', 'like', "%{$search}%");
+                  });
             });
         }
 
         $perPage = $request->get('per_page', 15);
-        $orders = $query->orderBy('orders.created_at', 'desc')->paginate($perPage);
+        $orders = $query->orderBy('created_at', 'desc')->paginate($perPage);
 
         // Formater les données
         $orders->getCollection()->transform(function ($order) {
+            // Get vendor from first product in order
+            $vendor = null;
+            if ($order->orderItems->count() > 0) {
+                $vendor = $order->orderItems->first()->vintageProduct->vendeur;
+            }
+
             return [
                 'id' => $order->id,
                 'order_number' => $order->order_number,
                 'client_name' => $order->user->name ?? 'N/A',
                 'client_email' => $order->user->email ?? 'N/A',
                 'client_phone' => $order->user->phone ?? null,
-                'vendor_name' => $order->vendor->name ?? 'N/A',
-                'vendor_email' => $order->vendor->email ?? 'N/A',
-                'vendor_phone' => $order->vendor->phone ?? null,
-                'items_count' => $order->items->sum('quantity'),
+                'vendor_name' => $vendor->name ?? 'N/A',
+                'vendor_email' => $vendor->email ?? 'N/A',
+                'vendor_phone' => $vendor->phone ?? null,
+                'items_count' => $order->orderItems->sum('quantity'),
                 'total_price' => $order->total_price,
                 'subtotal' => $order->subtotal,
                 'status' => $order->status,
@@ -102,8 +105,14 @@ class Ordermanagementcontroller extends Controller
      */
     public function show($id)
     {
-        $order = Order::with(['user', 'vendor', 'items.vintageProduct'])
+        $order = Order::with(['user', 'orderItems.vintageProduct.vendeur'])
             ->findOrFail($id);
+
+        // Get vendor from first product
+        $vendor = null;
+        if ($order->orderItems->count() > 0) {
+            $vendor = $order->orderItems->first()->vintageProduct->vendeur;
+        }
 
         return response()->json([
             'id' => $order->id,
@@ -111,10 +120,10 @@ class Ordermanagementcontroller extends Controller
             'client_name' => $order->user->name ?? 'N/A',
             'client_email' => $order->user->email ?? 'N/A',
             'client_phone' => $order->user->phone ?? null,
-            'vendor_name' => $order->vendor->name ?? 'N/A',
-            'vendor_email' => $order->vendor->email ?? 'N/A',
-            'vendor_phone' => $order->vendor->phone ?? null,
-            'items' => $order->items->map(function ($item) {
+            'vendor_name' => $vendor->name ?? 'N/A',
+            'vendor_email' => $vendor->email ?? 'N/A',
+            'vendor_phone' => $vendor->phone ?? null,
+            'items' => $order->orderItems->map(function ($item) {
                 return [
                     'id' => $item->id,
                     'product_name' => $item->vintageProduct->title ?? 'Produit supprimé',
@@ -177,38 +186,41 @@ class Ordermanagementcontroller extends Controller
      */
     public function export(Request $request)
     {
-        $query = Order::with(['user', 'vendor'])
-            ->select('orders.*')
-            ->leftJoin('users as clients', 'orders.user_id', '=', 'clients.id')
-            ->leftJoin('users as vendors', 'orders.vendor_id', '=', 'vendors.id');
+        $query = Order::with(['user', 'orderItems.vintageProduct.vendeur']);
 
         // Appliquer les mêmes filtres que l'index
         if ($request->has('status') && $request->status) {
-            $query->where('orders.status', $request->status);
+            $query->where('status', $request->status);
         }
 
         if ($request->has('date_from') && $request->date_from) {
-            $query->whereDate('orders.created_at', '>=', $request->date_from);
+            $query->whereDate('created_at', '>=', $request->date_from);
         }
 
         if ($request->has('date_to') && $request->date_to) {
-            $query->whereDate('orders.created_at', '<=', $request->date_to);
+            $query->whereDate('created_at', '<=', $request->date_to);
         }
 
-        $orders = $query->orderBy('orders.created_at', 'desc')->get();
+        $orders = $query->orderBy('created_at', 'desc')->get();
 
         // Créer le CSV avec UTF-8 BOM pour Excel
         $csvData = "\xEF\xBB\xBF"; // UTF-8 BOM
         $csvData .= "N° Commande,Client,Email Client,Vendeur,Email Vendeur,Prix Total,Statut,Date\n";
         
         foreach ($orders as $order) {
+            // Get vendor from first product
+            $vendor = null;
+            if ($order->orderItems->count() > 0) {
+                $vendor = $order->orderItems->first()->vintageProduct->vendeur;
+            }
+
             $csvData .= sprintf(
                 '"%s","%s","%s","%s","%s","%s","%s","%s"' . "\n",
                 $order->order_number,
                 $order->user->name ?? 'N/A',
                 $order->user->email ?? 'N/A',
-                $order->vendor->name ?? 'N/A',
-                $order->vendor->email ?? 'N/A',
+                $vendor->name ?? 'N/A',
+                $vendor->email ?? 'N/A',
                 number_format($order->total_price, 2, ',', ' '),
                 $this->getStatusLabelFr($order->status),
                 $order->created_at->format('d/m/Y H:i:s')

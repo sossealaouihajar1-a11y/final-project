@@ -53,7 +53,7 @@
         <div class="flex items-center justify-between">
           <div>
             <p class="text-sm text-[#7a7465] mb-1">Total dépensé</p>
-            <p class="text-2xl font-bold text-[#6b8043]">{{ formatPrice(stats.total_spent) }}€</p>
+            <p class="text-2xl font-bold text-[#6b8043]">{{ formatPrice(stats.total_spent) }} MAD</p>
           </div>
           <div class="w-12 h-12 bg-[#e3eed0] rounded-lg flex items-center justify-center">
             <svg class="w-6 h-6 text-[#6b8043]" fill="currentColor" viewBox="0 0 20 20">
@@ -126,8 +126,8 @@
                 <p class="text-sm text-[#7a7465]">{{ item.vintage_product?.category }}</p>
               </div>
               <div class="text-right">
-                <p class="text-sm text-[#7a7465]">{{ item.quantity }} × {{ formatPrice(item.price) }}€</p>
-                <p class="font-semibold text-[#2a2a28]">{{ formatPrice(item.price * item.quantity) }}€</p>
+                <p class="text-sm text-[#7a7465]">{{ item.quantity }} × {{ formatPrice(item.price) }} MAD</p>
+                <p class="font-semibold text-[#2a2a28]">{{ formatPrice(item.price * item.quantity) }} MAD</p>
               </div>
             </div>
           </div>
@@ -136,7 +136,7 @@
           <div class="flex justify-end pt-4 border-t border-[#d9cbb7]">
             <div class="text-right">
               <p class="text-sm text-[#7a7465] mb-1">Total</p>
-              <p class="text-2xl font-bold text-[#6b8043]">{{ formatPrice(order.total_price) }}€</p>
+              <p class="text-2xl font-bold text-[#6b8043]">{{ formatPrice(order.total_price) }} MAD</p>
             </div>
           </div>
 

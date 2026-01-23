@@ -437,7 +437,7 @@
                 <!-- Price -->
                 <div class="flex items-center justify-between mb-3">
                   <div class="text-2xl font-bold text-[#8b1c3d]">
-                    {{ favorite.product?.price }}€
+                    {{ favorite.product?.price }} MAD
                   </div>
                 </div>
 

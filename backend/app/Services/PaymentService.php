@@ -7,7 +7,9 @@ use Stripe\PaymentIntent;
 use Stripe\Exception\ApiErrorException;
 use App\Models\Payment;
 use App\Models\Order;
+use App\Mail\OrderConfirmationMail;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class PaymentService
 {
@@ -120,6 +122,9 @@ class PaymentService
                 'status' => 'paid',
             ]);
 
+            // Send invoice email with PDF attachment
+            $this->sendInvoiceEmail($order);
+
             Log::info('Payment successful', [
                 'order_id' => $order->id,
                 'transaction_id' => $paymentIntentId,
@@ -216,6 +221,41 @@ class PaymentService
                 'payment_intent_id' => $paymentIntentId,
             ]);
             throw $e;
+        }
+    }
+
+    /**
+     * Send invoice email with PDF attachment
+     */
+    public function sendInvoiceEmail(Order $order)
+    {
+        try {
+            Log::info('Starting to send invoice email', ['order_id' => $order->id]);
+            
+            // Reload order with relationships
+            $order = Order::with(['user', 'orderItems.vintageProduct'])->find($order->id);
+            
+            if (!$order->user || !$order->user->email) {
+                Log::error('User or email not found', ['order_id' => $order->id]);
+                return;
+            }
+
+            Log::info('Sending invoice email to: ' . $order->user->email, ['order_id' => $order->id]);
+            
+            // Send the invoice email
+            Mail::to($order->user->email)->send(new OrderConfirmationMail($order));
+
+            Log::info('Invoice email sent', [
+                'order_id' => $order->id,
+                'user_email' => $order->user->email,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error sending invoice email', [
+                'error' => $e->getMessage(),
+                'order_id' => $order->id,
+                'trace' => $e->getTraceAsString(),
+            ]);
+            // Don't throw - payment was successful even if email fails
         }
     }
 }

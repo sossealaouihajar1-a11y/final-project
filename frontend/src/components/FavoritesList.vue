@@ -61,10 +61,12 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useConfirmDialog } from '@/composables/useConfirmDialog'
 import favoritesService from '@/services/favoritesService'
 import ProductCard from '@/components/ProductCard.vue'
 
 const router = useRouter()
+const { confirmDelete } = useConfirmDialog()
 const favorites = ref([])
 const loading = ref(true)
 const error = ref(null)
@@ -97,7 +99,8 @@ const removeFavorite = async (productId) => {
 }
 
 const clearAllFavorites = async () => {
-  if (confirm('Êtes-vous sûr de vouloir supprimer tous vos favoris ?')) {
+  const confirmed = await confirmDelete('tous vos favoris')
+  if (confirmed) {
     try {
       await favoritesService.clearAll()
       favorites.value = []

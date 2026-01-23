@@ -121,10 +121,7 @@
                 <strong>N° Facture:</strong> INV-{{ date('Y') }}-{{ str_pad($order->id, 8, '0', STR_PAD_LEFT) }}<br>
                 <strong>N° Commande:</strong> {{ $order->id }}<br>
                 <strong>Date:</strong> {{ $order->created_at->format('d/m/Y') }}<br>
-                <strong>Statut:</strong> 
-                <span class="status-badge status-{{ $order->status }}">
-                    {{ ucfirst($order->status) }}
-                </span>
+            
             </p>
         </div>
 
@@ -172,9 +169,9 @@
             <tr>
                 <td><strong>{{ $item->vintageProduct->title }}</strong></td>
                 <td>{{ $item->vintageProduct->category }}</td>
-                <td class="text-right">{{ number_format($item->price, 2) }}€</td>
+                <td class="text-right">{{ number_format($item->price, 2) }}MAD</td>
                 <td class="text-right">{{ $item->quantity }}</td>
-                <td class="text-right"><strong>{{ number_format($item->subtotal, 2) }}€</strong></td>
+                <td class="text-right"><strong>{{ number_format($item->subtotal, 2) }}MAD</strong></td>
             </tr>
             @endforeach
         </tbody>
@@ -184,7 +181,7 @@
     <table>
         <tr>
             <th>Sous-total:</th>
-            <td class="text-right">{{ number_format($order->invoice->subtotal, 2) }}€</td>
+            <td class="text-right">{{ number_format($order->invoice->subtotal, 2) }}MAD</td>
         </tr>
         <tr>
             <th>Frais de port:</th>
@@ -192,13 +189,13 @@
                 @if($order->invoice->shipping_cost == 0)
                     GRATUIT
                 @else
-                    {{ number_format($order->invoice->shipping_cost, 2) }}€
+                    {{ number_format($order->invoice->shipping_cost, 2) }}MAD
                 @endif
             </td>
         </tr>
         <tr class="total-line">
             <th>TOTAL TTC:</th>
-            <td class="text-right">{{ number_format($order->invoice->total_amount, 2) }}€</td>
+            <td class="text-right">{{ number_format($order->invoice->total_amount, 2) }}MAD</td>
         </tr>
     </table>
 </div>

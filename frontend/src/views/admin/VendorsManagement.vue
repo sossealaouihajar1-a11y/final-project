@@ -187,11 +187,13 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
+import { useConfirmDialog } from '@/composables/useConfirmDialog'
 import Header from '@/components/Header.vue'
 import authService from '@/services/authService'
 
 const router = useRouter()
 const authStore = useAuthStore()
+const { confirmAction } = useConfirmDialog()
 
 const vendors = ref([])
 const loading = ref(false)

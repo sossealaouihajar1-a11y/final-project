@@ -1,6 +1,148 @@
 <template>
   <div class="min-h-screen bg-[#f6f3ee] text-[#2a2a28]">
 
+    <!-- Order Details Modal -->
+    <div v-if="selectedOrder" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="p-6 border-b border-[#d6cdbf]">
+          <div class="flex justify-between items-center">
+            <h2 class="text-2xl font-serif text-[#4a3728]">Détails commande</h2>
+            <button @click="selectedOrder = null" class="text-gray-500 hover:text-gray-700">✕</button>
+          </div>
+        </div>
+        
+        <div class="p-6 space-y-6">
+          <!-- Header Info -->
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <p class="text-xs uppercase text-[#6b7b4b] mb-1">Numéro commande</p>
+              <p class="font-semibold text-[#4a3728]">{{ selectedOrder.order_number }}</p>
+            </div>
+            <div>
+              <p class="text-xs uppercase text-[#6b7b4b] mb-1">Statut</p>
+              <span :class="getStatusClass(selectedOrder.status)" class="px-3 py-1 rounded-full text-xs">
+                {{ getStatusLabel(selectedOrder.status) }}
+              </span>
+            </div>
+            <div>
+              <p class="text-xs uppercase text-[#6b7b4b] mb-1">Date</p>
+              <p class="text-[#4a3728]">{{ formatDate(selectedOrder.created_at) }}</p>
+            </div>
+            <div>
+              <p class="text-xs uppercase text-[#6b7b4b] mb-1">Total</p>
+              <p class="font-semibold text-[#6b7b4b]">{{ formatPrice(selectedOrder.total_price) }}</p>
+            </div>
+          </div>
+
+          <!-- Client Info -->
+          <div class="border-t border-[#d6cdbf] pt-4">
+            <h3 class="font-semibold text-[#4a3728] mb-3">Client</h3>
+            <p>{{ selectedOrder.client_name }}</p>
+            <p class="text-sm text-gray-600">{{ selectedOrder.client_email }}</p>
+            <p class="text-sm text-gray-600">{{ selectedOrder.client_phone }}</p>
+          </div>
+
+          <!-- Vendor Info -->
+          <div class="border-t border-[#d6cdbf] pt-4">
+            <h3 class="font-semibold text-[#4a3728] mb-3">Vendeur</h3>
+            <p>{{ selectedOrder.vendor_name }}</p>
+            <p class="text-sm text-gray-600">{{ selectedOrder.vendor_email }}</p>
+            <p class="text-sm text-gray-600">{{ selectedOrder.vendor_phone }}</p>
+          </div>
+
+          <!-- Items -->
+          <div class="border-t border-[#d6cdbf] pt-4">
+            <h3 class="font-semibold text-[#4a3728] mb-3">Articles</h3>
+            <div class="space-y-2">
+              <div v-for="item in selectedOrder.items" :key="item.id" class="flex justify-between items-center py-2 border-b border-[#e4dccf]">
+                <div class="flex items-center space-x-3">
+                  <img v-if="item.product_image" :src="item.product_image" :alt="item.product_name" class="w-12 h-12 object-cover rounded">
+                  <div>
+                    <p class="font-medium text-[#4a3728]">{{ item.product_name }}</p>
+                    <p class="text-sm text-gray-600">Qty: {{ item.quantity }}</p>
+                  </div>
+                </div>
+                <p class="font-semibold text-[#4a3728]">{{ formatPrice(item.price * item.quantity) }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Totals -->
+          <div class="border-t border-[#d6cdbf] pt-4 space-y-2">
+            <div class="flex justify-between">
+              <span>Sous-total</span>
+              <span>{{ formatPrice(selectedOrder.subtotal) }}</span>
+            </div>
+            <div class="flex justify-between font-semibold text-[#4a3728]">
+              <span>Total</span>
+              <span>{{ formatPrice(selectedOrder.total_price) }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-6 border-t border-[#d6cdbf] flex justify-end">
+          <button @click="selectedOrder = null" class="px-4 py-2 bg-[#d6cdbf] text-[#4a3728] rounded-lg hover:bg-[#cfc3aa]">
+            Fermer
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status Update Modal -->
+    <div v-if="statusUpdateOrder" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div class="bg-white rounded-xl shadow-2xl max-w-md w-full">
+        <div class="p-6 border-b border-[#d6cdbf]">
+          <h2 class="text-xl font-serif text-[#4a3728]">Mettre à jour le statut</h2>
+        </div>
+        
+        <div class="p-6 space-y-4">
+          <p class="text-[#5a564f]">Commande: <span class="font-semibold">{{ statusUpdateOrder.order_number }}</span></p>
+          
+          <div>
+            <label class="block text-sm font-medium text-[#4a3728] mb-2">Nouveau statut</label>
+            <select v-model="newStatus" class="w-full px-4 py-3 border border-[#d6cdbf] rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#6b7b4b]">
+              <option value="pending">En attente</option>
+              <option value="paid">Payée</option>
+              <option value="shipped">Expédiée</option>
+              <option value="delivered">Livrée</option>
+              <option value="canceled">Annulée</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="p-6 border-t border-[#d6cdbf] flex space-x-3">
+          <button @click="saveStatusUpdate" class="flex-1 px-4 py-2 bg-[#6b7b4b] text-white rounded-lg hover:bg-[#556b2f] font-medium">
+            Confirmer
+          </button>
+          <button @click="statusUpdateOrder = null" class="flex-1 px-4 py-2 bg-[#d6cdbf] text-[#4a3728] rounded-lg hover:bg-[#cfc3aa]">
+            Annuler
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Confirmation Delete Modal -->
+    <div v-if="confirmModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div class="bg-white rounded-xl shadow-2xl max-w-md w-full">
+        <div class="p-6 border-b border-[#d6cdbf]">
+          <h2 class="text-xl font-serif text-[#4a3728]">{{ confirmModal.title }}</h2>
+        </div>
+        
+        <div class="p-6">
+          <p class="text-[#5a564f]">{{ confirmModal.message }}</p>
+        </div>
+
+        <div class="p-6 border-t border-[#d6cdbf] flex space-x-3">
+          <button @click="confirmModal.action()" class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium">
+            Supprimer
+          </button>
+          <button @click="confirmModal = null" class="flex-1 px-4 py-2 bg-[#d6cdbf] text-[#4a3728] rounded-lg hover:bg-[#cfc3aa]">
+            Annuler
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Hero -->
     <section class="border-b border-[#d6cdbf]">
       <div class="max-w-7xl mx-auto px-6 py-12 text-center">
@@ -124,12 +266,12 @@
                 <button @click="viewOrderDetails(order)" class="text-[#6b7b4b] hover:underline">
                   Détails
                 </button>
-                <button @click="updateStatus(order)" class="text-[#4a3728] hover:underline">
+                <!-- <button @click="updateStatus(order)" class="text-[#4a3728] hover:underline">
                   Statut
-                </button>
-                <button @click="confirmDelete(order)" class="text-red-600 hover:underline">
+                </button> -->
+                <!-- <button @click="confirmDelete(order)" class="text-red-600 hover:underline">
                   Supprimer
-                </button>
+                </button> -->
               </td>
             </tr>
           </tbody>

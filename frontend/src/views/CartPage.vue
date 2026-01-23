@@ -1,43 +1,33 @@
 <template>
-  <div class="bg-white min-h-screen flex flex-col">
+  <div class="min-h-screen flex flex-col bg-[#f8f5ef] text-[#2a2a28] font-serif">
+
     <!-- Header -->
     <Header />
 
-    <!-- ================= HERO ================= -->
-    <section class="bg-[#f2f1ed] border-b border-gray-200">
-      <div class="max-w-7xl mx-auto px-6 py-14">
-        <p class="uppercase tracking-[0.35em] text-xs text-gray-500 mb-4">
+    <!-- HERO -->
+    <section class="bg-[#fbfaf7] border-b border-[#d6cdbf]">
+      <div class="max-w-7xl mx-auto px-6 py-5 text-center">
+        <p class="uppercase tracking-widest text-xs text-[#6b7b4b] mb-2">
           Panier
         </p>
-        <h1 class="text-4xl md:text-5xl font-serif text-gray-900 mb-4">
-          Mon Panier
-        </h1>
-        <p class="text-gray-600 max-w-2xl">
+    
+        <p class="text-[#5a564f] text-lg">
           {{ cartStore.itemCount }} article(s) dans votre panier
         </p>
       </div>
     </section>
 
-    <!-- ================= CONTENT ================= -->
+    <!-- MAIN CONTENT -->
     <main class="max-w-7xl mx-auto px-6 py-16 flex-grow">
-      <!-- Titre -->
-      <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 flex items-center space-x-3">
-          <svg class="w-8 h-8 text-[#8b1c3d]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-          </svg>
-          <span>Votre panier</span>
-        </h1>
-      </div>
 
       <!-- Panier vide -->
-      <div v-if="cartStore.isEmpty" class="bg-white rounded-2xl shadow-sm border border-gray-200 p-16 text-center">
-        <svg class="w-24 h-24 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div v-if="cartStore.isEmpty" class="bg-[#fbfaf7] rounded-2xl shadow-lg border border-[#d6cdbf] p-16 text-center">
+        <svg class="w-24 h-24 mx-auto text-[#c1bdae] mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
         </svg>
-        <h2 class="text-2xl font-bold text-gray-800 mb-2">Votre panier est vide</h2>
-        <p class="text-gray-600 mb-6">Découvrez nos produits vintage uniques</p>
-        <router-link to="/products" class="inline-block border border-[#8b1c3d] px-10 py-3 text-[#8b1c3d] uppercase tracking-wider text-sm hover:bg-[#8b1c3d] hover:text-white transition">
+        <h2 class="text-2xl font-bold text-[#4a3728] mb-2">Votre panier est vide</h2>
+        <p class="text-[#5a564f] mb-6">Découvrez nos produits vintage uniques</p>
+        <router-link to="/products" class="inline-block border border-[#8b5e3c] px-10 py-3 text-[#8b5e3c] uppercase tracking-wider text-sm hover:bg-[#8b5e3c] hover:text-white transition rounded-lg">
           Parcourir la boutique
         </router-link>
       </div>
@@ -46,21 +36,13 @@
       <div v-else class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <!-- Liste des articles -->
         <div class="lg:col-span-2 space-y-4">
-          <div
-            v-for="item in cartStore.items"
-            :key="item.id"
-            class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition"
-          >
+          <div v-for="item in cartStore.items" :key="item.id" class="bg-[#fbfaf7] rounded-2xl shadow-md border border-[#d6cdbf] overflow-hidden hover:shadow-lg transition">
+            
             <div class="flex flex-col sm:flex-row">
               <!-- Image -->
-              <div class="sm:w-48 h-48 bg-gray-100 flex items-center justify-center flex-shrink-0">
-                <img
-                  v-if="item.image_url"
-                  :src="item.image_url"
-                  :alt="item.title"
-                  class="w-full h-full object-cover"
-                />
-                <svg v-else class="w-16 h-16 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+              <div class="sm:w-48 h-48 bg-[#f1eee6] flex items-center justify-center flex-shrink-0">
+                <img v-if="item.image_url" :src="item.image_url" :alt="item.title" class="w-full h-full object-cover rounded-lg" />
+                <svg v-else class="w-16 h-16 text-[#c1bdae]" fill="currentColor" viewBox="0 0 20 20">
                   <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
                 </svg>
               </div>
@@ -69,14 +51,10 @@
               <div class="flex-1 p-6">
                 <div class="flex justify-between items-start mb-4">
                   <div>
-                    <h3 class="text-lg font-semibold text-gray-900 mb-1">{{ item.title }}</h3>
-                    <p class="text-sm text-gray-600">{{ item.category }}</p>
+                    <h3 class="text-lg font-semibold text-[#4a3728] mb-1">{{ item.title }}</h3>
+                    <p class="text-sm text-[#5a564f]">{{ item.category }}</p>
                   </div>
-                  <button
-                    @click="removeItem(item.id)"
-                    class="text-red-500 hover:text-red-700 transition"
-                    title="Supprimer"
-                  >
+                  <button @click="removeItem(item.id)" class="text-red-600 hover:text-red-800 transition" title="Supprimer">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
@@ -86,30 +64,23 @@
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                   <!-- Prix -->
                   <div class="mb-4 sm:mb-0">
-                    <div class="text-2xl font-bold text-[#8b1c3d]">
-                      {{ (item.price * item.quantity).toFixed(2) }}€
+                    <div class="text-2xl font-bold text-[#8b5e3c]">
+                      {{ (item.price * item.quantity).toFixed(2) }}MAD
                     </div>
-                    <div class="text-sm text-gray-500">
-                      {{ item.price }}€ × {{ item.quantity }}
+                    <div class="text-sm text-[#5a564f]">
+                      {{ item.price }}MAD× {{ item.quantity }}
                     </div>
                   </div>
 
                   <!-- Quantité -->
-                  <div class="flex items-center space-x-3 bg-gray-50 rounded-lg p-2 border border-gray-200">
-                    <button
-                      @click="decrementQuantity(item.id)"
-                      class="w-8 h-8 flex items-center justify-center bg-white rounded-md hover:bg-gray-100 transition font-bold border border-gray-300"
-                    >
+                  <div class="flex items-center space-x-3 bg-[#f1eee6] rounded-lg p-2 border border-[#d6cdbf]">
+                    <button @click="decrementQuantity(item.id)" class="w-8 h-8 flex items-center justify-center bg-white rounded-md hover:bg-[#f5f3ed] transition font-bold border border-[#d6cdbf]">
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
                       </svg>
                     </button>
                     <span class="font-semibold text-lg min-w-[2rem] text-center">{{ item.quantity }}</span>
-                    <button
-                      @click="incrementQuantity(item.id)"
-                      :disabled="item.quantity >= item.stock"
-                      class="w-8 h-8 flex items-center justify-center bg-white rounded-md hover:bg-gray-100 transition font-bold disabled:opacity-50 disabled:cursor-not-allowed border border-gray-300"
-                    >
+                    <button @click="incrementQuantity(item.id)" :disabled="item.quantity >= item.stock" class="w-8 h-8 flex items-center justify-center bg-white rounded-md hover:bg-[#f5f3ed] transition font-bold disabled:opacity-50 disabled:cursor-not-allowed border border-[#d6cdbf]">
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                       </svg>
@@ -118,214 +89,57 @@
                 </div>
 
                 <!-- Stock -->
-                <div class="mt-3 text-sm flex items-center space-x-2" :class="item.quantity >= item.stock ? 'text-orange-600' : 'text-gray-600'">
+                <div class="mt-3 text-sm flex items-center space-x-2" :class="item.quantity >= item.stock ? 'text-orange-600' : 'text-[#5a564f]'">
                   <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
                   </svg>
                   <span>Stock disponible: {{ item.stock }}</span>
                 </div>
+
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Résumé de la commande -->
-        <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6 sticky top-8">
-          <h2 class="text-xl font-bold text-gray-900 mb-6">Récapitulatif</h2>
-
-          <!-- Price Details -->
-          <div class="space-y-3 mb-6 pb-6 border-b border-gray-200">
-            <div class="flex justify-between text-gray-600">
+        <!-- Récapitulatif -->
+        <div class="bg-[#fbfaf7] rounded-2xl shadow-lg border border-[#d6cdbf] p-6 sticky top-8">
+          <h2 class="text-xl font-bold text-[#4a3728] mb-6">Récapitulatif</h2>
+          <div class="space-y-3 mb-6 pb-6 border-b border-[#d6cdbf]">
+            <div class="flex justify-between text-[#5a564f]">
               <span>Sous-total</span>
-              <span class="font-medium">{{ subtotal.toFixed(2) }}€</span>
+              <span class="font-medium">{{ subtotal.toFixed(2) }} MAD</span>
             </div>
-            <div class="flex justify-between text-gray-600">
+            <div class="flex justify-between text-[#5a564f]">
               <span>Livraison</span>
-              <span class="font-medium" :class="shippingCost === 0 ? 'text-[#8b1c3d]' : ''">
-                {{ shippingCost === 0 ? 'GRATUIT' : shippingCost.toFixed(2) + '€' }}
+              <span class="font-medium" :class="shippingCost === 0 ? 'text-[#8b5e3c]' : ''">
+                {{ shippingCost === 0 ? 'GRATUIT' : shippingCost.toFixed(2) + ' MAD' }}
               </span>
             </div>
-
-            <!-- Progress Bar -->
-            <div v-if="subtotal < 400" class="pt-2">
-              <div class="flex justify-between text-xs text-gray-600 mb-2">
-                <span>Livraison gratuite à partir de 400€</span>
-                <span class="font-medium">{{ (400 - subtotal).toFixed(2) }}€</span>
-              </div>
-              <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-                <div class="h-full bg-gradient-to-r from-[#8b1c3d] to-[#5a4a3a] transition-all duration-500" :style="{ width: `${(subtotal / 400) * 100}%` }"></div>
-              </div>
-              <p class="text-xs text-gray-500 mt-2">Plus que {{ (400 - subtotal).toFixed(2) }}€ pour la livraison gratuite !</p>
-            </div>
-            <div v-else class="pt-2">
-              <div class="flex items-center space-x-2 text-[#8b1c3d] text-sm font-medium">
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                </svg>
-                <span>Vous bénéficiez de la livraison gratuite !</span>
-              </div>
-            </div>
           </div>
 
-          <div class="flex justify-between text-xl font-bold text-gray-900 mb-6">
+          <div class="flex justify-between text-xl font-bold text-[#4a3728] mb-6">
             <span>Total</span>
-            <span class="text-[#8b1c3d]">{{ totalPrice.toFixed(2) }}€</span>
+            <span class="text-[#8b5e3c]">{{ totalPrice.toFixed(2) }} MAD</span>
           </div>
 
-          <!-- ÉTAPE 1: Bouton Procéder au paiement -->
-          <div v-if="!orderConfirmed">
-            <button
-              @click="proceedToCheckout"
-              :disabled="processing"
-              class="w-full px-6 py-4 bg-[#8b1c3d] text-white font-bold rounded-xl hover:bg-[#5a4a3a] transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl"
-            >
-              <svg v-if="!processing" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-              </svg>
-              <svg v-else class="animate-spin h-6 w-6" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              <span>{{ processing ? 'Traitement...' : 'Procéder au paiement' }}</span>
-            </button>
-            <p class="text-xs text-gray-500 text-center mt-3">
-              Vous finaliserez votre commande à l'étape suivante
-            </p>
-          </div>
+          <button @click="proceedToCheckout" class="w-full px-6 py-4 bg-[#8b5e3c] text-white font-bold rounded-xl hover:bg-[#a06a47] transition shadow-lg hover:shadow-xl">
+            Procéder au paiement
+          </button>
 
-          <!-- ÉTAPE 2: Après confirmation -->
-          <div v-else>
-            <!-- Si Cash on Delivery: Message de succès -->
-            <div v-if="confirmedOrder?.payment_method === 'cash_on_delivery'" class="space-y-4">
-              <div class="p-4 bg-green-50 border-2 border-green-500 rounded-xl">
-                <div class="flex items-center space-x-3 mb-3">
-                  <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
-                    <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p class="font-bold text-green-800 text-lg">Commande confirmée !</p>
-                    <p class="text-sm text-green-700">Paiement à la livraison</p>
-                  </div>
-                </div>
-                <p class="text-sm text-green-700 mb-2">
-                  Votre commande a été enregistrée avec succès.
-                </p>
-                <p class="text-sm text-green-700">
-                  💰 Montant à régler à la livraison: <strong>{{ confirmedOrder.total_price.toFixed(2) }}€</strong>
-                </p>
-              </div>
-              <router-link to="/client/dashboard" class="block w-full px-6 py-4 bg-[#8b1c3d] text-white font-bold rounded-xl hover:bg-[#5a4a3a] transition text-center">
-                Voir mes commandes
-              </router-link>
-            </div>
-
-            <!-- Si Stripe: Bouton Payer -->
-            <div v-else-if="confirmedOrder?.payment_method === 'stripe'" class="space-y-4">
-              <div class="p-4 bg-blue-50 border-2 border-blue-500 rounded-xl">
-                <div class="flex items-center space-x-3 mb-3">
-                  <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
-                    <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
-                      <path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p class="font-bold text-blue-800 text-lg">Commande confirmée !</p>
-                    <p class="text-sm text-blue-700">En attente de paiement</p>
-                  </div>
-                </div>
-                <p class="text-sm text-blue-700 mb-2">
-                  Votre commande a été enregistrée. Veuillez procéder au paiement.
-                </p>
-                <p class="text-sm text-blue-700">
-                  💳 Montant à payer: <strong>{{ confirmedOrder.total_price.toFixed(2) }}€</strong>
-                </p>
-              </div>
-              <button
-                @click="proceedToPayment"
-                :disabled="paymentProcessing"
-                class="w-full px-6 py-4 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition disabled:opacity-50 flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl"
-              >
-                <svg v-if="!paymentProcessing" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                </svg>
-                <svg v-else class="animate-spin h-6 w-6" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                <span>{{ paymentProcessing ? 'Traitement...' : 'Procéder au paiement' }}</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Informations complémentaires -->
-          <div v-if="!orderConfirmed" class="mt-6 pt-6 border-t space-y-4">
-            <div class="flex items-start space-x-3 text-sm text-gray-600">
-              <svg class="w-5 h-5 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-              </svg>
-              <div>
-                <div class="font-semibold text-gray-900 mb-1">Paiement sécurisé</div>
-                <p>Vos données sont protégées</p>
-              </div>
-            </div>
-            <div class="flex items-start space-x-3 text-sm text-gray-600">
-              <svg class="w-5 h-5 text-indigo-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
-                <path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1v-5a1 1 0 00-.293-.707l-2-2A1 1 0 0015 7h-1z" />
-              </svg>
-              <div>
-                <div class="font-semibold text-gray-900 mb-1">Livraison gratuite</div>
-                <p>À partir de 400€</p>
-              </div>
-            </div>
-            <div class="flex items-start space-x-3 text-sm text-gray-600">
-              <svg class="w-5 h-5 text-indigo-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
-              </svg>
-              <div>
-                <div class="font-semibold text-gray-900 mb-1">Livraison rapide</div>
-                <p>Sous 3 à 5 jours ouvrés</p>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </main>
 
-    <!-- Toast Notification -->
-    <transition name="slide-up">
-      <div
-        v-if="notification.show"
-        class="fixed bottom-4 right-4 bg-white rounded-lg shadow-2xl p-4 max-w-sm z-50 border-l-4"
-        :class="notification.type === 'error' ? 'border-red-500' : notification.type === 'info' ? 'border-blue-500' : 'border-green-500'"
-      >
-        <div class="flex items-center space-x-3">
-          <svg v-if="notification.type === 'success'" class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-          </svg>
-          <svg v-else-if="notification.type === 'info'" class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
-          </svg>
-          <svg v-else class="w-6 h-6 text-red-600" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-          </svg>
-          <p class="text-gray-800 font-medium">{{ notification.message }}</p>
-        </div>
-      </div>
-    </transition>
-
-    <!-- Footer -->
     <Footer />
   </div>
 </template>
+
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCartStore } from '@/stores/cartStore'
+import { useConfirmDialog } from '@/composables/useConfirmDialog'
 import cartService from '@/services/cartService'
 import shippingAddressService from '@/services/shippingAddressService'
 import Header from '@/components/Header.vue'
@@ -333,6 +147,7 @@ import Footer from '@/components/Footer.vue'
 
 const router = useRouter()
 const cartStore = useCartStore()
+const { confirmDelete } = useConfirmDialog()
 
 const processing = ref(false)
 
@@ -383,8 +198,9 @@ const loadShippingAddress = async () => {
   }
 }
 
-const removeItem = (productId) => {
-  if (confirm('Voulez-vous retirer cet article du panier ?')) {
+const removeItem = async (productId) => {
+  const confirmed = await confirmDelete('cet article')
+  if (confirmed) {
     cartStore.removeItem(productId)
     showNotification('Article retiré du panier')
   }

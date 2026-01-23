@@ -72,9 +72,15 @@
           <span class="text-gray-500">|</span>
           <router-link
             to="/cart"
-            class="px-3 py-1 rounded-md hover:bg-[#e4e1d8] hover:text-[#6b4f3a] transition"
+            class="px-3 py-1 rounded-md hover:bg-[#e4e1d8] hover:text-[#6b4f3a] transition relative"
           >
             Cart
+            <span 
+              v-if="cartItemsCount > 0"
+              class="absolute -top-2 -right-1 bg-red-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center"
+            >
+              {{ cartItemsCount }}
+            </span>
           </router-link>
           <span class="text-gray-500">|</span>
           
@@ -275,9 +281,11 @@
 <script setup>
 import { ref, onMounted, reactive, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useCartStore } from '@/stores/cartStore'
 import apiClient from '@/api/axios'
 
 const router = useRouter()
+const cartStore = useCartStore()
 const isOpen = ref(false)
 const showDropdown = ref(false)
 
@@ -299,6 +307,7 @@ const userData = computed(() => {
 
 const userName = computed(() => userData.value?.name || userData.value?.email || 'Mon Espace')
 const userRole = computed(() => userData.value?.role || 'client')
+const cartItemsCount = computed(() => cartStore.items?.length || 0)
 
 // Initialiser au montage
 onMounted(() => {
@@ -340,7 +349,7 @@ const getDashboardLabel = () => {
       return 'Vendor Dashboard'
     case 'client':
     default:
-      return 'Mon Espace'
+      return 'My space'
   }
 }
 
@@ -361,7 +370,7 @@ const logout = async () => {
     // Dispatcher un événement pour notifier les autres composants
     window.dispatchEvent(new Event('authChange'))
     
-    // Rediriger vers la page d'accueil
+    // Rediriger vers la page de login
     router.push('/')
   }
 }

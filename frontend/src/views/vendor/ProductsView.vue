@@ -1,170 +1,267 @@
 <template>
-  <div class="space-y-6">
-    <!-- Header with Add Button -->
-    <div class="flex justify-between items-center">
-      <div>
-        <h3 class="text-lg font-semibold text-gray-900">Mes Produits</h3>
-        <p class="text-sm text-gray-600 mt-1">Gérez vos produits vintage</p>
-      </div>
-      <button @click="openAddModal" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-        + Ajouter un produit
-      </button>
-    </div>
-
-    <!-- Filters -->
-    <div class="bg-white rounded-lg shadow p-4">
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <input v-model="filters.search" type="text" placeholder="Rechercher..." class="border rounded-lg px-3 py-2" />
-        <select v-model="filters.category" class="border rounded-lg px-3 py-2">
-          <option value="">Toutes les catégories</option>
-          <option v-for="cat in categories" :key="cat" :value="cat">
-            {{ cat.charAt(0).toUpperCase() + cat.slice(1).replace(/_/g, ' ') }}
-          </option>
-        </select>
-        <select v-model="filters.status" class="border rounded-lg px-3 py-2">
-          <option value="">Tous les statuts</option>
-          <option value="active">Actif</option>
-          <option value="inactive">Inactif</option>
-          <option value="sold_out">Épuisé</option>
-        </select>
-        <button @click="applyFilters" class="bg-gray-600 text-white rounded-lg hover:bg-gray-700">
-          Filtrer
-        </button>
-      </div>
-    </div>
-
-    <!-- Products Table -->
-    <div class="bg-white rounded-lg shadow overflow-hidden">
-      <div v-if="loading" class="p-8 text-center text-gray-500">
-        Chargement...
-      </div>
-      <div v-else-if="products.length === 0" class="p-8 text-center text-gray-500">
-        Aucun produit trouvé
-      </div>
-      <table v-else class="w-full">
-        <thead class="bg-gray-50 border-b">
-          <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Produit</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Catégorie</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Prix</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stock</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y">
-          <tr v-for="product in products" :key="product.id" class="hover:bg-gray-50">
-            <td class="px-6 py-4 whitespace-nowrap">
-              <div class="flex items-center">
-                <div class="w-12 h-12 bg-gray-200 rounded flex items-center justify-center mr-3 overflow-hidden flex-shrink-0">
-                  <img 
-                    v-if="product.image_url" 
-                    :src="product.image_url" 
-                    :alt="product.title"
-                    class="w-full h-full object-cover"
-                  />
-                </div>
-                <div>
-                  <p class="text-sm font-medium text-gray-900">{{ product.title }}</p>
-                  <p class="text-xs text-gray-500">{{ product.description.substring(0, 30) }}...</p>
-                </div>
-              </div>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-              {{ product.category }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-              ${{ product.price }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <span :class="getStockClass(product.stock)" class="px-3 py-1 rounded-full text-xs font-semibold">
-                {{ product.stock === 0 ? 'Rupture de stock' : product.stock }}
-              </span>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <span :class="getStatusClass(product.status)" class="px-3 py-1 rounded-full text-xs font-semibold">
-                {{ product.status }}
-              </span>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
-              <button @click="editProduct(product)" class="text-blue-600 hover:text-blue-800">
-                ✏️ Modifier
-              </button>
-              <button @click="deleteProduct(product.id)" class="text-red-600 hover:text-red-800">
-                🗑️ Supprimer
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  <div class="bg-[#f6f3ee] min-h-screen text-[#2a2a28]">
 
     <!-- Add/Edit Modal -->
-    <div v-if="showAddModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md max-h-[90vh] flex flex-col">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">
-          {{ editingProduct ? 'Modifier le produit' : 'Ajouter un produit' }}
-        </h3>
-        <form @submit.prevent="saveProduct" class="space-y-4">
-          <input v-model="form.title" type="text" placeholder="Titre" class="w-full border rounded-lg px-3 py-2" required />
-          <textarea v-model="form.description" placeholder="Description" class="w-full border rounded-lg px-3 py-2 h-20" required></textarea>
-          <select v-model="form.category" class="w-full border rounded-lg px-3 py-2" required>
-            <option value="">Sélectionnez une catégorie</option>
+    <div v-if="showAddModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="p-6 border-b border-[#d6cdbf]">
+          <div class="flex justify-between items-center">
+            <h2 class="text-2xl font-serif text-[#4a3728]">{{ editingProduct ? 'Modifier' : 'Ajouter' }} un produit</h2>
+            <button @click="closeModal" class="text-gray-500 hover:text-gray-700">✕</button>
+          </div>
+        </div>
+        
+        <div class="p-6 space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-[#4a3728] mb-2">Titre</label>
+            <input v-model="form.title" type="text" placeholder="Titre du produit" class="w-full px-4 py-2 border border-[#d6cdbf] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6b7b4b]">
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-[#4a3728] mb-2">Description</label>
+            <textarea v-model="form.description" rows="4" placeholder="Description du produit" class="w-full px-4 py-2 border border-[#d6cdbf] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6b7b4b]"></textarea>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-[#4a3728] mb-2">Catégorie</label>
+              <select v-model="form.category" class="w-full px-4 py-2 border border-[#d6cdbf] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6b7b4b]">
+                <option value="">Sélectionnez une catégorie</option>
+                <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-[#4a3728] mb-2">Prix (MAD)</label>
+              <input v-model.number="form.price" type="number" placeholder="0" class="w-full px-4 py-2 border border-[#d6cdbf] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6b7b4b]">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-[#4a3728] mb-2">Stock</label>
+              <input v-model.number="form.stock" type="number" placeholder="0" class="w-full px-4 py-2 border border-[#d6cdbf] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6b7b4b]">
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-[#4a3728] mb-2">Condition</label>
+              <select v-model="form.condition" class="w-full px-4 py-2 border border-[#d6cdbf] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6b7b4b]">
+                <option value="bon">Bon</option>
+                <option value="parfait">Parfait</option>
+                <option value="utilise">Utilisé</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-[#4a3728] mb-2">Promotion (%)</label>
+            <input v-model.number="form.promotion" type="number" placeholder="0" class="w-full px-4 py-2 border border-[#d6cdbf] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6b7b4b]">
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-[#4a3728] mb-2">Image</label>
+            <div v-if="form.image_preview" class="mb-4">
+              <img :src="form.image_preview" :alt="form.title" class="w-32 h-32 object-cover rounded-lg">
+              <button @click="clearImage" type="button" class="mt-2 text-red-600 hover:text-red-800">Retirer</button>
+            </div>
+            <input @change="onImageSelected" type="file" accept="image/*" class="w-full px-4 py-2 border border-[#d6cdbf] rounded-lg">
+          </div>
+        </div>
+
+        <div class="p-6 border-t border-[#d6cdbf] flex space-x-3">
+          <button @click="saveProduct" class="flex-1 px-4 py-2 bg-[#6b8043] text-white rounded-lg hover:bg-[#556b2f] font-medium">
+            {{ editingProduct ? 'Mettre à jour' : 'Ajouter' }}
+          </button>
+          <button @click="closeModal" class="flex-1 px-4 py-2 bg-[#d6cdbf] text-[#4a3728] rounded-lg hover:bg-[#cfc3aa]">
+            Annuler
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== HERO ===== -->
+    <section class="border-b border-[#d6cdbf]">
+      <div class="max-w-7xl mx-auto px-6 py-12 text-center">
+        <p class="uppercase tracking-[0.3em] text-xs text-[#6b7b4b] mb-3">
+          Gestion produits
+        </p>
+        <h1 class="text-4xl md:text-5xl font-serif text-[#4a3728] mb-4">
+          Mes Produits
+        </h1>
+        <p class="text-[#5a564f] max-w-xl mx-auto">
+          Gérez votre catalogue vintage et vos stocks
+        </p>
+      </div>
+    </section>
+
+    <!-- ===== CONTENT ===== -->
+    <div class="max-w-7xl mx-auto px-6 py-10 space-y-10">
+
+      <!-- ===== ACTION BAR ===== -->
+      <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+        <div>
+          <h3 class="text-lg font-serif text-[#4a3728]">
+            Catalogue
+          </h3>
+          <p class="text-sm text-[#7a7465]">
+            Tous vos produits vintage
+          </p>
+        </div>
+
+        <button
+          @click="openAddModal"
+          class="px-6 py-3 bg-[#6b8043] text-white rounded-lg hover:bg-[#556b2f] font-medium transition"
+        >
+          + Ajouter un produit
+        </button>
+      </div>
+
+      <!-- ===== FILTERS ===== -->
+      <div class="bg-[#fbfaf7] border border-[#d6cdbf] rounded-xl p-6">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <input
+            v-model="filters.search"
+            type="text"
+            placeholder="Rechercher un produit..."
+            class="px-4 py-3 border border-[#d6cdbf] rounded-lg bg-white focus:outline-none focus:ring-1 focus:ring-[#6b7b4b]"
+          />
+
+          <select v-model="filters.category" class="px-4 py-3 border border-[#d6cdbf] rounded-lg bg-white">
+            <option value="">Toutes les catégories</option>
             <option v-for="cat in categories" :key="cat" :value="cat">
               {{ cat.charAt(0).toUpperCase() + cat.slice(1).replace(/_/g, ' ') }}
             </option>
           </select>
-          <input v-model.number="form.price" type="number" placeholder="Prix" class="w-full border rounded-lg px-3 py-2" required />
-          <input v-model.number="form.stock" type="number" placeholder="Stock" class="w-full border rounded-lg px-3 py-2" required />
-          <select v-model="form.condition" class="w-full border rounded-lg px-3 py-2" required>
-            <option value="">État du produit</option>
-            <option value="neuf">Neuf</option>
-            <option value="excellent">Excellent</option>
-            <option value="tres_bon">Très bon</option>
-            <option value="bon">Bon</option>
-            <option value="acceptable">Acceptable</option>
-            <option value="a_restaurer">À restaurer</option>
-          </select>
-          <input v-model.number="form.promotion" type="number" placeholder="Promotion %" class="w-full border rounded-lg px-3 py-2" />
-          
-          <!-- Image Upload Section -->
-          <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700">Image du produit</label>
-            <div v-if="form.image_preview" class="mb-3">
-              <img :src="form.image_preview" alt="Preview" class="w-full h-40 object-cover rounded-lg" />
-              <button type="button" @click="clearImage" class="mt-2 text-sm text-red-600 hover:text-red-800">
-                Supprimer l'image
-              </button>
-            </div>
-            <input 
-              type="file" 
-              accept="image/*" 
-              @change="onImageSelected"
-              class="w-full border rounded-lg px-3 py-2"
-            />
-            <p class="text-xs text-gray-500">Formats acceptés: JPG, PNG, GIF. Max 5MB</p>
-          </div>
 
-          <div class="flex justify-end gap-3 mt-6">
-            <button type="button" @click="closeModal" class="px-4 py-2 text-gray-700 border rounded-lg hover:bg-gray-50">
-              Annuler
-            </button>
-            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-              {{ editingProduct ? 'Mettre à jour' : 'Ajouter' }}
-            </button>
-          </div>
-        </form>
+          <select v-model="filters.status" class="px-4 py-3 border border-[#d6cdbf] rounded-lg bg-white">
+            <option value="">Tous les statuts</option>
+            <option value="active">Actif</option>
+            <option value="inactive">Inactif</option>
+            <option value="sold_out">Épuisé</option>
+          </select>
+
+          <button
+            @click="applyFilters"
+            class="bg-[#6b8043] text-white rounded-lg hover:bg-[#556b2f] font-medium transition"
+          >
+            Filtrer
+          </button>
+        </div>
       </div>
+
+      <!-- ===== TABLE ===== -->
+      <div class="bg-[#fbfaf7] border border-[#d6cdbf] rounded-xl overflow-hidden">
+
+        <div v-if="loading" class="p-10 text-center text-[#7a7465]">
+          Chargement...
+        </div>
+
+        <div v-else-if="products.length === 0" class="p-10 text-center text-[#7a7465]">
+          Aucun produit trouvé
+        </div>
+
+        <div v-else class="overflow-x-auto">
+          <table class="min-w-full text-sm">
+            <thead class="bg-[#f1ede6]">
+              <tr class="text-left text-xs uppercase tracking-wider text-[#6b7b4b]">
+                <th class="px-6 py-4">Produit</th>
+                <th class="px-6 py-4">Catégorie</th>
+                <th class="px-6 py-4">Prix</th>
+                <th class="px-6 py-4">Stock</th>
+                <th class="px-6 py-4">Statut</th>
+                <th class="px-6 py-4">Actions</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr
+                v-for="product in products"
+                :key="product.id"
+                class="border-t border-[#e4dccf] hover:bg-[#f4f1eb]"
+              >
+                <td class="px-6 py-4">
+                  <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-lg bg-[#d6cdbf] overflow-hidden">
+                      <img
+                        v-if="product.image_url"
+                        :src="product.image_url"
+                        :alt="product.title"
+                        class="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div>
+                      <p class="font-medium text-[#4a3728]">
+                        {{ product.title }}
+                      </p>
+                      <p class="text-xs text-[#7a7465]">
+                        {{ product.description.substring(0, 35) }}...
+                      </p>
+                    </div>
+                  </div>
+                </td>
+
+                <td class="px-6 py-4 text-[#7a7465]">
+                  {{ product.category }}
+                </td>
+
+                <td class="px-6 py-4 font-medium text-[#4a3728]">
+                  {{ product.price }} MAD
+                </td>
+
+                <td class="px-6 py-4">
+                  <span
+                    :class="getStockClass(product.stock)"
+                    class="px-3 py-1 rounded-full text-xs font-semibold"
+                  >
+                    {{ product.stock === 0 ? 'Rupture' : product.stock }}
+                  </span>
+                </td>
+
+                <td class="px-6 py-4">
+                  <span
+                    :class="getStatusClass(product.status)"
+                    class="px-3 py-1 rounded-full text-xs font-semibold"
+                  >
+                    {{ product.status }}
+                  </span>
+                </td>
+
+                <td class="px-6 py-4 space-x-3">
+                  <button
+                    @click="editProduct(product)"
+                    class="text-[#6b8043] hover:underline font-medium"
+                  >
+                    Modifier
+                  </button>
+                  <button
+                    @click="deleteProduct(product.id)"
+                    class="text-[#8b1c3d] hover:underline font-medium"
+                  >
+                    Supprimer
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
     </div>
   </div>
 </template>
 
+
+
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/authStore'
+import { useNotification } from '@/composables/useNotification'
+import { useConfirmDialog } from '@/composables/useConfirmDialog'
 import vendorProductService from '@/services/vendorProductService'
 
 const authStore = useAuthStore()
+const { showError, showSuccess } = useNotification()
+const { confirmDelete } = useConfirmDialog()
 
 const products = ref([])
 const loading = ref(false)
@@ -198,7 +295,9 @@ onMounted(() => {
 const loadCategories = async () => {
   try {
     const response = await vendorProductService.getCategories()
-    categories.value = response.data || []
+    // Response can be either array directly or wrapped in data
+    categories.value = Array.isArray(response.data) ? response.data : (response.data?.data || [])
+    console.log('📂 Categories loaded:', categories.value)
   } catch (error) {
     console.error('Error loading categories:', error)
     // Fallback si erreur
@@ -209,20 +308,36 @@ const loadCategories = async () => {
 const loadProducts = async () => {
   loading.value = true
   try {
-    const response = await vendorProductService.getAllProducts({
-      search: filters.value.search,
-      category: filters.value.category,
-      status: filters.value.status
-    })
-    products.value = response.data.data || response.data
+    // Build params - only include non-empty values
+    const params = {}
+    if (filters.value.search && filters.value.search.trim()) {
+      params.search = filters.value.search
+    }
+    if (filters.value.category) {
+      params.category = filters.value.category
+    }
+    if (filters.value.status) {
+      params.status = filters.value.status
+    }
+    
+    console.log('🔍 Loading products with filters:', params)
+    
+    const response = await vendorProductService.getAllProducts(params)
+    console.log('📦 Response received:', response)
+    
+    // Handle pagination response
+    products.value = response.data.data || response.data || []
+    console.log('✅ Products loaded:', products.value.length, 'products')
   } catch (error) {
-    console.error('Error loading products:', error)
+    console.error('❌ Error loading products:', error)
+    products.value = []
   } finally {
     loading.value = false
   }
 }
 
 const applyFilters = () => {
+  console.log('🔄 Applying filters:', filters.value)
   loadProducts()
 }
 
@@ -273,13 +388,13 @@ const onImageSelected = (event) => {
   if (file) {
     // Validate file size (5MB)
     if (file.size > 5 * 1024 * 1024) {
-      alert('Le fichier est trop volumineux. Max 5MB.')
+      showError('Le fichier est trop volumineux. Max 5MB.', 'Fichier trop volumineux')
       return
     }
     
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      alert('Veuillez sélectionner une image valide.')
+      showError('Veuillez sélectionner une image valide.', 'Image invalide')
       return
     }
     
@@ -305,7 +420,7 @@ const saveProduct = async () => {
     
     // Validation basique
     if (!form.value.title || !form.value.description || !form.value.category) {
-      alert('Veuillez remplir tous les champs obligatoires')
+      showError('Veuillez remplir tous les champs obligatoires', 'Champs manquants')
       return
     }
     
@@ -339,7 +454,7 @@ const saveProduct = async () => {
     console.log('Product saved successfully:', response.data)
     
     // Success message
-    alert(method === 'create' ? 'Produit ajouté avec succès!' : 'Produit mis à jour avec succès!')
+    showSuccess(method === 'create' ? 'Produit ajouté avec succès!' : 'Produit mis à jour avec succès!', 'Succès')
     
     showAddModal.value = false
     editingProduct.value = null
@@ -362,22 +477,25 @@ const saveProduct = async () => {
     if (error.response?.status === 422) {
       const errors = error.response.data.errors || {}
       const errorMessages = Object.values(errors).flat().join('\n')
-      alert('Erreur de validation:\n' + errorMessages)
+      showError('Erreur de validation:\n' + errorMessages, 'Erreur de validation')
     } else if (error.response?.data?.message) {
-      alert('Erreur: ' + error.response.data.message)
+      showError(error.response.data.message, 'Erreur')
     } else {
-      alert('Erreur lors de l\'enregistrement du produit. Veuillez réessayer.')
+      showError('Erreur lors de l\'enregistrement du produit. Veuillez réessayer.', 'Erreur')
     }
   }
 }
 
 const deleteProduct = async (id) => {
-  if (confirm('Êtes-vous sûr de vouloir supprimer ce produit?')) {
+  const confirmed = await confirmDelete('ce produit')
+  if (confirmed) {
     try {
       await vendorProductService.deleteProduct(id)
+      showSuccess('Produit supprimé avec succès!', 'Suppression réussie')
       await loadProducts()
     } catch (error) {
       console.error('Error deleting product:', error)
+      showError('Erreur lors de la suppression du produit', 'Erreur')
     }
   }
 }

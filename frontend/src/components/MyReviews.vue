@@ -1,6 +1,26 @@
 <template>
   <div class="bg-[#f7f6f3] min-h-screen font-serif text-[#2a2a28]">
 
+    <!-- Confirmation Modal for Delete -->
+    <div v-if="reviewToDelete" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-xl shadow-2xl p-6 max-w-sm w-full mx-4">
+        <h3 class="text-lg font-bold text-[#2a2a28] mb-2">Confirmer la suppression</h3>
+        <p class="text-[#7a7465] mb-6">Êtes-vous sûr de vouloir supprimer cet avis ? Cette action est irréversible.</p>
+        <div class="flex space-x-3">
+          <button @click="deleteReview"
+            :disabled="submitting"
+            class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed font-medium">
+            {{ submitting ? 'Suppression...' : 'Supprimer' }}
+          </button>
+          <button @click="reviewToDelete = null"
+            :disabled="submitting"
+            class="flex-1 px-4 py-2 bg-[#d9cbb7] text-[#2a2a28] rounded-lg hover:bg-[#cfc3aa] transition disabled:opacity-50 disabled:cursor-not-allowed font-medium">
+            Annuler
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Loading -->
     <div v-if="loading" class="text-center py-12">
       <div class="inline-block">
@@ -71,7 +91,7 @@
               </h4>
               <div class="flex items-center space-x-3 mt-1">
                 <span class="text-sm text-[#7a7465]">{{ review.vintage_product?.category }}</span>
-                <span class="text-sm font-semibold text-[#6b8043]">{{ review.vintage_product?.price }}€</span>
+                <span class="text-sm font-semibold text-[#6b8043]">{{ review.vintage_product?.price }} MAD</span>
               </div>
               <p class="text-xs text-[#7a7465] mt-2">Publié le {{ formatDate(review.created_at) }}</p>
             </div>

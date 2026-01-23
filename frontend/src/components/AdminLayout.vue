@@ -62,8 +62,8 @@ const logout = async () => {
     // Dispatcher un événement pour notifier les autres composants (header, etc.)
     window.dispatchEvent(new Event('authChange'))
     
-    // Rediriger vers la page d'accueil
-    router.push('/')
+    // Rediriger vers la page de login
+    router.push('/login')
   }
 }
 </script>

@@ -91,8 +91,8 @@
                 <div class="item">
                     <strong>{{ $item->vintageProduct->title }}</strong><br>
                     <span style="color: #6b7280;">{{ $item->vintageProduct->category }}</span><br>
-                    Quantité: {{ $item->quantity }} × {{ number_format($item->price, 2) }}€
-                    = <strong>{{ number_format($item->subtotal, 2) }}€</strong>
+                    Quantité: {{ $item->quantity }} × {{ number_format($item->price, 2) }}MAD
+                    = <strong>{{ number_format($item->subtotal, 2) }}MAD</strong>
                 </div>
                 @endforeach
                 
@@ -108,7 +108,7 @@
                 @endif
                 
                 <div class="total">
-                    Total: {{ number_format($order->total_price, 2) }}€
+                    Total: {{ number_format($order->total_price, 2) }}MAD
                 </div>
             </div>
             
